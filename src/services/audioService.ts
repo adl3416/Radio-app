@@ -16,6 +16,7 @@ class WebAudioService {
   private audio: HTMLAudioElement | null = null;
   private currentStation: RadioStation | null = null;
   private listeners: Array<(state: PlaybackState) => void> = [];
+  private isAudioContextEnabled = false;
   private state: PlaybackState = {
     isPlaying: false,
     isLoading: false,
@@ -26,6 +27,22 @@ class WebAudioService {
 
   constructor() {
     this.loadVolumeFromStorage();
+    this.enableAudioContext();
+  }
+
+  private async enableAudioContext() {
+    // Enable audio context on first user interaction
+    const enableAudio = () => {
+      if (!this.isAudioContextEnabled) {
+        this.isAudioContextEnabled = true;
+        console.log('🔊 [WEB] Audio context enabled by user interaction');
+        document.removeEventListener('click', enableAudio);
+        document.removeEventListener('touchstart', enableAudio);
+      }
+    };
+
+    document.addEventListener('click', enableAudio);
+    document.addEventListener('touchstart', enableAudio);
   }
 
   private async loadVolumeFromStorage() {
@@ -51,15 +68,27 @@ class WebAudioService {
     return () => {
       this.listeners = this.listeners.filter(l => l !== listener);
     };
-  }
-  public async playStation(station: RadioStation) {
+  }  public async playStation(station: RadioStation) {
     try {
       console.log(`🎵 [WEB] Starting playback for: ${station.name}`);
-      console.log(`🔗 [WEB] Stream URL: ${station.streamUrl}`);
+      console.log(`🔗 [WEB] Stream URL: ${station.streamUrl || station.url}`);
       console.log(`🎧 [WEB] Station codec: ${station.codec || 'Unknown'}`);
+      console.log(`🔊 [WEB] Audio context enabled: ${this.isAudioContextEnabled}`);
+      console.log(`🌐 [WEB] User Agent:`, navigator.userAgent);
+      console.log(`🔊 [WEB] Audio support:`, {
+        canPlayMP3: (window as any).HTMLAudioElement ? new (window as any).HTMLAudioElement().canPlayType('audio/mpeg') : 'unknown',
+        canPlayAAC: (window as any).HTMLAudioElement ? new (window as any).HTMLAudioElement().canPlayType('audio/aac') : 'unknown',
+        canPlayMP4: (window as any).HTMLAudioElement ? new (window as any).HTMLAudioElement().canPlayType('audio/mp4') : 'unknown'
+      });
+      
+      // Use streamUrl if available, otherwise fall back to url
+      const finalUrl = station.streamUrl || station.url;
+      if (!finalUrl) {
+        throw new Error('No URL available for station');
+      }
       
       // Check if URL looks problematic
-      const urlLower = station.streamUrl.toLowerCase();
+      const urlLower = finalUrl.toLowerCase();
       if (urlLower.includes('.m3u8') || urlLower.includes('.pls') || urlLower.includes('.m3u')) {
         throw new Error('Desteklenmeyen playlist formatı: Bu istasyon HLS/M3U8 formatı kullanıyor ve web tarayıcıda desteklenmiyor.');
       }
@@ -67,14 +96,19 @@ class WebAudioService {
       this.updateState({ isLoading: true, error: null });
 
       if (this.audio) {
+        console.log('🧹 [WEB] Cleaning up previous audio instance');
         this.audio.pause();
         this.audio.src = '';
         this.audio = null;
-      }      this.audio = new (window as any).Audio();
+      }
+
+      console.log('🆕 [WEB] Creating new audio element');
+      this.audio = new HTMLAudioElement();
       
       if (this.audio) {
-        this.audio.crossOrigin = 'anonymous';
-        this.audio.preload = 'auto';
+        // Set CORS to null for better compatibility with radio streams
+        this.audio.crossOrigin = null; // Change to null for better compatibility
+        this.audio.preload = 'metadata'; // Changed to metadata for better loading
         this.audio.volume = this.state.volume;
 
         this.audio.addEventListener('loadstart', () => {
@@ -93,9 +127,7 @@ class WebAudioService {
         });        this.audio.addEventListener('pause', () => {
           console.log(`⏸️ [WEB] Paused: ${station.name}`);
           this.updateState({ isPlaying: false });
-        });
-
-        this.audio.addEventListener('error', (e) => {
+        });        this.audio.addEventListener('error', (e) => {
           console.error('❌ [WEB] Audio error:', e);
           console.error('❌ [WEB] Audio error details:', this.audio?.error);
           console.error('❌ [WEB] Stream URL:', station.streamUrl);
@@ -110,8 +142,8 @@ class WebAudioService {
                 suggestion = 'Tekrar deneyin veya başka istasyon seçin';
                 break;
               case 2: // MEDIA_ERR_NETWORK
-                errorMessage = 'Ağ hatası';
-                suggestion = 'İnternet bağlantınızı kontrol edin';
+                errorMessage = 'Ağ hatası veya CORS problemi';
+                suggestion = 'İnternet bağlantınızı kontrol edin veya farklı istasyon deneyin';
                 break;
               case 3: // MEDIA_ERR_DECODE
                 errorMessage = 'Desteklenmeyen ses formatı';
@@ -122,9 +154,13 @@ class WebAudioService {
                 suggestion = 'Farklı bir radyo istasyonu seçin. MP3/AAC formatları önerilir.';
                 break;
               default:
-                errorMessage = 'Ses oynatma hatası';
-                suggestion = 'Tarayıcı ses izni gerekebilir. Başka istasyon deneyin.';
+                errorMessage = 'Bilinmeyen ses oynatma hatası';
+                suggestion = 'Tarayıcıda ses izni gerekebilir. Ayarlardan izin verin ve tekrar deneyin.';
             }
+          } else {
+            // Browser compatibility issues
+            errorMessage = 'Tarayıcı uyumluluk hatası';
+            suggestion = 'Modern bir tarayıcı kullanın (Chrome, Firefox, Safari)';
           }
           
           const fullMessage = suggestion ? `${errorMessage}. ${suggestion}` : errorMessage;
@@ -134,13 +170,20 @@ class WebAudioService {
             isPlaying: false,
             isLoading: false,
           });
-        });
-
-        this.audio.addEventListener('waiting', () => {
+        });        this.audio.addEventListener('waiting', () => {
           this.updateState({ isLoading: true });
         });
 
-        this.audio.src = station.streamUrl;
+        this.audio.addEventListener('stalled', () => {
+          console.warn('⚠️ [WEB] Stream stalled:', station.name);
+          this.updateState({ isLoading: true });
+        });
+
+        this.audio.addEventListener('suspend', () => {
+          console.warn('⚠️ [WEB] Stream suspended:', station.name);
+        });        // Set the source and start loading
+        console.log('🔗 [WEB] Setting audio source:', finalUrl);
+        this.audio.src = finalUrl;
         this.currentStation = station;
         
         this.updateState({
@@ -148,18 +191,67 @@ class WebAudioService {
           isLoading: true,
         });
 
-        await this.audio.play();
-        console.log(`🎉 [WEB] Successfully started playing: ${station.name}`);
-      }
-    } catch (error) {
+        // Use load() method to properly initialize the stream
+        console.log('📥 [WEB] Loading audio...');
+        this.audio.load();
+        
+        // Add a small delay before attempting to play
+        await new Promise(resolve => setTimeout(resolve, 100));
+          // Attempt to play with better error handling
+        try {
+          // Check if user interaction is enabled
+          if (!this.isAudioContextEnabled) {
+            throw new Error('UserInteractionRequired');
+          }
+
+          const playPromise = this.audio.play();
+          
+          if (playPromise !== undefined) {
+            await playPromise;
+            console.log(`🎉 [WEB] Successfully started playing: ${station.name}`);
+          }
+        } catch (playError) {
+          console.error('❌ [WEB] Play promise rejected:', playError);
+          
+          let playErrorMessage = 'Oynatma başlatılamadı';
+          
+          if (playError instanceof Error) {
+            if (playError.message === 'UserInteractionRequired') {
+              playErrorMessage = '🔊 Ses çalmak için sayfada herhangi bir yere tıklayın ve tekrar deneyin';
+            } else if (playError.name === 'NotAllowedError') {
+              playErrorMessage = 'Tarayıcıda ses izni gerekli - lütfen sayfada herhangi bir yere tıklayın ve tekrar deneyin';
+            } else if (playError.name === 'NotSupportedError') {
+              playErrorMessage = 'Bu ses formatı tarayıcınızda desteklenmiyor';
+            } else if (playError.name === 'AbortError') {
+              playErrorMessage = 'Oynatma iptal edildi - tekrar deneyin';
+            }
+          }
+          
+          this.updateState({
+            error: playErrorMessage,
+            isPlaying: false,
+            isLoading: false,
+          });
+          
+          throw playError;
+        }
+      }    } catch (error) {
       console.error('❌ [WEB] Failed to play station:', error);
       let errorMessage = 'Radyo istasyonu çalınamadı';
       
       if (error instanceof Error) {
         if (error.name === 'NotAllowedError') {
-          errorMessage = 'Ses izni gerekli - tarayıcıda izin verin';
+          errorMessage = 'Tarayıcıda ses izni gerekli - sayfa ile etkileşim kurun (tıklayın) ve tekrar deneyin';
         } else if (error.name === 'NotSupportedError') {
-          errorMessage = 'Desteklenmeyen ses formatı';
+          errorMessage = 'Bu ses formatı tarayıcınızda desteklenmiyor - farklı istasyon deneyin';
+        } else if (error.name === 'AbortError') {
+          errorMessage = 'Bağlantı iptal edildi - internet bağlantınızı kontrol edin';
+        } else if (error.message.includes('Stream URL is missing')) {
+          errorMessage = 'İstasyon adres bilgisi eksik - farklı istasyon seçin';
+        } else if (error.message.includes('CORS')) {
+          errorMessage = 'Güvenlik kısıtlaması - bu istasyon web tarayıcıda çalışmıyor';
+        } else {
+          errorMessage = `Bağlantı hatası: ${error.message}`;
         }
       }
       
@@ -179,11 +271,19 @@ class WebAudioService {
       this.updateState({ isPlaying: false });
     }
   }
-
   public async resume() {
-    if (this.audio) {
-      await this.audio.play();
-      this.updateState({ isPlaying: true });
+    if (this.audio && this.currentStation) {
+      try {
+        const playPromise = this.audio.play();
+        if (playPromise !== undefined) {
+          await playPromise;
+          this.updateState({ isPlaying: true });
+        }
+      } catch (error) {
+        console.error('❌ [WEB] Resume failed:', error);
+        // If resume fails, try to restart the stream
+        await this.playStation(this.currentStation);
+      }
     }
   }
 

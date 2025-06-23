@@ -311,9 +311,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     isLive: true,
     genre: 'Spor',
     city: 'İstanbul'
-  },
-  {
-    id: 'joyfm',
+  },  {
+    id: 'joyfm-2',
     name: 'Joy FM',
     url: 'https://trkvz-radyolar.ercdn.net/joyfm/playlist.m3u8',
     streamUrl: 'https://trkvz-radyolar.ercdn.net/joyfm/playlist.m3u8',
@@ -343,9 +342,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     isLive: true,
     genre: 'Pop',
     city: 'İstanbul'
-  },
-  {
-    id: 'virgin',
+  },  {
+    id: 'virgin-2',
     name: 'Virgin Radio',
     url: 'https://trkvz-radyolar.ercdn.net/virgin/playlist.m3u8',
     streamUrl: 'https://trkvz-radyolar.ercdn.net/virgin/playlist.m3u8',

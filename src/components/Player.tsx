@@ -3,20 +3,18 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Image,
   StyleSheet,
   Dimensions,
   ActivityIndicator,
   Animated,
-  Easing,
-  Alert,
+  Slider,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTranslation } from 'react-i18next';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { audioService, PlaybackState } from '../services/audioService';
 import { favoritesService } from '../services/favoritesService';
-import { GUARANTEED_STATIONS } from '../constants/radioStations';
+import { useAppContext } from '../contexts/AppContext';
 
 interface PlayerProps {
   onClose?: () => void;
@@ -26,7 +24,7 @@ interface PlayerProps {
 const { width, height } = Dimensions.get('window');
 
 export const Player: React.FC<PlayerProps> = ({ onClose, isMinimized = false }) => {
-  const { t } = useTranslation();
+  const { isDark } = useAppContext();
   const [playbackState, setPlaybackState] = useState<PlaybackState>(audioService.getState());
   const [isFavorite, setIsFavorite] = useState(false);
   const [volume, setVolume] = useState(1.0);
@@ -34,9 +32,6 @@ export const Player: React.FC<PlayerProps> = ({ onClose, isMinimized = false }) 
   // Animation refs
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
-  const waveAnim1 = useRef(new Animated.Value(0)).current;
-  const waveAnim2 = useRef(new Animated.Value(0)).current;
-  const waveAnim3 = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const unsubscribe = audioService.subscribe(setPlaybackState);

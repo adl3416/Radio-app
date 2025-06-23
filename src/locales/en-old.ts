@@ -1,6 +1,6 @@
 export default {
   // App
-  appName: 'RADYO ÇINARI',
+  appName: 'Turkish Radio Stations',
   appSubtitle: 'Live Radio Broadcasts',
   
   // Common
@@ -48,9 +48,7 @@ export default {
   audioSettings: 'Audio Settings',
   highQuality: 'High Quality',
   highQualityDesc: 'Better sound quality (more data)',
-  autoPlay: 'Auto Play',
   autoPlayDesc: 'Play last station when opening app',
-  notifications: 'Notifications',
   pushNotifications: 'Notifications',
   notificationsDesc: 'New stations and updates',
   aboutSupport: 'About & Support',
@@ -67,13 +65,15 @@ export default {
   termsOfService: 'Terms of Service',
   termsDesc: 'Service usage terms',
   changeLanguage: 'Language Change',
-  changeLanguageConfirm: 'Are you sure you want to change language?',
+  changeLanguageConfirm: 'Are you sure you want to change language to {{newLanguage}}?',
   change: 'Change',
   shareMessage: 'Try Turkish Radio Stations app! Listen to the best Turkish radio stations. 📻',
   shareTitle: 'Turkish Radio Stations',
   emailError: 'Could not open email app',
   browseStations: 'Browse Stations',
   startListening: 'Start Listening',
+  emptyDescription: 'Add your favorite radio stations to favorites for easy access here.',
+  emptyRecentDescription: 'Radio stations you listen to will appear here for easy re-access.',
   
   // Categories
   'category.all': 'All',
@@ -86,13 +86,25 @@ export default {
   'category.sports': 'Sports',
   'category.talk': 'Talk',
   
+  // Stations
+  allStations: 'All Stations',
+  liveStations: 'Live Stations',
+  guaranteedStations: 'Guaranteed Stations',
+  guaranteedDescription: '100% MP3 format guarantee • Tested URLs • Smooth playback',
+  useGuaranteed: 'Guaranteed Stations',
+  
   // Errors & Warnings
   apiError: 'API Error',
-  apiErrorMessage: 'Could not load live radio data. Guaranteed stations will be used.',
-  connectionError: 'Connection error',
-  streamError: 'Stream error',
-  unsupportedFormat: 'Unsupported format',
-  tryAgain: 'Try again',
+  apiErrorMessage: 'Failed to load live radio data. Guaranteed stations will be used.',
+  formatWarning: 'Format Warning',
+  formatWarningMessage: 'This station comes from API and format compatibility cannot be guaranteed. Switch to "Local" if you experience issues.',
+  
+  // Player
+  nowPlaying: 'Now Playing',
+  play: 'Play',
+  pause: 'Pause',
+  stop: 'Stop',
+  volume: 'Volume',
   
   // Theme & Language
   lightMode: 'Light Mode',
@@ -100,29 +112,46 @@ export default {
   turkish: 'Turkish',
   english: 'English',
 
+  common: {
+    play: 'Play',
+    pause: 'Pause',
+    stop: 'Stop',
+    loading: 'Loading...',
+    error: 'Error',
+    retry: 'Retry',
+    settings: 'Settings',
+    about: 'About',
+    search: 'Search',
+    favorites: 'Favorites',
+    recent: 'Recently Played',
+    categories: 'Categories',
+    all: 'All'
+  },
   screens: {
     home: {
       title: 'Turkish Radio',
       popularStations: 'Popular Stations',
+      allStations: 'All Stations',
       searchPlaceholder: 'Search radio stations...'
     },
     favorites: {
       title: 'My Favorites',
       empty: 'No favorite stations yet',
-      addFirst: 'Add your first favorite station',
-      emptyDescription: 'Add your favorite radio stations to favorites for easy access here.'
+      addFirst: 'Add your first favorite station'
     },
     recent: {
       title: 'Recently Played',
-      empty: 'No stations played yet',
-      startListening: 'Start listening',
-      emptyDescription: 'Radio stations you listen to will appear here for easy re-access.'
+      empty: 'No recent stations',
+      startListening: 'Start listening'
     },
     settings: {
       title: 'Settings',
       language: 'Language',
+      notifications: 'Notifications',
+      autoPlay: 'Auto Play',
       sleepTimer: 'Sleep Timer',
-      theme: 'Theme'
+      theme: 'Theme',
+      version: 'Version'
     }
   },
   player: {
@@ -131,5 +160,15 @@ export default {
     connecting: 'Connecting...',
     connectionError: 'Connection error',
     tryAgain: 'Try again'
+  },
+  notifications: {
+    nowPlaying: 'Now playing',
+    radioStarted: 'Radio started',
+    radioStopped: 'Radio stopped'
+  },
+  errors: {
+    networkError: 'Check your internet connection',
+    playbackError: 'Playback error occurred',
+    generalError: 'An error occurred'
   }
 };

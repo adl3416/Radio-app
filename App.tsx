@@ -9,12 +9,16 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 // Import i18n configuration
 import './src/locales/i18n';
 
+// Import contexts
+import { AppProvider } from './src/contexts/AppContext';
+
 // Import screens
-import { HomeScreen } from './src/screens/HomeScreen';
-import { FavoritesScreen } from './src/screens/FavoritesScreen';
-import { RecentScreen } from './src/screens/RecentScreen';
-import { SettingsScreen } from './src/screens/SettingsScreen';
-import { Player } from './src/components/Player';
+import { UltraModernHomeScreen } from './src/screens/UltraModernHomeScreen';
+import { ModernFavoritesScreen } from './src/screens/ModernFavoritesScreen';
+import { ModernRecentScreen } from './src/screens/ModernRecentScreen';
+import { ModernSettingsScreen } from './src/screens/ModernSettingsScreen';
+import { ModernPlayer } from './src/components/ModernPlayer';
+import { VinylPlayer } from './src/components/VinylPlayer';
 
 // Import types
 import { RadioStation } from './src/constants/radioStations';
@@ -26,6 +30,7 @@ const Stack = createNativeStackNavigator();
 function TabNavigator() {
   const [selectedStation, setSelectedStation] = useState<RadioStation | null>(null);
   const [showPlayer, setShowPlayer] = useState(false);
+  const [showVinylPlayer, setShowVinylPlayer] = useState(false);
   const [playbackState, setPlaybackState] = useState<PlaybackState>(audioService.getState());
 
   useEffect(() => {
@@ -35,25 +40,31 @@ function TabNavigator() {
 
   const handleStationPress = async (station: RadioStation) => {
     try {
+      console.log('🎵 [APP] Attempting to play station:', station.name);
+      console.log('🎵 [APP] Before setShowVinylPlayer - current state:', showVinylPlayer);
       await audioService.playStation(station);
+      console.log('✅ [APP] Successfully started station:', station.name);
       setSelectedStation(station);
-      setShowPlayer(true);
+      setShowVinylPlayer(true); // RADYO ÇINARI Vinyl Player'ı aç
+      console.log('🎵 [APP] After setShowVinylPlayer - should be true:', true);
+      console.log('🎭 [APP] VinylPlayer will be rendered with props - isVisible:', true, 'currentStation:', station.name);
     } catch (error) {
-      console.error('Failed to play station:', error);
-      // Still show player even if audio fails, user can try again
+      console.error('❌ [APP] Failed to play station:', error);
       setSelectedStation(station);
-      setShowPlayer(true);
+      setShowVinylPlayer(true); // RADYO ÇINARI Vinyl Player'ı aç
+      console.log('🎵 [APP] After setShowVinylPlayer (error case) - should be true:', true);
+      console.log('🎭 [APP] VinylPlayer will be rendered with props (error) - isVisible:', true, 'currentStation:', station.name);
     }
   };
 
   const handleOpenPlayer = () => {
     if (playbackState.currentStation) {
-      setShowPlayer(true);
+      setShowVinylPlayer(true);
     }
   };
 
   const handleClosePlayer = () => {
-    setShowPlayer(false);
+    setShowVinylPlayer(false);
   };
 
   return (
@@ -86,7 +97,7 @@ function TabNavigator() {
       >
         <Tab.Screen name="Anasayfa">
           {(props) => (
-            <HomeScreen
+            <UltraModernHomeScreen
               {...props}
               onStationPress={handleStationPress}
               onOpenPlayer={handleOpenPlayer}
@@ -95,7 +106,7 @@ function TabNavigator() {
         </Tab.Screen>
         <Tab.Screen name="Favoriler">
           {(props) => (
-            <FavoritesScreen
+            <ModernFavoritesScreen
               {...props}
               onStationPress={handleStationPress}
               onOpenPlayer={handleOpenPlayer}
@@ -104,41 +115,40 @@ function TabNavigator() {
         </Tab.Screen>
         <Tab.Screen name="Geçmiş">
           {(props) => (
-            <RecentScreen
+            <ModernRecentScreen
               {...props}
               onStationPress={handleStationPress}
               onOpenPlayer={handleOpenPlayer}
             />
           )}
         </Tab.Screen>
-        <Tab.Screen name="Ayarlar" component={SettingsScreen} />
+        <Tab.Screen name="Ayarlar" component={ModernSettingsScreen} />
       </Tab.Navigator>
 
       {/* Mini Player */}
-      {playbackState.currentStation && !showPlayer && (
-        <Player isMinimized={true} onClose={handleOpenPlayer} />
+      {playbackState.currentStation && !showVinylPlayer && (
+        <ModernPlayer isMinimized={true} onClose={handleOpenPlayer} />
       )}
 
-      {/* Full Screen Player Modal */}
-      <Modal
-        visible={showPlayer}
-        animationType="slide"
-        presentationStyle="fullScreen"
-      >
-        <Player onClose={handleClosePlayer} />
-      </Modal>
+      {/* RADYO ÇINARI - Vinyl Player */}
+      <VinylPlayer 
+        isVisible={showVinylPlayer} 
+        onClose={handleClosePlayer} 
+      />
     </View>
   );
 }
 
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle="dark-content" backgroundColor="white" />
-      <NavigationContainer>
-        <TabNavigator />
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <AppProvider>
+      <SafeAreaProvider>
+        <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
+        <NavigationContainer>
+          <TabNavigator />
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </AppProvider>
   );
 }
 

@@ -13,8 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { RadioStationCard } from '../components/RadioStationCard';
-import { RADIO_STATIONS, CATEGORIES, RadioStation } from '../constants/radioStations';
+import { RADIO_STATIONS, CATEGORIES, RadioStation, Category } from '../constants/radioStations';
 import { radioBrowserService, ProcessedRadioStation } from '../services/radioBrowserService';
 
 interface HomeScreenProps {
@@ -67,7 +66,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       setLoading(false);
     }
   };
-
   const filterStations = () => {
     const stationsToFilter = useApiStations && apiStations.length > 0 
       ? apiStations 
@@ -76,16 +74,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     let filtered = stationsToFilter;
 
     if (selectedCategory !== 'Tümü') {
-      filtered = filtered.filter(station => station.category === selectedCategory);
-    }
-
-    if (searchQuery.trim()) {
+      filtered = filtered.filter(station => station.category === selectedCategory.toLowerCase());
+    }if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
       filtered = filtered.filter(station =>
         station.name.toLowerCase().includes(query) ||
-        station.description.toLowerCase().includes(query) ||
-        station.genre.toLowerCase().includes(query) ||
-        station.city?.toLowerCase().includes(query)
+        (station.description && station.description.toLowerCase().includes(query)) ||
+        (station.genre && station.genre.toLowerCase().includes(query)) ||
+        (station.city && station.city.toLowerCase().includes(query))
       );
     }
 
@@ -117,26 +113,24 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       loadRadioStations();
     }
   };
-
-  const renderCategoryItem = ({ item }: { item: string }) => (
+  const renderCategoryItem = ({ item }: { item: Category }) => (
     <TouchableOpacity
-      onPress={() => setSelectedCategory(item)}
+      onPress={() => setSelectedCategory(item.name)}
       style={[
         styles.categoryButton,
-        selectedCategory === item ? styles.categoryButtonActive : styles.categoryButtonInactive
+        selectedCategory === item.name ? styles.categoryButtonActive : styles.categoryButtonInactive
       ]}
     >
       <Text
         style={[
           styles.categoryText,
-          selectedCategory === item ? styles.categoryTextActive : styles.categoryTextInactive
+          selectedCategory === item.name ? styles.categoryTextActive : styles.categoryTextInactive
         ]}
       >
-        {item}
+        {item.name}
       </Text>
     </TouchableOpacity>
   );
-
   const renderStationItem = ({ item }: { item: RadioStation }) => (
     <View style={styles.stationItemContainer}>
       <TouchableOpacity
@@ -170,6 +164,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       </TouchableOpacity>
     </View>
   );
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -247,11 +242,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       >
         {/* Categories */}
         <View style={styles.categoriesSection}>
-          <Text style={styles.sectionTitle}>Kategoriler</Text>
-          <FlatList
+          <Text style={styles.sectionTitle}>Kategoriler</Text>          <FlatList
             data={CATEGORIES}
             renderItem={renderCategoryItem}
-            keyExtractor={(item) => item}
+            keyExtractor={(item) => item.id}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.categoriesList}
