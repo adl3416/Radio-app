@@ -55,7 +55,6 @@ class RadioBrowserService {
   private baseUrl = 'https://de1.api.radio-browser.info';
   private cache: Map<string, ProcessedRadioStation[]> = new Map();
   private cacheTimeout = 30 * 60 * 1000; // 30 minutes
-
   /**
    * Get Turkish radio stations
    */
@@ -70,7 +69,7 @@ class RadioBrowserService {
 
     try {
       const response = await fetch(
-        `${this.baseUrl}/json/stations/bycountry/turkey?limit=100&order=votes&reverse=true`
+        `${this.baseUrl}/json/stations/bycountry/turkey?limit=500&order=votes&reverse=true`
       );
       
       if (!response.ok) {
@@ -94,12 +93,49 @@ class RadioBrowserService {
   }
 
   /**
+   * Get ALL Turkish radio stations from API (no limit)
+   */
+  async getAllTurkishStations(): Promise<ProcessedRadioStation[]> {
+    const cacheKey = 'all-turkish-stations';
+    const cached = this.cache.get(cacheKey);
+    
+    if (cached) {
+      console.log('Using cached ALL Turkish stations');
+      return cached;
+    }
+
+    try {
+      // Use the exact endpoint you mentioned with hidebroken=true
+      const response = await fetch(
+        `${this.baseUrl}/json/stations/bycountrycodeexact/TR?hidebroken=true&order=votes&reverse=true`
+      );
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const stations: RadioBrowserStation[] = await response.json();
+      const processed = this.processStations(stations);
+      
+      // Cache the results for longer since this is a large dataset
+      this.cache.set(cacheKey, processed);
+      setTimeout(() => this.cache.delete(cacheKey), this.cacheTimeout * 2); // 1 hour cache
+      
+      console.log(`Fetched ${processed.length} Turkish stations from Radio Browser API (ALL)`);
+      return processed;
+      
+    } catch (error) {
+      console.error('Failed to fetch ALL Turkish stations:', error);
+      throw new Error('Tüm Türk radyo istasyonları yüklenemedi');
+    }
+  }
+  /**
    * Search stations by name or tag
    */
   async searchStations(query: string, country = 'turkey'): Promise<ProcessedRadioStation[]> {
     try {
       const response = await fetch(
-        `${this.baseUrl}/json/stations/search?name=${encodeURIComponent(query)}&country=${country}&limit=50&order=votes&reverse=true`
+        `${this.baseUrl}/json/stations/search?name=${encodeURIComponent(query)}&country=${country}&limit=200&order=votes&reverse=true`
       );
       
       if (!response.ok) {
@@ -114,7 +150,6 @@ class RadioBrowserService {
       throw new Error('Radyo arama başarısız');
     }
   }
-
   /**
    * Get stations by tag/genre
    */
@@ -128,7 +163,7 @@ class RadioBrowserService {
 
     try {
       const response = await fetch(
-        `${this.baseUrl}/json/stations/bytag/${encodeURIComponent(tag)}?limit=50&order=votes&reverse=true`
+        `${this.baseUrl}/json/stations/bytag/${encodeURIComponent(tag)}?limit=200&order=votes&reverse=true`
       );
       
       if (!response.ok) {
@@ -149,13 +184,12 @@ class RadioBrowserService {
       throw new Error(`${tag} radyoları yüklenemedi`);
     }
   }
-
   /**
    * Get popular Turkish stations by genre
    */
   async getTurkishByGenre(genre: string): Promise<ProcessedRadioStation[]> {
     try {
-      const allTurkish = await this.getTurkishStations();
+      const allTurkish = await this.getAllTurkishStations(); // Use the new function to get all stations
       
       // Filter by genre/tag
       const filtered = allTurkish.filter(station => 
@@ -164,11 +198,39 @@ class RadioBrowserService {
         station.name.toLowerCase().includes(genre.toLowerCase())
       );
       
-      return filtered.slice(0, 20); // Limit to 20 stations
+      return filtered.slice(0, 100); // Increased limit to 100 stations
       
     } catch (error) {
       console.error(`Failed to get Turkish stations by genre ${genre}:`, error);
       return [];
+    }
+  }
+
+  /**
+   * Get Turkish stations with pagination
+   */
+  async getTurkishStationsPaginated(page: number = 1, limit: number = 100): Promise<{
+    stations: ProcessedRadioStation[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }> {
+    try {
+      const allStations = await this.getAllTurkishStations();
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      const paginatedStations = allStations.slice(startIndex, endIndex);
+      
+      return {
+        stations: paginatedStations,
+        total: allStations.length,
+        page,
+        totalPages: Math.ceil(allStations.length / limit)
+      };
+      
+    } catch (error) {
+      console.error('Failed to get paginated Turkish stations:', error);
+      throw new Error('Sayfalı radyo listesi yüklenemedi');
     }
   }
 

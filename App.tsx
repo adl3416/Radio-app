@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Alert } from 'react-native';
 import { audioService } from './src/services/cleanAudioService';
 import { SimplePlayer } from './src/components/SimplePlayer';
+import { ExtendedRadioList } from './src/screens/ExtendedRadioList';
 import { RADIO_STATIONS } from './src/constants/radioStations';
 
 // Basit ana sayfa komponenti
@@ -27,6 +28,7 @@ const TURKISH_RADIOS = RADIO_STATIONS.map(station => ({
 
 export default function App() {
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
+  const [isExtendedListOpen, setIsExtendedListOpen] = useState(false);
   const [currentStation, setCurrentStation] = useState<any>(null);
   const [audioState, setAudioState] = useState(audioService.getState());
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -155,10 +157,17 @@ export default function App() {
         <Text style={styles.stationCount}>
           {TURKISH_RADIOS.length} İstasyon • {favorites.length} Favori
         </Text>
-      </LinearGradient>
-
-      <View style={styles.content}>
-        <Text style={styles.sectionTitle}>📻 Radyo İstasyonları</Text>
+      </LinearGradient>      <View style={styles.content}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>📻 Radyo İstasyonları</Text>
+          <TouchableOpacity 
+            style={styles.exploreButton}
+            onPress={() => setIsExtendedListOpen(true)}
+          >
+            <Text style={styles.exploreText}>🌍 Tümünü Gör</Text>
+            <Ionicons name="chevron-forward" size={16} color="#FF6B35" />
+          </TouchableOpacity>
+        </View>
         
         <FlatList
           data={sortedRadios}
@@ -175,11 +184,18 @@ export default function App() {
             Şu an çalıyor: {currentStation.name}
           </Text>
         </View>
-      )}
-
-      <SimplePlayer
+      )}      <SimplePlayer
         isVisible={isPlayerOpen}
         onClose={() => setIsPlayerOpen(false)}
+      />
+      
+      <ExtendedRadioList
+        isVisible={isExtendedListOpen}
+        onClose={() => setIsExtendedListOpen(false)}
+        currentAudioState={audioState}
+        onStationPlay={playRadio}
+        favorites={favorites}
+        onToggleFavorite={toggleFavorite}
       />
     </View>
   );
@@ -215,12 +231,32 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 20,
-  },
-  sectionTitle: {
+  },  sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#1F2937',
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 20,
+  },
+  exploreButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF7ED',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#FF6B35',
+  },
+  exploreText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FF6B35',
+    marginRight: 4,
   },
   listContainer: {
     paddingBottom: 20,
