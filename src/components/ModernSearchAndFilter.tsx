@@ -233,9 +233,8 @@ export const ModernSearchAndFilter: React.FC<ModernSearchAndFilterProps> = ({
               />
               <Text
                 className="ml-2 text-sm font-medium"
-                style={{ color: colors.textSecondary }}
-              >
-                {stationCount} {t('stations', 'istasyon')}
+                style={{ color: colors.textSecondary }}              >
+                {stationCount}{' '}{t('stations', 'istasyon')}
               </Text>
               {isApiMode && (
                 <View className="ml-2 flex-row items-center">

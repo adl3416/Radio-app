@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { audioService, PlaybackState } from '../services/audioService';
+import { audioService, PlaybackState } from '../services/cleanAudioService';
 import { useAppContext } from '../contexts/AppContext';
 import { RadioStation } from '../constants/radioStations';
 

@@ -9,7 +9,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { RadioStationCard } from '../components/RadioStationCard';
+import { ModernRadioCard } from '../components/ModernRadioCard';
 import { RadioStation } from '../constants/radioStations';
 import { favoritesService } from '../services/favoritesService';
 
@@ -47,12 +47,11 @@ export const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
   const handleStationPlay = (station: RadioStation) => {
     onOpenPlayer();
   };
-
-  const renderStationItem = ({ item }: { item: RadioStation }) => (
-    <RadioStationCard
+  const renderStationItem = ({ item, index }: { item: RadioStation; index: number }) => (
+    <ModernRadioCard
       station={item}
       onPress={onStationPress}
-      onPlay={handleStationPlay}
+      index={index}
     />
   );
   const renderEmptyState = () => (

@@ -36,11 +36,9 @@ export const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
   
   // State
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('Tümü');
-  const [filteredStations, setFilteredStations] = useState<RadioStation[]>(GUARANTEED_STATIONS);
+  const [selectedCategory, setSelectedCategory] = useState('Tümü');  const [filteredStations, setFilteredStations] = useState<RadioStation[]>([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [useApiStations, setUseApiStations] = useState(false);
-  const [apiStations, setApiStations] = useState<ProcessedRadioStation[]>([]);
+  const [useApiStations, setUseApiStations] = useState(false);  const [apiStations, setApiStations] = useState<ProcessedRadioStation[]>([]);
   
   // Animation
   const fadeAnim = new Animated.Value(0);
@@ -48,6 +46,7 @@ export const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
 
   useEffect(() => {
     // Load guaranteed stations first
+    setFilteredStations(GUARANTEED_STATIONS);
     filterStations();
     
     // Entrance animation
@@ -106,15 +105,13 @@ export const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
       ? apiStations 
       : GUARANTEED_STATIONS;
 
-    let filtered = stationsToFilter;
-
-    if (selectedCategory !== 'Tümü') {
-      filtered = filtered.filter(station => station.category === selectedCategory);
+    let filtered = stationsToFilter;    if (selectedCategory !== 'Tümü') {
+      filtered = filtered.filter((station: RadioStation | ProcessedRadioStation) => station.category === selectedCategory);
     }
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(station =>
+      filtered = filtered.filter((station: RadioStation | ProcessedRadioStation) =>
         station.name.toLowerCase().includes(query) ||
         (station.description && station.description.toLowerCase().includes(query)) ||
         (station.genre && station.genre.toLowerCase().includes(query)) ||
@@ -225,7 +222,7 @@ export const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
             {t('guaranteedDescription', '%100 MP3 format garantisi • Test edilmiş URL\'ler • Sorunsuz çalma')}
           </Text>
           <View className="flex-row flex-wrap">
-            {GUARANTEED_STATIONS.slice(0, 5).map((station, index) => (
+            {GUARANTEED_STATIONS.slice(0, 5).map((station: RadioStation, index: number) => (
               <View
                 key={station.id}
                 className="bg-white bg-opacity-20 rounded-2xl px-3 py-2 mr-2 mb-2"

@@ -45,12 +45,7 @@ export default {
   'category.news': 'Haber',
   'category.sports': 'Spor',
   'category.talk': 'Sohbet',
-  
-  // Stations
-  allStations: 'Tüm İstasyonlar',
-  liveStations: 'Canlı İstasyonlar',
-  guaranteedStations: 'Garantili İstasyonlar',
-  guaranteedDescription: '%100 MP3 format garantisi • Test edilmiş URL\'ler • Sorunsuz çalma',
+    // Stations - moved to main section to avoid duplicates
   useGuaranteed: 'Garantili İstasyonlar',
   
   // Errors & Warnings

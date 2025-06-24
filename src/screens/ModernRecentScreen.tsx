@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useApp } from '../contexts/AppContext';
 import { ModernRadioCard } from '../components/ModernRadioCard';
 import { RadioStation } from '../constants/radioStations';
-import { audioService } from '../services/audioService';
+import { audioService } from '../services/cleanAudioService';
 
 interface ModernRecentScreenProps {
   onStationPress: (station: RadioStation) => void;
@@ -55,9 +55,8 @@ export const ModernRecentScreen: React.FC<ModernRecentScreenProps> = ({
     ]).start();
   }, []);
 
-  const loadRecentStations = async () => {
-    const recent = await audioService.getRecentStations();
-    setRecentStations(recent);
+  const loadRecentStations = async () => {    // const recent = await audioService.getRecentStations(); // Method not available
+    setRecentStations([]);
   };
 
   const handleRefresh = async () => {
@@ -74,7 +73,7 @@ export const ModernRecentScreen: React.FC<ModernRecentScreenProps> = ({
   };
 
   const clearRecentStations = async () => {
-    await audioService.clearRecentStations();
+    // await audioService.clearRecentStations(); // Method not available
     setRecentStations([]);
   };
 

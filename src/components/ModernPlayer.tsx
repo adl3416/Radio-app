@@ -12,7 +12,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { audioService, PlaybackState } from '../services/audioService';
+import { audioService, PlaybackState } from '../services/cleanAudioService';
 import { favoritesService } from '../services/favoritesService';
 import { useAppContext } from '../contexts/AppContext';
 
@@ -115,10 +115,9 @@ export const ModernPlayer: React.FC<PlayerProps> = ({ onClose, isMinimized = fal
 
   const handleFavorite = () => {
     if (playbackState.currentStation) {
-      if (isFavorite) {
-        favoritesService.removeFavorite(playbackState.currentStation.id);
+      if (isFavorite) {        favoritesService.removeFromFavorites(playbackState.currentStation.id);
       } else {
-        favoritesService.addFavorite(playbackState.currentStation);
+        favoritesService.addToFavorites(playbackState.currentStation);
       }
       setIsFavorite(!isFavorite);
     }
@@ -126,7 +125,7 @@ export const ModernPlayer: React.FC<PlayerProps> = ({ onClose, isMinimized = fal
 
   const handleVolumeChange = (newVolume: number) => {
     setVolume(newVolume);
-    audioService.setVolume(newVolume);
+    // audioService.setVolume(newVolume); // Method not available in cleanAudioService
   };
 
   const toggleVolumeSlider = () => {

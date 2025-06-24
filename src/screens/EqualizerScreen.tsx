@@ -102,9 +102,8 @@ export const EqualizerScreen: React.FC<EqualizerScreenProps> = ({ onClose }) => 
             <Ionicons name="add" size={20} color={gain >= 12 ? '#D1D5DB' : '#3B82F6'} />
           </TouchableOpacity>
 
-          <View style={styles.gainDisplay}>
-            <Text style={styles.gainText}>
-              {gain > 0 ? '+' : ''}{gain}dB
+          <View style={styles.gainDisplay}>            <Text style={styles.gainText}>
+              {gain > 0 ? '+' : ''}{gain}{'dB'}
             </Text>
             <View style={styles.gainBar}>
               <View 

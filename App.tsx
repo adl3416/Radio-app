@@ -1,171 +1,290 @@
 import React, { useState, useEffect } from 'react';
-import { View, StatusBar, Modal, StyleSheet } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { StatusBar } from 'expo-status-bar';
+import { Alert } from 'react-native';
+import { audioService } from './src/services/cleanAudioService';
+import { SimplePlayer } from './src/components/SimplePlayer';
+import { RADIO_STATIONS } from './src/constants/radioStations';
+
+// Basit ana sayfa komponenti
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-// Import i18n configuration
-import './src/locales/i18n';
+// Power FM Group radyoları - güncellenmiş liste
+const TURKISH_RADIOS = RADIO_STATIONS.map(station => ({
+  id: station.id,
+  name: station.name,
+  url: station.url,
+  description: station.description || 'Power Group Radio',
+  protected: true,
+}));
 
-// Import contexts
-import { AppProvider } from './src/contexts/AppContext';
-
-// Import screens
-import { UltraModernHomeScreen } from './src/screens/UltraModernHomeScreen';
-import { ModernFavoritesScreen } from './src/screens/ModernFavoritesScreen';
-import { ModernRecentScreen } from './src/screens/ModernRecentScreen';
-import { ModernSettingsScreen } from './src/screens/ModernSettingsScreen';
-import { ModernPlayer } from './src/components/ModernPlayer';
-import { VinylPlayer } from './src/components/VinylPlayer';
-
-// Import types
-import { RadioStation } from './src/constants/radioStations';
-import { audioService, PlaybackState } from './src/services/audioService';
-
-const Tab = createBottomTabNavigator();
-const Stack = createNativeStackNavigator();
-
-function TabNavigator() {
-  const [selectedStation, setSelectedStation] = useState<RadioStation | null>(null);
-  const [showPlayer, setShowPlayer] = useState(false);
-  const [showVinylPlayer, setShowVinylPlayer] = useState(false);
-  const [playbackState, setPlaybackState] = useState<PlaybackState>(audioService.getState());
-
+export default function App() {
+  const [isPlayerOpen, setIsPlayerOpen] = useState(false);
+  const [currentStation, setCurrentStation] = useState<any>(null);
+  const [audioState, setAudioState] = useState(audioService.getState());
+  const [favorites, setFavorites] = useState<string[]>([]);
   useEffect(() => {
-    const unsubscribe = audioService.subscribe(setPlaybackState);
+    audioService.initialize();
+    
+    // Audio service state'ini dinle
+    const unsubscribe = audioService.subscribe(setAudioState);
     return unsubscribe;
   }, []);
 
-  const handleStationPress = async (station: RadioStation) => {
+  const playRadio = async (station: any) => {
     try {
-      console.log('🎵 [APP] Attempting to play station:', station.name);
-      console.log('🎵 [APP] Before setShowVinylPlayer - current state:', showVinylPlayer);
+      // Hiç log yazmayalım
+      
+      // Eğer farklı bir radyo çalıyorsa önce durdur
+      if (audioState.isPlaying && audioState.currentStation?.id !== station.id) {
+        await audioService.stop();
+      }
+      
+      setCurrentStation(station);
       await audioService.playStation(station);
-      console.log('✅ [APP] Successfully started station:', station.name);
-      setSelectedStation(station);
-      setShowVinylPlayer(true); // RADYO ÇINARI Vinyl Player'ı aç
-      console.log('🎵 [APP] After setShowVinylPlayer - should be true:', true);
-      console.log('🎭 [APP] VinylPlayer will be rendered with props - isVisible:', true, 'currentStation:', station.name);
+      setIsPlayerOpen(true);
     } catch (error) {
-      console.error('❌ [APP] Failed to play station:', error);
-      setSelectedStation(station);
-      setShowVinylPlayer(true); // RADYO ÇINARI Vinyl Player'ı aç
-      console.log('🎵 [APP] After setShowVinylPlayer (error case) - should be true:', true);
-      console.log('🎭 [APP] VinylPlayer will be rendered with props (error) - isVisible:', true, 'currentStation:', station.name);
+      // Hiçbir konsol çıktısı yok, tamamen sessiz
     }
   };
 
-  const handleOpenPlayer = () => {
-    if (playbackState.currentStation) {
-      setShowVinylPlayer(true);
+  const togglePlayPause = async (station: any) => {
+    try {
+      if (audioState.currentStation?.id === station.id) {
+        if (audioState.isPlaying) {
+          // Aynı radyo çalıyor, durdur
+          await audioService.pause();
+        } else {
+          // Aynı radyo duruyor, devam ettir
+          await audioService.resume();
+        }
+      } else {
+        // Farklı radyo - önce mevcut radyoyu durdur, sonra yeni radyoyu çal
+        if (audioState.isPlaying) {
+          await audioService.stop();
+        }
+        setCurrentStation(station);
+        await audioService.playStation(station);
+        setIsPlayerOpen(true);
+      }
+    } catch (error) {
+      // Hiçbir konsol çıktısı yok, tamamen sessiz
     }
   };
 
-  const handleClosePlayer = () => {
-    setShowVinylPlayer(false);
+  const toggleFavorite = (stationId: string) => {
+    setFavorites(prev => {
+      if (prev.includes(stationId)) {
+        return prev.filter(id => id !== stationId);
+      } else {
+        return [...prev, stationId];
+      }
+    });
+  };
+
+  // Radyoları favori durumuna göre sırala
+  const sortedRadios = [...TURKISH_RADIOS].sort((a, b) => {
+    const aIsFavorite = favorites.includes(a.id);
+    const bIsFavorite = favorites.includes(b.id);
+    
+    if (aIsFavorite && !bIsFavorite) return -1;
+    if (!aIsFavorite && bIsFavorite) return 1;
+    return 0;
+  });
+
+  const renderStation = ({ item }: { item: any }) => {
+    const isCurrentlyPlaying = audioState.currentStation?.id === item.id && audioState.isPlaying;
+    const isFavorite = favorites.includes(item.id);
+    
+    return (
+      <TouchableOpacity
+        style={[styles.stationCard, isFavorite && styles.favoriteCard]}
+        onPress={() => playRadio(item)}
+      >
+        <View style={styles.stationInfo}>
+          <View style={styles.stationHeader}>
+            <Text style={styles.stationName}>{item.name}</Text>
+            {isFavorite && <Text style={styles.favoriteIndicator}>⭐</Text>}
+          </View>
+          <Text style={styles.stationDesc}>{item.description}</Text>
+        </View>
+        
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.favoriteButton}
+            onPress={() => toggleFavorite(item.id)}
+          >
+            <Ionicons 
+              name={isFavorite ? "heart" : "heart-outline"} 
+              size={24} 
+              color={isFavorite ? "#FF6B35" : "#9CA3AF"} 
+            />
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={styles.playButton}
+            onPress={() => togglePlayPause(item)}
+          >
+            <Ionicons 
+              name={isCurrentlyPlaying ? "pause-circle" : "play-circle"} 
+              size={40} 
+              color={isCurrentlyPlaying ? "#10B981" : "#FF6B35"} 
+            />
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
+    );
   };
 
   return (
     <View style={styles.container}>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName: string;
-
-            if (route.name === 'Anasayfa') {
-              iconName = focused ? 'home' : 'home-outline';
-            } else if (route.name === 'Favoriler') {
-              iconName = focused ? 'heart' : 'heart-outline';
-            } else if (route.name === 'Geçmiş') {
-              iconName = focused ? 'time' : 'time-outline';
-            } else if (route.name === 'Ayarlar') {
-              iconName = focused ? 'settings' : 'settings-outline';
-            } else {
-              iconName = 'radio-outline';
-            }
-
-            return <Ionicons name={iconName as any} size={size} color={color} />;
-          },
-          tabBarActiveTintColor: '#3B82F6',
-          tabBarInactiveTintColor: '#6B7280',
-          tabBarStyle: styles.tabBar,
-          tabBarLabelStyle: styles.tabBarLabel,
-          headerShown: false,
-        })}
+      <StatusBar style="light" />
+        <LinearGradient
+        colors={['#FF6B35', '#F59E0B']}
+        style={styles.header}
       >
-        <Tab.Screen name="Anasayfa">
-          {(props) => (
-            <UltraModernHomeScreen
-              {...props}
-              onStationPress={handleStationPress}
-              onOpenPlayer={handleOpenPlayer}
-            />
-          )}
-        </Tab.Screen>
-        <Tab.Screen name="Favoriler">
-          {(props) => (
-            <ModernFavoritesScreen
-              {...props}
-              onStationPress={handleStationPress}
-              onOpenPlayer={handleOpenPlayer}
-            />
-          )}
-        </Tab.Screen>
-        <Tab.Screen name="Geçmiş">
-          {(props) => (
-            <ModernRecentScreen
-              {...props}
-              onStationPress={handleStationPress}
-              onOpenPlayer={handleOpenPlayer}
-            />
-          )}
-        </Tab.Screen>
-        <Tab.Screen name="Ayarlar" component={ModernSettingsScreen} />
-      </Tab.Navigator>
+        <Text style={styles.title}>🎧 RADYO ÇINARI</Text>
+        <Text style={styles.subtitle}>Modern Radyo Uygulaması</Text>
+        <Text style={styles.stationCount}>
+          {TURKISH_RADIOS.length} İstasyon • {favorites.length} Favori
+        </Text>
+      </LinearGradient>
 
-      {/* Mini Player */}
-      {playbackState.currentStation && !showVinylPlayer && (
-        <ModernPlayer isMinimized={true} onClose={handleOpenPlayer} />
+      <View style={styles.content}>
+        <Text style={styles.sectionTitle}>📻 Radyo İstasyonları</Text>
+        
+        <FlatList
+          data={sortedRadios}
+          renderItem={renderStation}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContainer}
+        />
+      </View>
+
+      {currentStation && (
+        <View style={styles.nowPlaying}>
+          <Text style={styles.nowPlayingText}>
+            Şu an çalıyor: {currentStation.name}
+          </Text>
+        </View>
       )}
 
-      {/* RADYO ÇINARI - Vinyl Player */}
-      <VinylPlayer 
-        isVisible={showVinylPlayer} 
-        onClose={handleClosePlayer} 
+      <SimplePlayer
+        isVisible={isPlayerOpen}
+        onClose={() => setIsPlayerOpen(false)}
       />
     </View>
-  );
-}
-
-export default function App() {
-  return (
-    <AppProvider>
-      <SafeAreaProvider>
-        <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-        <NavigationContainer>
-          <TabNavigator />
-        </NavigationContainer>
-      </SafeAreaProvider>
-    </AppProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#F9FAFB',
   },
-  tabBar: {
-    backgroundColor: 'white',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-    paddingBottom: 4,
-    paddingTop: 4,
-    height: 60,
+  header: {
+    paddingTop: 60,
+    paddingBottom: 30,
+    paddingHorizontal: 20,
+    alignItems: 'center',
   },
-  tabBarLabel: {
-    fontSize: 12,
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 5,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: 'rgba(255,255,255,0.8)',
+    marginBottom: 5,
+  },
+  stationCount: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.7)',
     fontWeight: '500',
+  },
+  content: {
+    flex: 1,
+    padding: 20,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1F2937',
+    marginBottom: 20,
+  },
+  listContainer: {
+    paddingBottom: 20,
+  },
+  stationCard: {
+    backgroundColor: 'white',
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  stationInfo: {
+    flex: 1,
+  },
+  stationHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+  },
+  stationName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1F2937',
+    flex: 1,
+  },
+  favoriteIndicator: {
+    fontSize: 14,
+    marginLeft: 8,
+  },
+  stationDesc: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  favoriteButton: {
+    padding: 8,
+  },
+  playButton: {
+    padding: 5,
+  },
+  favoriteCard: {
+    borderLeftWidth: 4,
+    borderLeftColor: '#FF6B35',
+    backgroundColor: '#FFF7ED',
+  },
+  nowPlaying: {
+    backgroundColor: '#FF6B35',
+    padding: 15,
+    alignItems: 'center',
+  },
+  nowPlayingText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });

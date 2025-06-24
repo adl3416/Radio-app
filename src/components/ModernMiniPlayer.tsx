@@ -12,7 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../contexts/AppContext';
 import { RadioStation } from '../constants/radioStations';
-import { audioService, PlaybackState } from '../services/audioService';
+import { audioService, PlaybackState } from '../services/cleanAudioService';
 
 interface ModernMiniPlayerProps {
   station: RadioStation;
