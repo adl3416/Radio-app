@@ -3,8 +3,10 @@ import { StatusBar } from 'expo-status-bar';
 import { Alert } from 'react-native';
 import { audioService } from './src/services/cleanAudioService';
 import { radioBrowserService } from './src/services/radioBrowserService';
+import { favoritesService } from './src/services/favoritesService';
 import { MiniPlayer, FullPlayer } from './src/components/NewPlayer';
 import { ExtendedRadioList } from './src/screens/ExtendedRadioList';
+import { FavoritesPage } from './src/screens/FavoritesPage';
 import { RADIO_STATIONS } from './src/constants/radioStations';
 
 // Basit ana sayfa komponenti
@@ -33,9 +35,10 @@ export default function App() {
   const [isMiniPlayerOpen, setIsMiniPlayerOpen] = useState(false);
   const [isFullPlayerOpen, setIsFullPlayerOpen] = useState(false);
   const [isExtendedListOpen, setIsExtendedListOpen] = useState(false);
+  const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [currentStation, setCurrentStation] = useState<any>(null);
   const [audioState, setAudioState] = useState(audioService.getState());
-  const [favorites, setFavorites] = useState<string[]>([]);
+  const [favorites, setFavorites] = useState<any[]>([]);
   const [apiStations, setApiStations] = useState<any[]>([]);
   const [loadingApiStations, setLoadingApiStations] = useState(false);
   const [showApiStations, setShowApiStations] = useState(false);
@@ -48,7 +51,14 @@ export default function App() {
     
     // Audio service state'ini dinle
     const unsubscribe = audioService.subscribe(setAudioState);
-    return unsubscribe;
+    
+    // Favorileri yükle
+    const unsubscribeFavorites = favoritesService.subscribe(setFavorites);
+    
+    return () => {
+      unsubscribe();
+      unsubscribeFavorites();
+    };
   }, []);
   // API'den radyo yükleme fonksiyonu
   const loadApiStations = async () => {
@@ -198,14 +208,24 @@ export default function App() {
     setCurrentStation(null);
   };
 
-  const toggleFavorite = (stationId: string) => {
-    setFavorites(prev => {
-      if (prev.includes(stationId)) {
-        return prev.filter(id => id !== stationId);
-      } else {
-        return [...prev, stationId];
-      }
-    });
+  const [isTogglngFavorite, setIsTogglingFavorite] = useState<string | null>(null);
+
+  const toggleFavorite = async (station: any) => {
+    if (isTogglngFavorite === station.id) {
+      console.log('Toggle favorite already in progress for:', station.name);
+      return;
+    }
+
+    try {
+      setIsTogglingFavorite(station.id);
+      console.log('Toggle favorite başladı:', station.name);
+      const result = await favoritesService.toggleFavorite(station);
+      console.log('Toggle favorite sonuç:', result ? 'Eklendi' : 'Kaldırıldı');
+    } catch (error) {
+      console.error('Favori toggle hatası:', error);
+    } finally {
+      setIsTogglingFavorite(null);
+    }
   };
   // Radyoları favori durumuna göre sırala ve arama filtresini uygula
   const filteredRadios = allStations.filter(station => {
@@ -248,53 +268,72 @@ export default function App() {
   });
 
   const sortedRadios = [...filteredRadios].sort((a, b) => {
-    const aIsFavorite = favorites.includes(a.id);
-    const bIsFavorite = favorites.includes(b.id);
+    const aIsFavorite = favorites.some(fav => fav.id === a.id);
+    const bIsFavorite = favorites.some(fav => fav.id === b.id);
     
     if (aIsFavorite && !bIsFavorite) return -1;
     if (!aIsFavorite && bIsFavorite) return 1;
     return 0;
   });
-  const renderStation = ({ item }: { item: any }) => {
+  const renderStation = ({ item, index }: { item: any; index: number }) => {
     const isCurrentlyPlaying = audioState.currentStation?.id === item.id && audioState.isPlaying;
     const isLoading = audioState.currentStation?.id === item.id && audioState.isLoading;
-    const isFavorite = favorites.includes(item.id);
+    const isFavorite = favorites.some(fav => fav.id === item.id);
+    const isFavoriteToggling = isTogglngFavorite === item.id;
     
     // Prevent double-tap by checking if this station is currently loading
     const isDisabled = isLoading || (audioState.isLoading && audioState.currentStation?.id !== item.id);
     
-    return (
-      <TouchableOpacity
-        style={[
-          styles.stationCard, 
-          isFavorite && styles.favoriteCard,
-          isDisabled && styles.disabledCard
-        ]}
-        onPress={() => !isDisabled && playRadio(item)}
-        disabled={isDisabled}
-      >
+    // Alternatif arka plan rengi (zebra deseni)
+    const isEvenIndex = index % 2 === 0;
+    const alternateBackgroundColor = isEvenIndex ? '#FFFFFF' : '#F8F9FA';
+    
+    const CardContent = () => (
+      <>
         <View style={styles.stationInfo}>
           <View style={styles.stationHeader}>
-            <Text style={styles.stationName}>{item.name}</Text>
-            {isFavorite && <Text style={styles.favoriteIndicator}>⭐</Text>}
+            <Text style={[
+              styles.stationName,
+              isFavorite && styles.favoriteStationName,
+              isCurrentlyPlaying && { color: 'white' }
+            ]}>
+              {item.name}
+            </Text>
           </View>
-          <Text style={styles.stationDesc}>{item.description}</Text>
+          <Text style={[
+            styles.stationDesc,
+            isCurrentlyPlaying && { color: 'rgba(255, 255, 255, 0.8)' }
+          ]}>
+            {item.description}
+          </Text>
           {item.votes && (
-            <Text style={styles.stationVotes}>👍 {item.votes} oy • {item.bitrate}kbps</Text>
+            <Text style={[
+              styles.stationVotes,
+              isCurrentlyPlaying && { color: 'rgba(255, 255, 255, 0.7)' }
+            ]}>
+              👍 {item.votes} oy • {item.bitrate}kbps
+            </Text>
           )}
         </View>
         
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={styles.favoriteButton}
-            onPress={() => toggleFavorite(item.id)}
-            disabled={isDisabled}
+            style={[
+              styles.favoriteButton, 
+              (isDisabled || isFavoriteToggling) && { opacity: 0.5 }
+            ]}
+            onPress={() => !isDisabled && !isFavoriteToggling && toggleFavorite(item)}
+            disabled={isDisabled || isFavoriteToggling}
           >
-            <Ionicons 
-              name={isFavorite ? "heart" : "heart-outline"} 
-              size={24} 
-              color={isFavorite ? "#FF6B35" : "#9CA3AF"} 
-            />
+            {isFavoriteToggling ? (
+              <ActivityIndicator size="small" color="#FF6B35" />
+            ) : (
+              <Ionicons 
+                name={isFavorite ? "heart" : "heart-outline"} 
+                size={24} 
+                color={isFavorite ? "#FF6B35" : (isCurrentlyPlaying ? "white" : "#9CA3AF")} 
+              />
+            )}
           </TouchableOpacity>
           
           <TouchableOpacity
@@ -303,16 +342,47 @@ export default function App() {
             disabled={isDisabled}
           >
             {isLoading ? (
-              <ActivityIndicator size="small" color="#FF6B35" />
+              <ActivityIndicator size="small" color={isCurrentlyPlaying ? "white" : "#FF6B35"} />
             ) : (
               <Ionicons 
                 name={isCurrentlyPlaying ? "pause-circle" : "play-circle"} 
                 size={40} 
-                color={isDisabled ? "#9CA3AF" : (isCurrentlyPlaying ? "#10B981" : "#FF6B35")} 
+                color={isDisabled ? "#9CA3AF" : (isCurrentlyPlaying ? "white" : "#FF6B35")} 
               />
             )}
           </TouchableOpacity>
         </View>
+      </>
+    );
+    
+    if (isCurrentlyPlaying) {
+      return (
+        <TouchableOpacity
+          onPress={() => !isDisabled && playRadio(item)}
+          disabled={isDisabled}
+          style={[styles.stationCardContainer, isDisabled && styles.disabledCard]}
+        >
+          <LinearGradient
+            colors={['#FF6B35', '#F59E0B']}
+            style={styles.playingStationCard}
+          >
+            <CardContent />
+          </LinearGradient>
+        </TouchableOpacity>
+      );
+    }
+    
+    return (
+      <TouchableOpacity
+        style={[
+          styles.stationCard,
+          { backgroundColor: alternateBackgroundColor }, // Alternatif arka plan rengi
+          isDisabled && styles.disabledCard
+        ]}
+        onPress={() => !isDisabled && playRadio(item)}
+        disabled={isDisabled}
+      >
+        <CardContent />
       </TouchableOpacity>
     );
   };
@@ -326,12 +396,21 @@ export default function App() {
       >
         <Text style={styles.title}>🎧 RADYO ÇINARI</Text>
         <Text style={styles.subtitle}>Modern Radyo Uygulaması</Text>
-        <Text style={styles.stationCount}>
-          {searchQuery 
-            ? `${filteredRadios.length}/${allStations.length} İstasyon` 
-            : `${allStations.length} İstasyon`
-          } ({TURKISH_RADIOS.length} Statik + {apiStations.length} API) • {favorites.length} Favori
-        </Text>
+        <View style={styles.headerStats}>
+          <Text style={styles.stationCount}>
+            {searchQuery 
+              ? `${filteredRadios.length}/${allStations.length} İstasyon` 
+              : `${allStations.length} İstasyon`
+            } ({TURKISH_RADIOS.length} Statik + {apiStations.length} API)
+          </Text>
+          <TouchableOpacity 
+            style={styles.favoritesHeaderButton}
+            onPress={() => setIsFavoritesOpen(true)}
+          >
+            <Ionicons name="heart" size={18} color="white" />
+            <Text style={styles.favoritesHeaderText}>{favorites.length} Favori</Text>
+          </TouchableOpacity>
+        </View>
       </LinearGradient>
 
       {/* Arama Çubuğu */}
@@ -444,7 +523,7 @@ export default function App() {
         
         <FlatList
           data={sortedRadios}
-          renderItem={renderStation}
+          renderItem={({ item, index }) => renderStation({ item, index })}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
@@ -468,6 +547,8 @@ export default function App() {
         onCollapse={handleCollapsePlayer}
         onNext={playNextRadio}
         onPrevious={playPreviousRadio}
+        onToggleFavorite={toggleFavorite}
+        isFavorite={audioState.currentStation ? favorites.some(fav => fav.id === audioState.currentStation.id) : false}
       />
       
       <ExtendedRadioList
@@ -477,6 +558,20 @@ export default function App() {
         onStationPlay={playRadio}
         favorites={favorites}
         onToggleFavorite={toggleFavorite}
+      />
+
+      {/* Favoriler Sayfası */}
+      <FavoritesPage
+        isVisible={isFavoritesOpen}
+        onClose={() => setIsFavoritesOpen(false)}
+        favorites={favorites.map(fav => fav.id)}
+        allStations={allStations}
+        onToggleFavorite={(stationId) => {
+          const station = allStations.find(s => s.id === stationId);
+          if (station) toggleFavorite(station);
+        }}
+        onPlayRadio={playRadio}
+        audioState={audioState}
       />
     </View>
   );
@@ -501,18 +596,37 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
-    marginBottom: 5,
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginBottom: 8,
+  },
+  headerStats: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
   },
   stationCount: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.7)',
-    fontWeight: '500',
+    color: 'rgba(255, 255, 255, 0.9)',
+    flex: 1,
+  },
+  favoritesHeaderButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    gap: 6,
+  },
+  favoritesHeaderText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
   },
   content: {
     flex: 1,
-    padding: 20,
-    paddingBottom: 90, // Mini player için yer bırak
+    paddingBottom: 90, // Sadece mini player için yer bırak
   },
   searchContainer: {
     paddingHorizontal: 20,
@@ -612,13 +726,13 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   listContainer: {
-    paddingBottom: 20,
+    paddingBottom: 20, // Sadece alt boşluk (scroll için)
   },
   stationCard: {
-    backgroundColor: 'white',
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 15,
+    // backgroundColor dinamik olarak ayarlanıyor
+    padding: 16,
+    borderRadius: 0, // Köşe yuvarlaklığı kaldırıldı
+    marginBottom: 0, // Alt boşluk sıfırlandı
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -627,6 +741,22 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  stationCardContainer: {
+    marginBottom: 0, // Alt boşluk sıfırlandı
+    borderRadius: 0, // Köşe yuvarlaklığı kaldırıldı
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  playingStationCard: {
+    padding: 16,
+    borderRadius: 0, // Köşe yuvarlaklığı kaldırıldı
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   stationInfo: {
     flex: 1,
@@ -640,19 +770,20 @@ const styles = StyleSheet.create({
   stationName: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#1F2937',
+    color: '#1F2937', // Normal durumda koyu yazı
     flex: 1,
   },
-  favoriteIndicator: {
+  favoriteStationName: {
+    color: '#FF6B35',
+    fontWeight: 'bold', // Favori isimler daha belirgin
+  },
+  stationDesc: {
     fontSize: 14,
-    marginLeft: 8,
-  },  stationDesc: {
-    fontSize: 14,
-    color: '#6B7280',
+    color: '#6B7280', // Normal durumda gri
   },
   stationVotes: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: '#9CA3AF', // Normal durumda açık gri
     marginTop: 2,
   },
   buttonContainer: {
@@ -667,9 +798,14 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   favoriteCard: {
-    borderLeftWidth: 4,
+    borderLeftWidth: 3,
     borderLeftColor: '#FF6B35',
-    backgroundColor: '#FFF7ED',
+    backgroundColor: '#FFFFFF', // Normal beyaz arka plan
+  },
+  currentlyPlayingCard: {
+    borderLeftWidth: 4,
+    borderLeftColor: '#10B981',
+    backgroundColor: '#FFF7ED', // Hafif turuncu ton (header ile uyumlu)
   },
   disabledCard: {
     opacity: 0.6,

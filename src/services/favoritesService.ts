@@ -6,6 +6,7 @@ const FAVORITES_KEY = 'favorite-stations';
 class FavoritesService {
   private listeners: Array<(favorites: RadioStation[]) => void> = [];
   private favorites: RadioStation[] = [];
+  private isProcessing = false; // Race condition koruması
 
   constructor() {
     this.loadFavorites();
@@ -67,12 +68,31 @@ class FavoritesService {
   }
 
   public async toggleFavorite(station: RadioStation): Promise<boolean> {
-    if (this.isFavorite(station.id)) {
-      await this.removeFromFavorites(station.id);
-      return false;
-    } else {
-      await this.addToFavorites(station);
-      return true;
+    if (this.isProcessing) {
+      console.log('Toggle favorite already processing, skipping...');
+      return this.isFavorite(station.id);
+    }
+
+    this.isProcessing = true;
+    
+    try {
+      console.log('toggleFavorite called for:', station.name);
+      console.log('Current favorites before toggle:', this.favorites.map(f => f.name).join(', '));
+      
+      const wasFavorite = this.isFavorite(station.id);
+      console.log('Was favorite:', wasFavorite);
+      
+      if (wasFavorite) {
+        await this.removeFromFavorites(station.id);
+        console.log('Removed from favorites');
+        return false;
+      } else {
+        await this.addToFavorites(station);
+        console.log('Added to favorites');
+        return true;
+      }
+    } finally {
+      this.isProcessing = false;
     }
   }
 }

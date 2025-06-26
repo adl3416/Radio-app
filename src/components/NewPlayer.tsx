@@ -7,6 +7,8 @@ import {
   Modal,
   Dimensions,
   ActivityIndicator,
+  PanResponder,
+  Animated,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -27,6 +29,8 @@ interface FullPlayerProps {
   onCollapse: () => void;
   onNext?: () => Promise<void>;
   onPrevious?: () => Promise<void>;
+  onToggleFavorite?: (station: any) => void;
+  isFavorite?: boolean;
 }
 
 // Mini Footer Player Component
@@ -120,13 +124,95 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ isVisible, onExpand, onC
 };
 
 // Full Screen Player Component
-export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, onNext, onPrevious }) => {
+export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, onNext, onPrevious, onToggleFavorite, isFavorite }) => {
   const [playbackState, setPlaybackState] = useState<PlaybackState>(audioService.getState());
+  const [translateY] = useState(new Animated.Value(0));
+  const [opacity] = useState(new Animated.Value(1));
 
   useEffect(() => {
     const unsubscribe = audioService.subscribe(setPlaybackState);
     return unsubscribe;
   }, []);
+
+  // PanResponder için gesture handling
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: (evt, gestureState) => {
+      // Dokunma başladığında gesture'ı etkinleştir
+      return true;
+    },
+    onMoveShouldSetPanResponder: (evt, gestureState) => {
+      // Herhangi bir hareket olduğunda gesture'ı yakala
+      // Aşağı doğru hareket öncelikli ama yan hareket de kabul et
+      const isDraggingDown = gestureState.dy > 5;
+      const isSignificantMove = Math.abs(gestureState.dx) > 5 || Math.abs(gestureState.dy) > 5;
+      return isDraggingDown || isSignificantMove;
+    },
+    onPanResponderGrant: () => {
+      // Gesture başladığında
+      console.log('Gesture başladı');
+    },
+    onPanResponderMove: (evt, gestureState) => {
+      // Sürükleme sırasında
+      const { dy } = gestureState;
+      console.log('Gesture move, dy:', dy);
+      
+      // Sadece aşağı doğru hareket için animasyon
+      if (dy >= 0) {
+        translateY.setValue(dy);
+        // Opacity'yi distance'a göre ayarla
+        const newOpacity = Math.max(0.3, 1 - (dy / (height * 0.4)));
+        opacity.setValue(newOpacity);
+      }
+    },
+    onPanResponderRelease: (evt, gestureState) => {
+      // Gesture bittiğinde
+      const { dy, vy } = gestureState;
+      console.log('Gesture bitti, dy:', dy, 'vy:', vy);
+      
+      const shouldClose = dy > height * 0.15 || vy > 0.3; // Threshold'ları düşürdük
+      
+      if (shouldClose) {
+        console.log('Player kapatılıyor');
+        // Kapatma animasyonu
+        Animated.parallel([
+          Animated.timing(translateY, {
+            toValue: height,
+            duration: 250,
+            useNativeDriver: true,
+          }),
+          Animated.timing(opacity, {
+            toValue: 0,
+            duration: 250,
+            useNativeDriver: true,
+          }),
+        ]).start(() => {
+          // Animasyon bitince collapse callback'ini çağır
+          translateY.setValue(0);
+          opacity.setValue(1);
+          onCollapse();
+        });
+      } else {
+        console.log('Player geri dönüyor');
+        // Geri dönme animasyonu
+        Animated.parallel([
+          Animated.spring(translateY, {
+            toValue: 0,
+            useNativeDriver: true,
+            tension: 100,
+            friction: 8,
+          }),
+          Animated.spring(opacity, {
+            toValue: 1,
+            useNativeDriver: true,
+            tension: 100,
+            friction: 8,
+          }),
+        ]).start();
+      }
+    },
+    onPanResponderTerminationRequest: () => false, // Gesture'ı başka component'lar çalamasın
+    onShouldBlockNativeResponder: () => false, // Native scroll davranışını engelleme
+  });
 
   const handlePlayPause = async () => {
     try {
@@ -170,10 +256,20 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, o
       visible={isVisible}
       animationType="slide"
       presentationStyle="fullScreen"
+      transparent={false}
     >
-      <View style={styles.fullPlayerContainer}>
+      <Animated.View 
+        style={[
+          styles.fullPlayerContainer,
+          {
+            transform: [{ translateY }],
+            opacity,
+          }
+        ]}
+        {...panResponder.panHandlers}
+      >
           <LinearGradient
-            colors={['#FF6B35', '#F59E0B', '#EF4444']}
+            colors={['#FF6B35', '#F59E0B']}
             style={styles.fullPlayerGradient}
           >
             {/* Header with pull indicator */}
@@ -250,8 +346,15 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, o
                   <Ionicons name="volume-high" size={24} color="white" />
                 </TouchableOpacity>
                 
-                <TouchableOpacity style={styles.actionButton}>
-                  <Ionicons name="heart-outline" size={24} color="white" />
+                <TouchableOpacity 
+                  style={styles.actionButton}
+                  onPress={() => onToggleFavorite && playbackState.currentStation && onToggleFavorite(playbackState.currentStation)}
+                >
+                  <Ionicons 
+                    name={isFavorite ? "heart" : "heart-outline"} 
+                    size={24} 
+                    color={isFavorite ? "#FF6B35" : "white"} 
+                  />
                 </TouchableOpacity>
                 
                 <TouchableOpacity style={styles.actionButton} onPress={handleStop}>
@@ -264,7 +367,7 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, o
               </View>
             </View>
           </LinearGradient>
-        </View>
+        </Animated.View>
     </Modal>
   );
 };
@@ -350,15 +453,20 @@ const styles = StyleSheet.create({
   },
   fullPlayerHeader: {
     alignItems: 'center',
-    paddingVertical: 16,
+    paddingVertical: 20, // Daha büyük dokunma alanı
     position: 'relative',
   },
   pullIndicator: {
-    width: 40,
-    height: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    borderRadius: 2,
-    marginBottom: 8,
+    width: 60,
+    height: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 3,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
   },
   collapseButton: {
     position: 'absolute',
