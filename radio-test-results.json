@@ -1,0 +1,653 @@
+{
+  "testDate": "2025-06-25T00:09:46.680Z",
+  "totalTested": 101,
+  "results": {
+    "working": [
+      {
+        "id": "power-turk",
+        "name": "⚡ Power Türk",
+        "url": "https://listen.powerapp.com.tr/powerturk/mpeg/icecast.audio",
+        "codec": "MP3"
+      },
+      {
+        "id": "power-pop",
+        "name": "⚡ Power Pop",
+        "url": "https://listen.powerapp.com.tr/powerpop/mpeg/icecast.audio",
+        "codec": "MP3"
+      },
+      {
+        "id": "power-love",
+        "name": "⚡ Power Love",
+        "url": "https://listen.powerapp.com.tr/powerlove/mpeg/icecast.audio",
+        "codec": "MP3"
+      },
+      {
+        "id": "power-dance",
+        "name": "⚡ Power Dance",
+        "url": "https://listen.powerapp.com.tr/powerdance/mpeg/icecast.audio",
+        "codec": "MP3"
+      },
+      {
+        "id": "trt-fm",
+        "name": "🎵 TRT FM",
+        "url": "https://radio-trtfm.live.trt.com.tr/stream",
+        "codec": "HLS"
+      },
+      {
+        "id": "virgin-radio-turkey",
+        "name": "🔥 Virgin Radio Turkey",
+        "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/VIRGIN_RADIO_TURKEY.mp3",
+        "codec": "MP3"
+      },
+      {
+        "id": "show-radyo",
+        "name": "🎤 Show Radyo",
+        "url": "https://moondigitalmaster.radyotvonline.net/showradyo/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "radyo-fenomen",
+        "name": "⭐ Radyo Fenomen",
+        "url": "https://live.radyofenomen.com/fenomen/128/icecast.audio",
+        "codec": "MP3"
+      },
+      {
+        "id": "best-fm",
+        "name": "🌟 Best FM",
+        "url": "https://bestfm.turkhosted.com/bestfm",
+        "codec": "MP3"
+      },
+      {
+        "id": "kral-fm",
+        "name": "👑 Kral FM",
+        "url": "https://dygedge.radyotvonline.net/kralfm/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "trt-turku",
+        "name": "🪕 TRT Türkü",
+        "url": "https://radio-trtturku.live.trt.com.tr/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "number1-fm",
+        "name": "1️⃣ Number1 FM",
+        "url": "https://n10101m.mediatriple.net/videoonlylive/mtisvwurbfcyslive/broadcast_58f5e5a2a1c23.smil/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "radyo-mydonose",
+        "name": "💫 Radyo Mydonose",
+        "url": "https://radyomydonose.com/ssl/128.m3u",
+        "codec": "MP3"
+      },
+      {
+        "id": "trt-radyo-1",
+        "name": "📻 TRT Radyo 1",
+        "url": "https://radio-trtradyo1.live.trt.com.tr/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "radyo-7",
+        "name": "7️⃣ Radyo 7",
+        "url": "https://moondigitaledge.radyotvonline.net/radyo7/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "arabesk-fm",
+        "name": "🎶 Arabesk FM",
+        "url": "https://yayin.arabesktv.com/arabesktv",
+        "codec": "MP3"
+      },
+      {
+        "id": "virgin-radio-turkey-api",
+        "name": "🔥 Virgin Radio Turkey",
+        "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/VIRGIN_RADIO_TURKEY.mp3",
+        "codec": "MP3"
+      },
+      {
+        "id": "best-fm-api",
+        "name": "🌟 Best FM",
+        "url": "https://bestfm.turkhosted.com/bestfm",
+        "codec": "MP3"
+      },
+      {
+        "id": "ntv-radyo",
+        "name": "📰 NTV Radyo",
+        "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/NTV_RADYO.mp3",
+        "codec": "MP3"
+      },
+      {
+        "id": "power-pop-api",
+        "name": "⚡ Power Pop (API)",
+        "url": "https://listen.powerapp.com.tr/powerpop/mpeg/icecast.audio",
+        "codec": "MP3"
+      },
+      {
+        "id": "kral-turk-fm",
+        "name": "👑 Kral Türk FM",
+        "url": "https://dygedge.radyotvonline.net/kralturk/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "a-haber-api",
+        "name": "📰 A Haber Radyo",
+        "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/A_HABER_RADYO.mp3",
+        "codec": "MP3"
+      },
+      {
+        "id": "trt-nağme",
+        "name": "🎵 TRT Nağme",
+        "url": "https://radio-trtnagme.live.trt.com.tr/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "cnn-turk-radyo",
+        "name": "📺 CNN Türk Radyo",
+        "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/CNN_TURK_RADYO.mp3",
+        "codec": "MP3"
+      },
+      {
+        "id": "radyo-haber-turk",
+        "name": "📻 Radyo Habertürk",
+        "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/RADYO_HABERTURK.mp3",
+        "codec": "MP3"
+      },
+      {
+        "id": "radyo-eksen",
+        "name": "🌟 Radyo Eksen",
+        "url": "https://moondigitaledge.radyotvonline.net/radyoeksen/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "radyo-bogazici",
+        "name": "🌉 Radyo Boğaziçi",
+        "url": "https://moondigitalmaster.radyotvonline.net/radyobogazici/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "trt-antalya",
+        "name": "🏖️ TRT Antalya",
+        "url": "https://radio-trtantalya.live.trt.com.tr/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "radyo-mydonose-api",
+        "name": "💫 Radyo Mydonose",
+        "url": "https://radyomydonose.com/ssl/128.m3u",
+        "codec": "MP3"
+      },
+      {
+        "id": "tgrt-haber",
+        "name": "📺 TGRT Haber",
+        "url": "https://canli.tgrthaber.com/tgrthaber",
+        "codec": "MP3"
+      },
+      {
+        "id": "halk-tv-radyo",
+        "name": "📻 Halk TV Radyo",
+        "url": "https://halktv-live.ercdn.net/halktv_audio/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "sozcu-radyo",
+        "name": "📰 Sözcü Radyo",
+        "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/SOZCU_RADYO.mp3",
+        "codec": "MP3"
+      },
+      {
+        "id": "fox-radyo",
+        "name": "🦊 Fox Radyo",
+        "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/FOX_RADYO.mp3",
+        "codec": "MP3"
+      },
+      {
+        "id": "radyo-gs",
+        "name": "🟡🔴 Radyo GS",
+        "url": "https://moondigitaledge.radyotvonline.net/radyogs/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "radyo-fb",
+        "name": "💛💙 Radyo FB",
+        "url": "https://moondigitaledge.radyotvonline.net/radyofb/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "radyo-bjk",
+        "name": "⚫⚪ Radyo BJK",
+        "url": "https://moondigitaledge.radyotvonline.net/radyobjk/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "radyo-trabzonspor",
+        "name": "🔵🔴 Radyo Trabzonspor",
+        "url": "https://moondigitaledge.radyotvonline.net/radyotrabzonspor/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "spor-fm",
+        "name": "⚽ Spor FM",
+        "url": "https://moondigitalmaster.radyotvonline.net/sporfm/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "arabesk-fm-2",
+        "name": "🎵 Arabesk FM",
+        "url": "http://yayin.arabeskfm.biz:8042/",
+        "codec": "AAC+"
+      },
+      {
+        "id": "damar-turk-fm-2",
+        "name": "💿 Damar Türk FM",
+        "url": "https://live.radyositesihazir.com:10997/",
+        "codec": "MP3"
+      },
+      {
+        "id": "radyo-siran",
+        "name": "🏔️ Radyo Şiran",
+        "url": "https://live.radyositesihazir.com/8078/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "power-pop-api-2",
+        "name": "⚡ Power POP (API)",
+        "url": "https://listen.powerapp.com.tr/powerpop/128/chunks/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "radio-5-turkey",
+        "name": "📻 Radio 5 Turkey",
+        "url": "http://radyo.yayin.com.tr:4108/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "kral-turk-fm-2",
+        "name": "👑 Kral Türk FM",
+        "url": "https://live.radyositesihazir.com/8032/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "a-haber-radio",
+        "name": "📰 A Haber Radyo",
+        "url": "https://trkvz-radyolar.ercdn.net/ahaberradyo/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "radyo-fenomen-2",
+        "name": "🎭 Radyo Fenomen",
+        "url": "https://live.radyofenomen.com/fenomen/128/icecast.audio",
+        "codec": "MP3"
+      },
+      {
+        "id": "radyo-seymen-2",
+        "name": "🎪 Radyo Seymen",
+        "url": "https://yayin.radyoseymen.com.tr:1070/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "super-fm",
+        "name": "⭐ Süper FM",
+        "url": "https://23543.live.streamtheworld.com:443/SUPER_FM_SC",
+        "codec": "MP3"
+      },
+      {
+        "id": "rs-fm",
+        "name": "🎵 RS FM",
+        "url": "https://icecast-rian.cdnvideo.ru/voicestm",
+        "codec": "MP3"
+      },
+      {
+        "id": "joy-turk",
+        "name": "😊 Joy Türk",
+        "url": "https://27913.live.streamtheworld.com:443/JOY_TURK_SC",
+        "codec": "MP3"
+      },
+      {
+        "id": "number-one",
+        "name": "#️⃣ Number One",
+        "url": "https://n10101m.mediatriple.net/numberone",
+        "codec": "MP3"
+      },
+      {
+        "id": "diyanet-radyo",
+        "name": "🕌 Diyanet Radyo",
+        "url": "https://eustr73.mediatriple.net/videoonlylive/mtikoimxnztxlive/broadcast_5ee3c1171d7d2a.smil/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "numberone-turk",
+        "name": "#️⃣ Number One Türk",
+        "url": "https://n10101m.mediatriple.net/numberoneturk",
+        "codec": "MP3"
+      },
+      {
+        "id": "alem-fm-2",
+        "name": "🌍 Alem FM",
+        "url": "https://turkmedya.radyotvonline.net/alemfmaac",
+        "codec": "MP3"
+      },
+      {
+        "id": "super-fm-2",
+        "name": "⭐ Süper FM 2",
+        "url": "https://25583.live.streamtheworld.com:443/SUPER2_SC",
+        "codec": "MP3"
+      },
+      {
+        "id": "radyo-45lik",
+        "name": "💿 Radyo 45lik",
+        "url": "https://stream.radyo45lik.com:4545/",
+        "codec": "MP3"
+      },
+      {
+        "id": "metro-fm-turkey",
+        "name": "🚇 Metro FM",
+        "url": "https://28513.live.streamtheworld.com:443/METRO_FM_SC",
+        "codec": "MP3"
+      },
+      {
+        "id": "kurd1-fm",
+        "name": "🎵 Kurd1 FM",
+        "url": "https://listen.radioking.com/radio/119251/stream/158701",
+        "codec": "MP3"
+      },
+      {
+        "id": "trt-nagme",
+        "name": "🎼 TRT Nağme",
+        "url": "https://tv-trtmuzik.medya.trt.com.tr/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "radyo-odtu",
+        "name": "🎓 Radyo ODTU",
+        "url": "https://stream3.radyoodtu.com.tr:8000/",
+        "codec": "AAC+"
+      },
+      {
+        "id": "park-fm",
+        "name": "🌳 Park FM",
+        "url": "http://yayin.netradyom.com:8050/PARKFM/",
+        "codec": "AAC+"
+      },
+      {
+        "id": "arabesk-fm-api",
+        "name": "🎵 Arabesk FM",
+        "url": "http://yayin.arabeskfm.biz:8042/",
+        "codec": "AAC+"
+      },
+      {
+        "id": "damar-turk-fm-api",
+        "name": "🎵 Damar Türk FM",
+        "url": "https://live.radyositesihazir.com:10997/",
+        "codec": "MP3"
+      },
+      {
+        "id": "radyo-siran-api",
+        "name": "🎵 Radyo Şiran",
+        "url": "https://live.radyositesihazir.com/8078/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "radio-5-turkey-api",
+        "name": "🎵 Radio 5 Turkey",
+        "url": "http://radyo.yayin.com.tr:4108/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "radyo-fenomen-api",
+        "name": "🎵 Radyo Fenomen",
+        "url": "https://live.radyositesihazir.com/8100/stream?type=http&nocache=21588",
+        "codec": "AAC+"
+      },
+      {
+        "id": "radyo-seymen-api",
+        "name": "🎵 Radyo Seymen",
+        "url": "https://yayin.radyoseymen.com.tr:1070/stream",
+        "codec": "AAC+"
+      },
+      {
+        "id": "super-fm-api",
+        "name": "🎵 Super FM",
+        "url": "https://23543.live.streamtheworld.com:443/SUPER_FM_SC",
+        "codec": "MP3"
+      },
+      {
+        "id": "radyo-eksen-api",
+        "name": "🎵 Radyo Eksen",
+        "url": "https://moondigitaledge.radyotvonline.net/radyoeksen/radyoeksen.smil/stream",
+        "codec": "MP3"
+      },
+      {
+        "id": "merih-fm-stream",
+        "name": "🎵 Merih FM",
+        "url": "http://yayin.merih.fm:9040/stream",
+        "codec": "MP3"
+      }
+    ],
+    "failing": [
+      {
+        "id": "a-haber",
+        "name": "📰 A Haber",
+        "url": "https://trkvz-radyo.radyotvonline.com/ahaber/ahaber.stream/stream",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "trt-3",
+        "name": "📻 TRT 3",
+        "url": "https://radio-trt3.live.trt.com.tr/stream",
+        "codec": "HLS",
+        "error": "fetch failed"
+      },
+      {
+        "id": "radyo-viva",
+        "name": "🎶 Radyo Viva",
+        "url": "https://4.seslimedya.com/radyoviva/mp3/4play.mp3",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "radyo-d",
+        "name": "🎵 Radyo D",
+        "url": "https://4.seslimedya.com/radyod/mp3/4play.mp3",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "capital-radyo",
+        "name": "💎 Capital Radyo",
+        "url": "https://radyo.dogannet.tv/capital",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "slow-turk",
+        "name": "🎼 Slow Türk",
+        "url": "https://radyo.dogannet.tv/slowturk",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "alem-fm",
+        "name": "🌍 Alem FM",
+        "url": "https://ssl5.radyotvonline.com/alemfm/alemfm.stream/stream",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "radyo-turkuvaz",
+        "name": "🔵 Radyo Turkuvaz",
+        "url": "https://stream.turkuvazradyo.com.tr/turkuvazradyo",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "damar-turk-fm",
+        "name": "💫 Damar Türk FM",
+        "url": "https://ssldamarfm.mediatriple.net/damartv",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "alem-fm-api",
+        "name": "🌍 Alem FM",
+        "url": "https://ssl5.radyotvonline.com/alemfm/alemfm.stream/stream",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "radyo-seymen",
+        "name": "🎭 Radyo Seymen",
+        "url": "https://yayin.radyoseymen.com.tr/radyoseymen",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "rock-turk",
+        "name": "🎸 Rock Türk",
+        "url": "https://radyo.dogannet.tv/rockturk",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "trt-muzik",
+        "name": "🎼 TRT Müzik",
+        "url": "https://radio-trtmuzik.live.trt.com.tr/stream",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "pal-fm",
+        "name": "🎵 Pal FM",
+        "url": "https://shoutcast.radyogrup.com:1030/palfm_64",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "ribat-fm",
+        "name": "☪️ Ribat FM",
+        "url": "https://yayin.ribatfm.com.tr/ribatfm",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "medine-fm",
+        "name": "🕌 Medine FM",
+        "url": "https://yayin.medinefm.com/medinefm",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "duygusal-fm",
+        "name": "🤲 Duygusal FM",
+        "url": "https://ssl.radyogrup.com:7050/duygusal_live",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "kuran-radyo",
+        "name": "📖 Kuran Radyo",
+        "url": "https://yayin.kuranradyo.com/kuranradyo",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "ilahi-radyo",
+        "name": "🎵 İlahi Radyo",
+        "url": "https://yayin.ilahiradyo.com/ilahiradyo",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "tele1-radyo",
+        "name": "📡 Tele1 Radyo",
+        "url": "https://tele1tv-live.ercdn.net/tele1tv_audio/stream",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "futbol-fm",
+        "name": "⚽ Futbol FM",
+        "url": "https://yayin.futbolfm.com.tr/futbolfm",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "basketbol-fm",
+        "name": "🏀 Basketbol FM",
+        "url": "https://yayin.basketbolfm.com.tr/basketbolfm",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "ahaber-stream",
+        "name": "📰 A Haber Radyo",
+        "url": "https://trkvz-radyo.radyotvonline.net/stream",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "radyo-turkuvaz-api",
+        "name": "🎵 Radyo Türkuvaz",
+        "url": "https://trkvz-radyo.radyotvonline.net/stream",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "radyo-alaturka-api",
+        "name": "🎵 Radyo Alaturka",
+        "url": "https://ssl3.radyotvonline.com/radyoalaturka/radyoalaturka.stream/stream",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "radyo-beykent-api",
+        "name": "🎵 Radyo Beykent",
+        "url": "https://yayin.radyobeykent.com/radyobeykent",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "radyo-slow-turk-api",
+        "name": "🎵 Radyo Slow Türk",
+        "url": "https://radyoslowturk.radyotvonline.net/stream",
+        "codec": "MP3",
+        "error": "fetch failed"
+      },
+      {
+        "id": "radyo-beat-api",
+        "name": "🎵 Radyo Beat",
+        "url": "https://radyobeat.radyotvonline.net/stream",
+        "codec": "MP3",
+        "error": "fetch failed"
+      }
+    ],
+    "suspicious": [
+      {
+        "id": "joy-fm",
+        "name": "😊 Joy FM",
+        "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/JOY_FM.mp3",
+        "codec": "MP3",
+        "error": "Timeout (slow server)",
+        "fixable": false
+      },
+      {
+        "id": "metro-fm",
+        "name": "🚇 Metro FM",
+        "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/METRO_FM.mp3",
+        "codec": "MP3",
+        "error": "Timeout (slow server)",
+        "fixable": false
+      },
+      {
+        "id": "metro-fm-api",
+        "name": "🚇 Metro FM",
+        "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/METRO_FM.mp3",
+        "codec": "MP3",
+        "error": "Timeout (slow server)",
+        "fixable": false
+      }
+    ]
+  },
+  "successRate": 69
+}

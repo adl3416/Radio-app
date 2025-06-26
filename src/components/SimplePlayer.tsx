@@ -54,8 +54,16 @@ export const SimplePlayer: React.FC<SimplePlayerProps> = ({ isVisible, onClose }
 
   return (
     <Modal visible={isVisible} animationType="slide" transparent>
-      <View style={styles.overlay}>
-        <View style={styles.container}>
+      <TouchableOpacity 
+        style={styles.overlay} 
+        activeOpacity={1} 
+        onPress={onClose}
+      >
+        <TouchableOpacity 
+          style={styles.container} 
+          activeOpacity={1} 
+          onPress={(e) => e.stopPropagation()}
+        >
           <LinearGradient
             colors={['#FF6B35', '#F59E0B']}
             style={styles.playerBackground}
@@ -111,7 +119,7 @@ export const SimplePlayer: React.FC<SimplePlayerProps> = ({ isVisible, onClose }
                 style={styles.controlButton}
                 onPress={handleStop}
               >
-                <Ionicons name="stop" size={32} color="white" />
+                <Ionicons name="stop" size={28} color="white" />
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -124,7 +132,7 @@ export const SimplePlayer: React.FC<SimplePlayerProps> = ({ isVisible, onClose }
                 ) : (
                   <Ionicons
                     name={playbackState.isPlaying ? 'pause' : 'play'}
-                    size={40}
+                    size={35}
                     color="white"
                   />
                 )}
@@ -134,12 +142,12 @@ export const SimplePlayer: React.FC<SimplePlayerProps> = ({ isVisible, onClose }
                 style={styles.controlButton}
                 onPress={onClose}
               >
-                <Ionicons name="remove" size={32} color="white" />
+                <Ionicons name="remove" size={28} color="white" />
               </TouchableOpacity>
             </View>
           </LinearGradient>
-        </View>
-      </View>
+        </TouchableOpacity>
+      </TouchableOpacity>
     </Modal>
   );
 };
@@ -151,7 +159,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   container: {
-    height: height * 0.6,
+    height: height * 0.35, // 0.6'dan 0.35'e düşürdük - yaklaşık %40 daha küçük
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     overflow: 'hidden',
@@ -164,7 +172,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 30,
+    marginBottom: 15, // 30'dan 15'e düşürdük
   },
   closeButton: {
     padding: 8,
@@ -179,35 +187,35 @@ const styles = StyleSheet.create({
   },
   stationInfo: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 20, // 40'dan 20'ye düşürdük
   },
   stationIcon: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 80, // 120'den 80'e düşürdük
+    height: 80, // 120'den 80'e düşürdük
+    borderRadius: 40, // 60'dan 40'a düşürdük
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 15, // 20'den 15'e düşürdük
   },
   stationIconText: {
-    fontSize: 48,
+    fontSize: 32, // 48'den 32'ye düşürdük
   },
   stationName: {
-    fontSize: 24,
+    fontSize: 20, // 24'den 20'ye düşürdük
     fontWeight: 'bold',
     color: 'white',
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 6, // 8'den 6'ya düşürdük
   },
   stationDesc: {
-    fontSize: 16,
+    fontSize: 14, // 16'dan 14'e düşürdük
     color: 'rgba(255, 255, 255, 0.8)',
     textAlign: 'center',
   },
   statusContainer: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 20, // 40'dan 20'ye düşürdük
   },
   statusIndicator: {
     flexDirection: 'row',
@@ -234,20 +242,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 30,
+    gap: 20, // 30'dan 20'ye düşürdük
   },
   controlButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 50, // 60'dan 50'ye düşürdük
+    height: 50, // 60'dan 50'ye düşürdük
+    borderRadius: 25, // 30'dan 25'e düşürdük
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   playButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 65, // 80'den 65'e düşürdük
+    height: 65, // 80'den 65'e düşürdük
+    borderRadius: 32.5, // 40'dan 32.5'e düşürdük
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
 });

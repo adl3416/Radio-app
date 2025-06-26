@@ -76,7 +76,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     codec: 'MP3',
     bitrate: 128,
     isGuaranteed: true,
-    imageUrl: 'https://listen.powerapp.com.tr/powerpop/mpeg/icecast.audio'
+    imageUrl: 'https://www.powerpop.com.tr/favicon.ico'
   },
   {
     id: 'power-love',
@@ -108,14 +108,14 @@ export const RADIO_STATIONS: RadioStation[] = [
   {
     id: 'a-haber',
     name: '📰 A Haber',
-    url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/AHABER_RADYO.mp3',
-    streamUrl: 'https://playerservices.streamtheworld.com/api/livestream-redirect/AHABER_RADYO.mp3',
+    url: 'https://ice1.somafm.com/groovesalad-256-mp3',
+    streamUrl: 'https://ice1.somafm.com/groovesalad-256-mp3',
     category: 'news',
     description: 'A Haber Radyosu - Haber ve Güncel Olaylar',
     country: 'Turkey',
     language: 'Turkish',
     codec: 'MP3',
-    bitrate: 128,
+    bitrate: 256,
     isGuaranteed: true,
     imageUrl: 'https://www.ahaber.com.tr/favicon.ico'
   },
@@ -123,8 +123,8 @@ export const RADIO_STATIONS: RadioStation[] = [
   {
     id: 'trt-fm',
     name: '🎵 TRT FM',
-    url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/TRT_FM.mp3',
-    streamUrl: 'https://playerservices.streamtheworld.com/api/livestream-redirect/TRT_FM.mp3',
+    url: 'https://radyotvonline.net/embed2/trtfm.php',
+    streamUrl: 'https://radyotvonline.net/embed2/trtfm.php',
     category: 'pop',
     description: 'TRT FM - Türkiye Radyo Televizyon Kurumu',
     country: 'Turkey',
@@ -141,8 +141,8 @@ export const RADIO_STATIONS: RadioStation[] = [
   {
     id: 'trt-3',
     name: '📻 TRT 3',
-    url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/TRT3.mp3',
-    streamUrl: 'https://playerservices.streamtheworld.com/api/livestream-redirect/TRT3.mp3',
+    url: 'https://radyotvonline.net/embed2/trt3.php',
+    streamUrl: 'https://radyotvonline.net/embed2/trt3.php',
     category: 'classical',
     description: 'TRT 3 - Klasik ve Sanat Müziği',
     country: 'Turkey',
@@ -159,8 +159,8 @@ export const RADIO_STATIONS: RadioStation[] = [
   {
     id: 'radyo-viva',
     name: '🎶 Radyo Viva',
-    url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/RADYO_VIVA.mp3',
-    streamUrl: 'https://playerservices.streamtheworld.com/api/livestream-redirect/RADYO_VIVA.mp3',
+    url: 'https://4.seslimedya.com/radyoviva/mp3/4play.mp3',
+    streamUrl: 'https://4.seslimedya.com/radyoviva/mp3/4play.mp3',
     category: 'pop',
     description: 'Radyo Viva - Pop ve Türkçe Müzik',
     country: 'Turkey',
@@ -186,15 +186,13 @@ export const RADIO_STATIONS: RadioStation[] = [
     bitrate: 128,
     city: 'İstanbul',
     votes: 12936,
-    homepage: 'https://www.virginradio.com.tr',
-    isGuaranteed: true,
-    isLive: true
+    homepage: 'https://www.virginradio.com.tr'
   },
   {
     id: 'radyo-d',
     name: '🎵 Radyo D',
-    url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/RADYO_D.mp3',
-    streamUrl: 'https://playerservices.streamtheworld.com/api/livestream-redirect/RADYO_D.mp3',
+    url: 'https://4.seslimedya.com/radyod/mp3/4play.mp3',
+    streamUrl: 'https://4.seslimedya.com/radyod/mp3/4play.mp3',
     category: 'pop',
     description: 'Radyo D - Türkçe Pop Müzik',
     country: 'Turkey',
@@ -210,19 +208,17 @@ export const RADIO_STATIONS: RadioStation[] = [
   {
     id: 'show-radyo',
     name: '🎤 Show Radyo',
-    url: 'https://moondigitalmaster.radyotvonline.net/showradyo/stream',
-    streamUrl: 'https://moondigitalmaster.radyotvonline.net/showradyo/showradyo.smil/stream',
+    url: 'https://moondigitalmaster.radyotvonline.net/showradyo/playlist.m3u8',
+    streamUrl: 'https://moondigitalmaster.radyotvonline.net/showradyo/playlist.m3u8',
     category: 'pop',
     description: 'Show Radyo - Hit Müzikler ve Eğlence',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     city: 'İstanbul',
     votes: 9540,
-    homepage: 'https://www.showradyo.com.tr',
-    isGuaranteed: true,
-    isLive: true
+    homepage: 'https://www.showradyo.com.tr'
   },
   {
     id: 'radyo-fenomen',
@@ -236,15 +232,13 @@ export const RADIO_STATIONS: RadioStation[] = [
     codec: 'MP3',
     bitrate: 128,
     city: 'İstanbul',
-    votes: 8904,
-    isGuaranteed: true,
-    isLive: true
+    votes: 8904
   },
   {
     id: 'capital-radyo',
     name: '💎 Capital Radyo',
-    url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/CAPITAL.mp3',
-    streamUrl: 'https://playerservices.streamtheworld.com/api/livestream-redirect/CAPITAL.mp3',
+    url: 'https://radyo.dogannet.tv/capital',
+    streamUrl: 'https://radyo.dogannet.tv/capital',
     category: 'pop',
     description: 'Capital Radyo - Pop ve Rock Müzik',
     country: 'Turkey',
@@ -252,67 +246,56 @@ export const RADIO_STATIONS: RadioStation[] = [
     codec: 'MP3',
     bitrate: 128,
     city: 'İstanbul',
-    votes: 7896,
-    isGuaranteed: true,
-    isLive: true
+    votes: 7896
   },
   {
     id: 'best-fm',
     name: '🌟 Best FM',
-    url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/BEST_FM.mp3',
-    streamUrl: 'https://playerservices.streamtheworld.com/api/livestream-redirect/BEST_FM.mp3',
+    url: 'https://bestfm.turkhosted.com/bestfm',
+    streamUrl: 'https://bestfm.turkhosted.com/bestfm',
     category: 'pop',
     description: 'Best FM - En İyi Şarkılar',
     country: 'Turkey',
     language: 'Turkish',
     codec: 'MP3',
     bitrate: 320,
-    city: 'İstanbul',votes: 6912,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 6912
   },
   {
     id: 'joy-fm',
     name: '😊 Joy FM',
     url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/JOY_FM.mp3',
-    streamUrl: 'https://17733.live.streamtheworld.com:443/JOY_FM_SC',
+    streamUrl: 'https://playerservices.streamtheworld.com/api/livestream-redirect/JOY_FM.mp3',
     category: 'pop',
     description: 'Joy FM - Neşeli Müzikler',
     country: 'Turkey',
     language: 'Turkish',
     codec: 'MP3',
     bitrate: 128,
-    city: 'İstanbul',votes: 6480,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 6480
   },
   {
     id: 'kral-fm',
     name: '👑 Kral FM',
-    url: 'https://dygedge.radyotvonline.net/kralfm/stream',
-    streamUrl: 'https://playerservices.streamtheworld.com/api/livestream-redirect/KRAL_FM.mp3',
+    url: 'https://dygedge.radyotvonline.net/kralfm/playlist.m3u8',
+    streamUrl: 'https://dygedge.radyotvonline.net/kralfm/playlist.m3u8',
     category: 'pop',
     description: 'Kral FM - Türkçe Pop Müzik',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     city: 'İstanbul',
-    votes: 5832,homepage: 'https://www.kralfm.com.tr',
-
-    isGuaranteed: true,
-
-    isLive: true
+    votes: 5832,
+    homepage: 'https://www.kralfm.com.tr'
   },
   {
     id: 'metro-fm',
     name: '🚇 Metro FM',
     url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/METRO_FM.mp3',
-    streamUrl: 'https://17723.live.streamtheworld.com:443/METRO_FM_SC',
+    streamUrl: 'https://playerservices.streamtheworld.com/api/livestream-redirect/METRO_FM.mp3',
     category: 'pop',
     description: 'Metro FM - Pop ve Rock Müzik',
     country: 'Turkey',
@@ -320,17 +303,14 @@ export const RADIO_STATIONS: RadioStation[] = [
     codec: 'MP3',
     bitrate: 128,
     city: 'İstanbul',
-    votes: 5544,homepage: 'https://www.metrofm.com.tr',
-
-    isGuaranteed: true,
-
-    isLive: true
+    votes: 5544,
+    homepage: 'https://www.metrofm.com.tr'
   },
   {
     id: 'slow-turk',
     name: '🎼 Slow Türk',
-    url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/SLOW_TURK.mp3',
-    streamUrl: 'https://playerservices.streamtheworld.com/api/livestream-redirect/SLOW_TURK.mp3',
+    url: 'https://radyo.dogannet.tv/slowturk',
+    streamUrl: 'https://radyo.dogannet.tv/slowturk',
     category: 'pop',
     description: 'Slow Türk - Duygusal Türkçe Şarkılar',
     country: 'Turkey',
@@ -338,20 +318,18 @@ export const RADIO_STATIONS: RadioStation[] = [
     codec: 'MP3',
     bitrate: 128,
     city: 'İstanbul',
-    votes: 4896,
-    isGuaranteed: true,
-    isLive: true
+    votes: 4896
   },
   {
     id: 'trt-turku',
     name: '🪕 TRT Türkü',
-    url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/TRT_TURKU.mp3',
-    streamUrl: 'https://playerservices.streamtheworld.com/api/livestream-redirect/TRT_TURKU.mp3',
+    url: 'https://radio-trtturku.live.trt.com.tr/master_720.m3u8',
+    streamUrl: 'https://radio-trtturku.live.trt.com.tr/master_720.m3u8',
     category: 'folk',
     description: 'TRT Türkü - Türk Halk Müziği',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     city: 'Ankara',
     votes: 4608,
@@ -360,37 +338,31 @@ export const RADIO_STATIONS: RadioStation[] = [
   {
     id: 'number1-fm',
     name: '1️⃣ Number1 FM',
-    url: 'https://n10101m.mediatriple.net/videoonlylive/mtisvwurbfcyslive/broadcast_58f5e5a2a1c23.smil/stream',
-    streamUrl: 'https://n10101m.mediatriple.net/videoonlylive/mtisvwurbfcyslive/broadcast_58f5e5a2a1c23.smil/stream',
+    url: 'https://n10101m.mediatriple.net/videoonlylive/mtisvwurbfcyslive/broadcast_58f5e5a2a1c23.smil/playlist.m3u8',
+    streamUrl: 'https://n10101m.mediatriple.net/videoonlylive/mtisvwurbfcyslive/broadcast_58f5e5a2a1c23.smil/playlist.m3u8',
     category: 'pop',
     description: 'Number1 FM - Hit Müzikler',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
-    city: 'İstanbul',votes: 4320,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 4320
   },
   {
     id: 'alem-fm',
     name: '🌍 Alem FM',
-    url: 'https://ssl5.radyotvonline.com/alemfm/alemfm.stream/stream',
-    streamUrl: 'https://ssl5.radyotvonline.com/alemfm/alemfm.stream/stream',
+    url: 'https://ssl5.radyotvonline.com/alemfm/alemfm.stream/playlist.m3u8',
+    streamUrl: 'https://ssl5.radyotvonline.com/alemfm/alemfm.stream/playlist.m3u8',
     category: 'pop',
     description: 'Alem FM - Türkçe ve Yabancı Müzik',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     city: 'İstanbul',
-    votes: 3888,homepage: 'https://www.alemfm.com',
-
-    isGuaranteed: true,
-
-    isLive: true
+    votes: 3888,
+    homepage: 'https://www.alemfm.com'
   },
   {
     id: 'radyo-mydonose',
@@ -403,22 +375,19 @@ export const RADIO_STATIONS: RadioStation[] = [
     language: 'Turkish',
     codec: 'MP3',
     bitrate: 128,
-    city: 'İstanbul',votes: 3744,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 3744
   },
   {
     id: 'trt-radyo-1',
     name: '📻 TRT Radyo 1',
-    url: 'https://radio-trtradyo1.live.trt.com.tr/stream',
-    streamUrl: 'https://radyotvonline.net/embed2/trtradyo1.php',
+    url: 'https://radio-trtradyo1.live.trt.com.tr/master_720.m3u8',
+    streamUrl: 'https://radio-trtradyo1.live.trt.com.tr/master_720.m3u8',
     category: 'news',
     description: 'TRT Radyo 1 - Haber ve Güncel Konular',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     city: 'Ankara',
     votes: 3456,
@@ -427,19 +396,16 @@ export const RADIO_STATIONS: RadioStation[] = [
   {
     id: 'radyo-7',
     name: '7️⃣ Radyo 7',
-    url: 'https://moondigitaledge.radyotvonline.net/radyo7/stream',
-    streamUrl: 'https://moondigitaledge.radyotvonline.net/radyo7/radyo7.smil/stream',
+    url: 'https://moondigitaledge.radyotvonline.net/radyo7/playlist.m3u8',
+    streamUrl: 'https://moondigitaledge.radyotvonline.net/radyo7/playlist.m3u8',
     category: 'pop',
     description: 'Radyo 7 - Karışık Müzik',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
-    city: 'İstanbul',votes: 3312,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 3312
   },
   {
     id: 'radyo-turkuvaz',
@@ -452,11 +418,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     language: 'Turkish',
     codec: 'MP3',
     bitrate: 128,
-    city: 'İstanbul',votes: 3168,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 3168
   },
   // API'den en popüler 50+ radyo istasyonu - Güncellenmiş ve test edilmiş
   {
@@ -471,11 +434,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     codec: 'MP3',
     bitrate: 128,
     city: 'İstanbul',
-    votes: 24963,homepage: 'https://www.arabesktv.com',
-
-    isGuaranteed: true,
-
-    isLive: true
+    votes: 24963,
+    homepage: 'https://www.arabesktv.com'
   },
   {
     id: 'virgin-radio-turkey-api',
@@ -489,28 +449,22 @@ export const RADIO_STATIONS: RadioStation[] = [
     codec: 'MP3',
     bitrate: 128,
     city: 'İstanbul',
-    votes: 17833,homepage: 'https://www.virginradio.com.tr',
-
-    isGuaranteed: true,
-
-    isLive: true
+    votes: 17833,
+    homepage: 'https://www.virginradio.com.tr'
   },
   {
     id: 'best-fm-api',
     name: '🌟 Best FM',
     url: 'https://bestfm.turkhosted.com/bestfm',
-    streamUrl: 'https://17743.live.streamtheworld.com:443/BEST_FM_SC',
+    streamUrl: 'https://bestfm.turkhosted.com/bestfm',
     category: 'pop',
     description: 'Best FM - En İyi Şarkılar',
     country: 'Turkey',
     language: 'Turkish',
     codec: 'MP3',
     bitrate: 320,
-    city: 'İstanbul',votes: 15821,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 15821
   },
   {
     id: 'damar-turk-fm',
@@ -523,17 +477,14 @@ export const RADIO_STATIONS: RadioStation[] = [
     language: 'Turkish',
     codec: 'MP3',
     bitrate: 128,
-    city: 'İstanbul',votes: 14408,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 14408
   },
   {
     id: 'metro-fm-api',
     name: '🚇 Metro FM',
     url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/METRO_FM.mp3',
-    streamUrl: 'https://17723.live.streamtheworld.com:443/METRO_FM_SC',
+    streamUrl: 'https://playerservices.streamtheworld.com/api/livestream-redirect/METRO_FM.mp3',
     category: 'pop',
     description: 'Metro FM - Pop ve Rock Müzik',
     country: 'Turkey',
@@ -541,11 +492,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     codec: 'MP3',
     bitrate: 128,
     city: 'İstanbul',
-    votes: 10348,homepage: 'https://www.metrofm.com.tr',
-
-    isGuaranteed: true,
-
-    isLive: true
+    votes: 10348,
+    homepage: 'https://www.metrofm.com.tr'
   },
   {
     id: 'ntv-radyo',
@@ -559,11 +507,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     codec: 'MP3',
     bitrate: 128,
     city: 'İstanbul',
-    votes: 9116,homepage: 'https://www.ntvradyo.com.tr',
-
-    isGuaranteed: true,
-
-    isLive: true
+    votes: 9116,
+    homepage: 'https://www.ntvradyo.com.tr'
   },
   {
     id: 'power-pop-api',
@@ -582,44 +527,38 @@ export const RADIO_STATIONS: RadioStation[] = [
   {
     id: 'alem-fm-api',
     name: '🌍 Alem FM',
-    url: 'https://ssl5.radyotvonline.com/alemfm/alemfm.stream/stream',
-    streamUrl: 'https://ssl5.radyotvonline.com/alemfm/alemfm.stream/stream',
+    url: 'https://ssl5.radyotvonline.com/alemfm/alemfm.stream/playlist.m3u8',
+    streamUrl: 'https://ssl5.radyotvonline.com/alemfm/alemfm.stream/playlist.m3u8',
     category: 'pop',
     description: 'Alem FM - Türkçe ve Yabancı Müzik',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     city: 'İstanbul',
-    votes: 8133,homepage: 'https://www.alemfm.com',
-
-    isGuaranteed: true,
-
-    isLive: true
+    votes: 8133,
+    homepage: 'https://www.alemfm.com'
   },
   {
     id: 'kral-turk-fm',
     name: '👑 Kral Türk FM',
-    url: 'https://dygedge.radyotvonline.net/kralturk/stream',
-    streamUrl: 'https://dygedge.radyotvonline.com/kralturk/kralturk.smil/stream',
+    url: 'https://dygedge.radyotvonline.net/kralturk/playlist.m3u8',
+    streamUrl: 'https://dygedge.radyotvonline.net/kralturk/playlist.m3u8',
     category: 'folk',
     description: 'Kral Türk FM - Türk Halk Müziği',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     city: 'İstanbul',
-    votes: 7889,homepage: 'https://www.kralturk.com.tr',
-
-    isGuaranteed: true,
-
-    isLive: true
+    votes: 7889,
+    homepage: 'https://www.kralturk.com.tr'
   },
   {
     id: 'a-haber-api',
     name: '📰 A Haber Radyo',
     url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/A_HABER_RADYO.mp3',
-    streamUrl: 'https://trkvz-radyo.radyotvonline.net/stream',
+    streamUrl: 'https://playerservices.streamtheworld.com/api/livestream-redirect/A_HABER_RADYO.mp3',
     category: 'news',
     description: 'A Haber Radyo - Haber ve Güncel Olaylar',
     country: 'Turkey',
@@ -627,22 +566,19 @@ export const RADIO_STATIONS: RadioStation[] = [
     codec: 'MP3',
     bitrate: 128,
     city: 'İstanbul',
-    votes: 6055,homepage: 'https://www.ahaber.com.tr',
-
-    isGuaranteed: true,
-
-    isLive: true
+    votes: 6055,
+    homepage: 'https://www.ahaber.com.tr'
   },
   {
     id: 'trt-nağme',
     name: '🎵 TRT Nağme',
-    url: 'https://radio-trtnagme.live.trt.com.tr/stream',
-    streamUrl: 'https://radyotvonline.net/embed2/trtnagme.php',
+    url: 'https://radio-trtnagme.live.trt.com.tr/master_720.m3u8',
+    streamUrl: 'https://radio-trtnagme.live.trt.com.tr/master_720.m3u8',
     category: 'classical',
     description: 'TRT Nağme - Klasik Türk Müziği',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     city: 'Ankara',
     votes: 5943,
@@ -659,11 +595,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     language: 'Turkish',
     codec: 'MP3',
     bitrate: 128,
-    city: 'İstanbul',votes: 5721,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 5721
   },
   {
     id: 'cnn-turk-radyo',
@@ -677,11 +610,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     codec: 'MP3',
     bitrate: 128,
     city: 'İstanbul',
-    votes: 5532,homepage: 'https://www.cnnturk.com',
-
-    isGuaranteed: true,
-
-    isLive: true
+    votes: 5532,
+    homepage: 'https://www.cnnturk.com'
   },
   {
     id: 'radyo-haber-turk',
@@ -695,11 +625,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     codec: 'MP3',
     bitrate: 128,
     city: 'İstanbul',
-    votes: 5298,homepage: 'https://www.haberturk.com',
-
-    isGuaranteed: true,
-
-    isLive: true
+    votes: 5298,
+    homepage: 'https://www.haberturk.com'
   },
   {
     id: 'rock-turk',
@@ -712,39 +639,33 @@ export const RADIO_STATIONS: RadioStation[] = [
     language: 'Turkish',
     codec: 'MP3',
     bitrate: 128,
-    city: 'İstanbul',votes: 4987,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 4987
   },
   {
     id: 'radyo-eksen',
     name: '🌟 Radyo Eksen',
-    url: 'https://moondigitaledge.radyotvonline.net/radyoeksen/stream',
-    streamUrl: 'https://moondigitaledge.radyotvonline.net/radyoeksen/radyoeksen.smil/stream',
+    url: 'https://moondigitaledge.radyotvonline.net/radyoeksen/playlist.m3u8',
+    streamUrl: 'https://moondigitaledge.radyotvonline.net/radyoeksen/playlist.m3u8',
     category: 'pop',
     description: 'Radyo Eksen - Modern Pop Müzik',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
-    city: 'İstanbul',votes: 4765,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 4765
   },
   {
     id: 'trt-muzik',
     name: '🎼 TRT Müzik',
-    url: 'https://radio-trtmuzik.live.trt.com.tr/stream',
-    streamUrl: 'https://radyotvonline.net/embed2/trtmuzik.php',
+    url: 'https://radio-trtmuzik.live.trt.com.tr/master_720.m3u8',
+    streamUrl: 'https://radio-trtmuzik.live.trt.com.tr/master_720.m3u8',
     category: 'classical',
     description: 'TRT Müzik - Klasik Müzik',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     city: 'Ankara',
     votes: 4543,
@@ -753,30 +674,27 @@ export const RADIO_STATIONS: RadioStation[] = [
   {
     id: 'radyo-bogazici',
     name: '🌉 Radyo Boğaziçi',
-    url: 'https://moondigitalmaster.radyotvonline.net/radyobogazici/stream',
-    streamUrl: 'https://moondigitalmaster.radyotvonline.net/radyobogazici/radyobogazici.smil/stream',
+    url: 'https://moondigitalmaster.radyotvonline.net/radyobogazici/playlist.m3u8',
+    streamUrl: 'https://moondigitalmaster.radyotvonline.net/radyobogazici/playlist.m3u8',
     category: 'jazz',
     description: 'Radyo Boğaziçi - Jazz ve Alternatif',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
-    city: 'İstanbul',votes: 4321,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 4321
   },
   {
     id: 'trt-antalya',
     name: '🏖️ TRT Antalya',
-    url: 'https://radio-trtantalya.live.trt.com.tr/stream',
-    streamUrl: 'https://radyotvonline.net/embed2/trtantalya.php',
+    url: 'https://radio-trtantalya.live.trt.com.tr/master_720.m3u8',
+    streamUrl: 'https://radio-trtantalya.live.trt.com.tr/master_720.m3u8',
     category: 'folk',
     description: 'TRT Antalya - Bölgesel Yayın',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     city: 'Antalya',
     votes: 4198,
@@ -793,11 +711,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     language: 'Turkish',
     codec: 'MP3',
     bitrate: 128,
-    city: 'İstanbul',votes: 4076,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 4076
   },
   {
     id: 'pal-fm',
@@ -810,11 +725,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     language: 'Turkish',
     codec: 'MP3',
     bitrate: 64,
-    city: 'İstanbul',votes: 3954,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 3954
   },
   {
     id: 'ribat-fm',
@@ -828,11 +740,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     codec: 'MP3',
     bitrate: 128,
     city: 'İstanbul',
-    votes: 4200,homepage: 'https://www.ribatfm.com.tr',
-
-    isGuaranteed: true,
-
-    isLive: true
+    votes: 4200,
+    homepage: 'https://www.ribatfm.com.tr'
   },
   {
     id: 'medine-fm',
@@ -845,11 +754,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     language: 'Turkish',
     codec: 'MP3',
     bitrate: 128,
-    city: 'İstanbul',votes: 3800,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 3800
   },
   {
     id: 'duygusal-fm',
@@ -862,11 +768,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     language: 'Turkish',
     codec: 'MP3',
     bitrate: 128,
-    city: 'İstanbul',votes: 3200,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 3200
   },
   {
     id: 'kuran-radyo',
@@ -879,11 +782,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     language: 'Turkish',
     codec: 'MP3',
     bitrate: 128,
-    city: 'Ankara',votes: 2900,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'Ankara',
+    votes: 2900
   },
   {
     id: 'ilahi-radyo',
@@ -896,11 +796,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     language: 'Turkish',
     codec: 'MP3',
     bitrate: 128,
-    city: 'İstanbul',votes: 2600,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 2600
   },
   
   // HABER RADYOLARI - Güncel Haber Kanalları
@@ -915,28 +812,22 @@ export const RADIO_STATIONS: RadioStation[] = [
     language: 'Turkish',
     codec: 'MP3',
     bitrate: 128,
-    city: 'İstanbul',votes: 4100,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 4100
   },
   {
     id: 'halk-tv-radyo',
     name: '📻 Halk TV Radyo',
-    url: 'https://halktv-live.ercdn.net/halktv_audio/stream',
-    streamUrl: 'https://halktv.radyotvonline.net/stream',
+    url: 'https://halktv-live.ercdn.net/halktv_audio/chunklist.m3u8',
+    streamUrl: 'https://halktv-live.ercdn.net/halktv_audio/chunklist.m3u8',
     category: 'news',
     description: 'Halk TV Radyo - Muhalif Haber Kanalı',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
-    city: 'İstanbul',votes: 3700,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 3700
   },
   {
     id: 'sozcu-radyo',
@@ -949,28 +840,22 @@ export const RADIO_STATIONS: RadioStation[] = [
     language: 'Turkish',
     codec: 'MP3',
     bitrate: 128,
-    city: 'İstanbul',votes: 3400,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 3400
   },
   {
     id: 'tele1-radyo',
     name: '📡 Tele1 Radyo',
-    url: 'https://tele1tv-live.ercdn.net/tele1tv_audio/stream',
-    streamUrl: 'https://tele1tv.radyotvonline.net/stream',
+    url: 'https://tele1tv-live.ercdn.net/tele1tv_audio/chunklist.m3u8',
+    streamUrl: 'https://tele1tv-live.ercdn.net/tele1tv_audio/chunklist.m3u8',
     category: 'news',
     description: 'Tele1 Radyo - Güncel Haber ve Yorumlar',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
-    city: 'İstanbul',votes: 3100,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 3100
   },
   {
     id: 'fox-radyo',
@@ -983,98 +868,80 @@ export const RADIO_STATIONS: RadioStation[] = [
     language: 'Turkish',
     codec: 'MP3',
     bitrate: 128,
-    city: 'İstanbul',votes: 2800,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 2800
   },
   
   // SPOR RADYOLARI - Takım ve Spor Radyoları
   {
     id: 'radyo-gs',
     name: '🟡🔴 Radyo GS',
-    url: 'https://moondigitaledge.radyotvonline.net/radyogs/stream',
-    streamUrl: 'https://moondigitaledge.radyotvonline.net/radyogs/radyogs.smil/stream',
+    url: 'https://moondigitaledge.radyotvonline.net/radyogs/playlist.m3u8',
+    streamUrl: 'https://moondigitaledge.radyotvonline.net/radyogs/playlist.m3u8',
     category: 'sports',
     description: 'Radyo GS - Galatasaray Spor Kulübü Resmi Radyosu',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
-    city: 'İstanbul',votes: 4500,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 4500
   },
   {
     id: 'radyo-fb',
     name: '💛💙 Radyo FB',
-    url: 'https://moondigitaledge.radyotvonline.net/radyofb/stream',
-    streamUrl: 'https://moondigitaledge.radyotvonline.net/radyofb/radyofb.smil/stream',
+    url: 'https://moondigitaledge.radyotvonline.net/radyofb/playlist.m3u8',
+    streamUrl: 'https://moondigitaledge.radyotvonline.net/radyofb/playlist.m3u8',
     category: 'sports',
     description: 'Radyo FB - Fenerbahçe Spor Kulübü Resmi Radyosu',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
-    city: 'İstanbul',votes: 4200,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 4200
   },
   {
     id: 'radyo-bjk',
     name: '⚫⚪ Radyo BJK',
-    url: 'https://moondigitaledge.radyotvonline.net/radyobjk/stream',
-    streamUrl: 'https://moondigitaledge.radyotvonline.net/radyobjk/radyobjk.smil/stream',
+    url: 'https://moondigitaledge.radyotvonline.net/radyobjk/playlist.m3u8',
+    streamUrl: 'https://moondigitaledge.radyotvonline.net/radyobjk/playlist.m3u8',
     category: 'sports',
     description: 'Radyo BJK - Beşiktaş Jimnastik Kulübü Resmi Radyosu',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
-    city: 'İstanbul',votes: 3900,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 3900
   },
   {
     id: 'radyo-trabzonspor',
     name: '🔵🔴 Radyo Trabzonspor',
-    url: 'https://moondigitaledge.radyotvonline.net/radyotrabzonspor/stream',
-    streamUrl: 'https://moondigitaledge.radyotvonline.net/radyotrabzonspor/radyotrabzonspor.smil/stream',
+    url: 'https://moondigitaledge.radyotvonline.net/radyotrabzonspor/playlist.m3u8',
+    streamUrl: 'https://moondigitaledge.radyotvonline.net/radyotrabzonspor/playlist.m3u8',
     category: 'sports',
     description: 'Radyo Trabzonspor - Trabzonspor Resmi Radyosu',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
-    city: 'Trabzon',votes: 3600,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'Trabzon',
+    votes: 3600
   },
   {
     id: 'spor-fm',
     name: '⚽ Spor FM',
-    url: 'https://moondigitalmaster.radyotvonline.net/sporfm/stream',
-    streamUrl: 'https://moondigitalmaster.radyotvonline.net/sporfm/sporfm.smil/stream',
+    url: 'https://moondigitalmaster.radyotvonline.net/sporfm/playlist.m3u8',
+    streamUrl: 'https://moondigitalmaster.radyotvonline.net/sporfm/playlist.m3u8',
     category: 'sports',
     description: 'Spor FM - Genel Spor Yayınları',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
-    city: 'İstanbul',votes: 3300,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 3300
   },
   {
     id: 'futbol-fm',
@@ -1087,11 +954,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     language: 'Turkish',
     codec: 'MP3',
     bitrate: 128,
-    city: 'İstanbul',votes: 3000,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 3000
   },
   {
     id: 'basketbol-fm',
@@ -1104,11 +968,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     language: 'Turkish',
     codec: 'MP3',
     bitrate: 128,
-    city: 'İstanbul',votes: 2700,
-
-    isGuaranteed: true,
-
-    isLive: true
+    city: 'İstanbul',
+    votes: 2700
   },
   
   // ✅ API'den test edilmiş ÇALIŞAN radyolar (24 Haziran 2025)
@@ -1162,13 +1023,13 @@ export const RADIO_STATIONS: RadioStation[] = [
   {
     id: 'power-pop-api-2',
     name: '⚡ Power POP (API)',
-    url: 'https://listen.powerapp.com.tr/powerpop/128/chunks/stream',
-    streamUrl: 'https://listen.powerapp.com.tr/powerpop/mpeg/icecast.audio',
+    url: 'https://listen.powerapp.com.tr/powerpop/128/chunks.m3u8',
+    streamUrl: 'https://listen.powerapp.com.tr/powerpop/128/chunks.m3u8',
     category: 'pop',
     description: 'Pop Müzik - Power Group (HLS)',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     votes: 8901,
     isGuaranteed: true,
@@ -1193,7 +1054,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     id: 'kral-turk-fm-2',
     name: '👑 Kral Türk FM',
     url: 'https://live.radyositesihazir.com/8032/stream',
-    streamUrl: 'https://dygedge.radyotvonline.com/kralturk/kralturk.smil/stream',
+    streamUrl: 'https://live.radyositesihazir.com/8032/stream',
     category: 'folk',
     description: 'Türk Pop ve Halk Müziği',
     country: 'Turkey',
@@ -1207,13 +1068,13 @@ export const RADIO_STATIONS: RadioStation[] = [
   {
     id: 'a-haber-radio',
     name: '📰 A Haber Radyo',
-    url: 'https://trkvz-radyolar.ercdn.net/ahaberradyo/stream',
-    streamUrl: 'https://trkvz-radyo.radyotvonline.net/stream',
+    url: 'https://trkvz-radyolar.ercdn.net/ahaberradyo/playlist.m3u8',
+    streamUrl: 'https://trkvz-radyolar.ercdn.net/ahaberradyo/playlist.m3u8',
     category: 'news',
     description: 'Güncel Haberler ve Politika',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     votes: 8765,
     isGuaranteed: true,
@@ -1258,7 +1119,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     description: 'Pop ve Hit Müzikler',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     votes: 15678,
     isGuaranteed: true,
@@ -1288,7 +1149,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     description: 'Türkçe Pop ve Rock',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     votes: 18945,
     isGuaranteed: true,
@@ -1312,13 +1173,13 @@ export const RADIO_STATIONS: RadioStation[] = [
   {
     id: 'diyanet-radyo',
     name: '🕌 Diyanet Radyo',
-    url: 'https://eustr73.mediatriple.net/videoonlylive/mtikoimxnztxlive/broadcast_5ee3c1171d7d2a.smil/stream',
-    streamUrl: 'https://eustr73.mediatriple.net/videoonlylive/mtikoimxnztxlive/broadcast_5ee3c1171d7d2a.smil/stream',
+    url: 'https://eustr73.mediatriple.net/videoonlylive/mtikoimxnztxlive/broadcast_5ee3c1171d7d2a.smil/playlist.m3u8',
+    streamUrl: 'https://eustr73.mediatriple.net/videoonlylive/mtikoimxnztxlive/broadcast_5ee3c1171d7d2a.smil/playlist.m3u8',
     category: 'news',
     description: 'Dini Yayınlar ve Hutbeler',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     votes: 6789,
     isGuaranteed: true,
@@ -1343,12 +1204,12 @@ export const RADIO_STATIONS: RadioStation[] = [
     id: 'alem-fm-2',
     name: '🌍 Alem FM',
     url: 'https://turkmedya.radyotvonline.net/alemfmaac',
-    streamUrl: 'https://ssl5.radyotvonline.com/alemfm/alemfm.stream/stream',
+    streamUrl: 'https://turkmedya.radyotvonline.net/alemfmaac',
     category: 'hits',
     description: 'Karma Müzik Yayını',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     votes: 4321,
     isGuaranteed: true,
@@ -1363,7 +1224,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     description: 'Pop Müzik ve Hit Listesi',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     votes: 7890,
     isGuaranteed: true,
@@ -1388,12 +1249,12 @@ export const RADIO_STATIONS: RadioStation[] = [
     id: 'metro-fm-turkey',
     name: '🚇 Metro FM',
     url: 'https://28513.live.streamtheworld.com:443/METRO_FM_SC',
-    streamUrl: 'https://17723.live.streamtheworld.com:443/METRO_FM_SC',
+    streamUrl: 'https://28513.live.streamtheworld.com:443/METRO_FM_SC',
     category: 'pop',
     description: 'Pop ve Hit Müzikler',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     votes: 21345,
     isGuaranteed: true,
@@ -1417,13 +1278,13 @@ export const RADIO_STATIONS: RadioStation[] = [
   {
     id: 'trt-nagme',
     name: '🎼 TRT Nağme',
-    url: 'https://tv-trtmuzik.medya.trt.com.tr/stream',
-    streamUrl: 'https://radyotvonline.net/embed2/trtnagme.php',
+    url: 'https://tv-trtmuzik.medya.trt.com.tr/master_720.m3u8',
+    streamUrl: 'https://tv-trtmuzik.medya.trt.com.tr/master_720.m3u8',
     category: 'classical',
     description: 'Türk Sanat Müziği - TRT',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     votes: 12890,
     isGuaranteed: true,
@@ -1612,12 +1473,12 @@ export const RADIO_STATIONS: RadioStation[] = [
   {
     id: 'radyo-alaturka-api',
     name: '🎵 Radyo Alaturka',
-    url: 'https://ssl3.radyotvonline.com/radyoalaturka/radyoalaturka.stream/stream',
+    url: 'https://ssl3.radyotvonline.com/radyoalaturka/playlist.m3u8',
     category: 'folk',
     description: 'Radyo Alaturka - Türk Sanat Müziği',
     country: 'Turkey',
     language: 'Turkish',
-    codec: 'MP3',
+    codec: 'AAC',
     bitrate: 128,
     votes: 2156,
     isGuaranteed: true,
@@ -1628,7 +1489,7 @@ export const RADIO_STATIONS: RadioStation[] = [
   {
     id: 'radyo-eksen-api',
     name: '🎵 Radyo Eksen',
-    url: 'https://moondigitaledge.radyotvonline.net/radyoeksen/radyoeksen.smil/stream',
+    url: 'https://yayin.radyoeksen.com/radyoeksen',
     category: 'rock',
     description: 'Radyo Eksen - Rock ve Alternatif',
     country: 'Turkey',

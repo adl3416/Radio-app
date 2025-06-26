@@ -56,7 +56,7 @@ class RadioBrowserService {
   private cache: Map<string, ProcessedRadioStation[]> = new Map();
   private cacheTimeout = 30 * 60 * 1000; // 30 minutes
   /**
-   * Get Turkish radio stations
+   * Get Turkish radio stations (up to 1500 - Maximum)
    */
   async getTurkishStations(): Promise<ProcessedRadioStation[]> {
     const cacheKey = 'turkish-stations';
@@ -69,7 +69,7 @@ class RadioBrowserService {
 
     try {
       const response = await fetch(
-        `${this.baseUrl}/json/stations/bycountry/turkey?limit=500&order=votes&reverse=true`
+        `${this.baseUrl}/json/stations/bycountry/turkey?limit=1500&order=votes&reverse=true`
       );
       
       if (!response.ok) {
@@ -79,9 +79,9 @@ class RadioBrowserService {
       const stations: RadioBrowserStation[] = await response.json();
       const processed = this.processStations(stations);
       
-      // Cache the results
+      // Cache the results for longer
       this.cache.set(cacheKey, processed);
-      setTimeout(() => this.cache.delete(cacheKey), this.cacheTimeout);
+      setTimeout(() => this.cache.delete(cacheKey), this.cacheTimeout * 2); // 1 hour cache
       
       console.log(`Fetched ${processed.length} Turkish stations from Radio Browser API`);
       return processed;
@@ -149,41 +149,34 @@ class RadioBrowserService {
       console.error('Failed to search stations:', error);
       throw new Error('Radyo arama başarısız');
     }
-  }
-  /**
-   * Get stations by tag/genre
+  }  /**
+   * Get stations by tag
    */
-  async getStationsByTag(tag: string): Promise<ProcessedRadioStation[]> {
-    const cacheKey = `tag-${tag}`;
-    const cached = this.cache.get(cacheKey);
-    
-    if (cached) {
-      return cached;
-    }
-
+  private async getStationsByTag(tag: string): Promise<ProcessedRadioStation[]> {
     try {
-      const response = await fetch(
-        `${this.baseUrl}/json/stations/bytag/${encodeURIComponent(tag)}?limit=200&order=votes&reverse=true`
-      );
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const stations: RadioBrowserStation[] = await response.json();
-      const processed = this.processStations(stations);
-      
-      // Cache the results
-      this.cache.set(cacheKey, processed);
-      setTimeout(() => this.cache.delete(cacheKey), this.cacheTimeout);
-      
-      return processed;
-      
+      const response = await fetch(`${this.baseUrl}/stations/bytag/${encodeURIComponent(tag)}?limit=100&hidebroken=true`);
+      const data = await response.json();
+      return this.processStations(data);
     } catch (error) {
-      console.error(`Failed to fetch stations by tag ${tag}:`, error);
-      throw new Error(`${tag} radyoları yüklenemedi`);
+      console.warn(`Failed to fetch stations by tag ${tag}:`, error);
+      return [];
     }
   }
+
+  /**
+   * Search stations by name (internal helper)
+   */
+  private async searchStationsByKeyword(name: string): Promise<ProcessedRadioStation[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/stations/search?name=${encodeURIComponent(name)}&limit=100&hidebroken=true`);
+      const data = await response.json();
+      return this.processStations(data);
+    } catch (error) {
+      console.warn(`Failed to search stations by name ${name}:`, error);
+      return [];
+    }
+  }
+
   /**
    * Get popular Turkish stations by genre
    */
@@ -385,6 +378,215 @@ class RadioBrowserService {
   clearCache(): void {
     this.cache.clear();
   }
+
+  /**
+   * Get Turkish religious (dini) stations
+   */
+  async getReligiousStations(): Promise<ProcessedRadioStation[]> {
+    const cacheKey = 'religious-stations';
+    const cached = this.cache.get(cacheKey);
+    
+    if (cached) {
+      console.log('Using cached religious stations');
+      return cached;
+    }
+
+    try {
+      // Search for religious stations using multiple approaches
+      const [tagResults, nameResults] = await Promise.all([
+        this.searchStationsByTags(['religion', 'religious', 'islam', 'islamic', 'dini', 'ilahi']),
+        this.searchStationsByName(['dini', 'ilahi', 'islam', 'kuran', 'din'])
+      ]);
+
+      // Combine and deduplicate results
+      const combined = [...tagResults, ...nameResults];
+      const uniqueStations = this.deduplicateStations(combined);
+      
+      // Filter for Turkish stations
+      const turkishReligious = uniqueStations.filter(station => 
+        station.country?.toLowerCase() === 'turkey' || 
+        station.language?.toLowerCase().includes('turkish') ||
+        station.name.toLowerCase().includes('türk')
+      );
+
+      // Cache the results
+      this.cache.set(cacheKey, turkishReligious);
+      setTimeout(() => this.cache.delete(cacheKey), this.cacheTimeout);
+      
+      console.log(`Fetched ${turkishReligious.length} Turkish religious stations`);
+      return turkishReligious;
+      
+    } catch (error) {
+      console.error('Failed to fetch religious stations:', error);
+      throw new Error('Dini radyo istasyonları yüklenemedi');
+    }
+  }
+
+  /**
+   * Get Turkish news (haber) stations
+   */
+  async getNewsStations(): Promise<ProcessedRadioStation[]> {
+    const cacheKey = 'news-stations';
+    const cached = this.cache.get(cacheKey);
+    
+    if (cached) {
+      console.log('Using cached news stations');
+      return cached;
+    }
+
+    try {
+      // Search for news stations using multiple approaches
+      const [tagResults, nameResults] = await Promise.all([
+        this.searchStationsByTags(['news', 'haber', 'haberler', 'gündem', 'politik']),
+        this.searchStationsByName(['haber', 'news', 'gündem', 'haberler', 'ajans'])
+      ]);
+
+      // Combine and deduplicate results
+      const combined = [...tagResults, ...nameResults];
+      const uniqueStations = this.deduplicateStations(combined);
+      
+      // Filter for Turkish stations
+      const turkishNews = uniqueStations.filter(station => 
+        station.country?.toLowerCase() === 'turkey' || 
+        station.language?.toLowerCase().includes('turkish') ||
+        station.name.toLowerCase().includes('türk')
+      );
+
+      // Cache the results
+      this.cache.set(cacheKey, turkishNews);
+      setTimeout(() => this.cache.delete(cacheKey), this.cacheTimeout);
+      
+      console.log(`Fetched ${turkishNews.length} Turkish news stations`);
+      return turkishNews;
+      
+    } catch (error) {
+      console.error('Failed to fetch news stations:', error);
+      throw new Error('Haber radyo istasyonları yüklenemedi');
+    }
+  }
+
+  /**
+   * Get Turkish sports (spor) stations
+   */
+  async getSportsStations(): Promise<ProcessedRadioStation[]> {
+    const cacheKey = 'sports-stations';
+    const cached = this.cache.get(cacheKey);
+    
+    if (cached) {
+      console.log('Using cached sports stations');
+      return cached;
+    }
+
+    try {
+      // Search for sports stations using multiple approaches
+      const [tagResults, nameResults] = await Promise.all([
+        this.searchStationsByTags(['sport', 'sports', 'spor', 'futbol', 'football', 'basketbol']),
+        this.searchStationsByName(['spor', 'sport', 'futbol', 'basketbol', 'maç'])
+      ]);
+
+      // Combine and deduplicate results
+      const combined = [...tagResults, ...nameResults];
+      const uniqueStations = this.deduplicateStations(combined);
+      
+      // Filter for Turkish stations
+      const turkishSports = uniqueStations.filter(station => 
+        station.country?.toLowerCase() === 'turkey' || 
+        station.language?.toLowerCase().includes('turkish') ||
+        station.name.toLowerCase().includes('türk')
+      );
+
+      // Cache the results
+      this.cache.set(cacheKey, turkishSports);
+      setTimeout(() => this.cache.delete(cacheKey), this.cacheTimeout);
+      
+      console.log(`Fetched ${turkishSports.length} Turkish sports stations`);
+      return turkishSports;
+      
+    } catch (error) {
+      console.error('Failed to fetch sports stations:', error);
+      throw new Error('Spor radyo istasyonları yüklenemedi');
+    }
+  }
+
+  /**
+   * Get categorized Turkish stations (dini, haber, spor)
+   */
+  async getCategorizedStations(): Promise<{
+    religious: ProcessedRadioStation[];
+    news: ProcessedRadioStation[];
+    sports: ProcessedRadioStation[];
+    total: number;
+  }> {
+    try {
+      const [religious, news, sports] = await Promise.all([
+        this.getReligiousStations(),
+        this.getNewsStations(),
+        this.getSportsStations()
+      ]);
+
+      return {
+        religious,
+        news,
+        sports,
+        total: religious.length + news.length + sports.length
+      };
+      
+    } catch (error) {
+      console.error('Failed to fetch categorized stations:', error);
+      throw new Error('Kategorili radyo istasyonları yüklenemedi');
+    }
+  }
+
+  /**
+   * Helper function to search stations by tags
+   */
+  private async searchStationsByTags(tags: string[]): Promise<ProcessedRadioStation[]> {
+    const results: ProcessedRadioStation[] = [];
+    
+    for (const tag of tags) {
+      try {
+        const stations = await this.getStationsByTag(tag);
+        results.push(...stations);
+      } catch (error) {
+        console.warn(`Failed to fetch stations for tag: ${tag}`, error);
+      }
+    }
+    
+    return results;
+  }
+  /**
+   * Helper function to search stations by name keywords
+   */
+  private async searchStationsByName(keywords: string[]): Promise<ProcessedRadioStation[]> {
+    const results: ProcessedRadioStation[] = [];
+    
+    for (const keyword of keywords) {
+      try {
+        const stations = await this.searchStationsByKeyword(keyword);
+        results.push(...stations);
+      } catch (error) {
+        console.warn(`Failed to search stations for keyword: ${keyword}`, error);
+      }
+    }
+    
+    return results;
+  }
+
+  /**
+   * Helper function to deduplicate stations by UUID
+   */
+  private deduplicateStations(stations: ProcessedRadioStation[]): ProcessedRadioStation[] {
+    const seen = new Set<string>();
+    return stations.filter(station => {
+      if (seen.has(station.id)) {
+        return false;
+      }
+      seen.add(station.id);
+      return true;
+    });
+  }
+
 }
 
 export const radioBrowserService = new RadioBrowserService();
+export default RadioBrowserService;
