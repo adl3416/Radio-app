@@ -18,15 +18,19 @@ interface MiniPlayerProps {
   isVisible: boolean;
   onExpand: () => void;
   onClose: () => void;
+  onNext?: () => Promise<void>;
+  onPrevious?: () => Promise<void>;
 }
 
 interface FullPlayerProps {
   isVisible: boolean;
   onCollapse: () => void;
+  onNext?: () => Promise<void>;
+  onPrevious?: () => Promise<void>;
 }
 
 // Mini Footer Player Component
-export const MiniPlayer: React.FC<MiniPlayerProps> = ({ isVisible, onExpand, onClose }) => {
+export const MiniPlayer: React.FC<MiniPlayerProps> = ({ isVisible, onExpand, onClose, onNext, onPrevious }) => {
   const [playbackState, setPlaybackState] = useState<PlaybackState>(audioService.getState());
 
   useEffect(() => {
@@ -43,6 +47,12 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ isVisible, onExpand, onC
       }
     } catch (error) {
       // Sessiz hata yönetimi
+    }
+  };
+
+  const handleNext = async () => {
+    if (onNext) {
+      await onNext();
     }
   };
 
@@ -76,18 +86,26 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ isVisible, onExpand, onC
             </Text>
           </View>
 
-          {/* Orta - Loading/Play durumu */}
+          {/* Orta - Kontroller */}
           <View style={styles.miniPlayerControls}>
             {playbackState.isLoading ? (
               <ActivityIndicator size="small" color="white" />
             ) : (
-              <TouchableOpacity onPress={handlePlayPause} style={styles.miniPlayButton}>
-                <Ionicons 
-                  name={playbackState.isPlaying ? "pause" : "play"} 
-                  size={20} 
-                  color="white" 
-                />
-              </TouchableOpacity>
+              <View style={styles.miniControlsRow}>
+                <TouchableOpacity onPress={handlePlayPause} style={styles.miniPlayButton}>
+                  <Ionicons 
+                    name={playbackState.isPlaying ? "pause" : "play"} 
+                    size={18} 
+                    color="white" 
+                  />
+                </TouchableOpacity>
+                
+                {onNext && (
+                  <TouchableOpacity onPress={handleNext} style={styles.miniNextButton}>
+                    <Ionicons name="play-skip-forward" size={16} color="white" />
+                  </TouchableOpacity>
+                )}
+              </View>
             )}
           </View>
 
@@ -102,7 +120,7 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ isVisible, onExpand, onC
 };
 
 // Full Screen Player Component
-export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse }) => {
+export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, onNext, onPrevious }) => {
   const [playbackState, setPlaybackState] = useState<PlaybackState>(audioService.getState());
 
   useEffect(() => {
@@ -128,6 +146,18 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse })
       onCollapse();
     } catch (error) {
       // Sessiz hata yönetimi
+    }
+  };
+
+  const handleNext = async () => {
+    if (onNext) {
+      await onNext();
+    }
+  };
+
+  const handlePrevious = async () => {
+    if (onPrevious) {
+      await onPrevious();
     }
   };
 
@@ -189,7 +219,7 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse })
             {/* Player Controls */}
             <View style={styles.fullPlayerControls}>
               <View style={styles.mainControls}>
-                <TouchableOpacity style={styles.controlButton}>
+                <TouchableOpacity style={styles.controlButton} onPress={handlePrevious}>
                   <Ionicons name="play-skip-back" size={30} color="white" />
                 </TouchableOpacity>
 
@@ -209,7 +239,7 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse })
                   )}
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.controlButton}>
+                <TouchableOpacity style={styles.controlButton} onPress={handleNext}>
                   <Ionicons name="play-skip-forward" size={30} color="white" />
                 </TouchableOpacity>
               </View>
@@ -280,11 +310,24 @@ const styles = StyleSheet.create({
   miniPlayerControls: {
     marginRight: 12,
   },
+  miniControlsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   miniPlayButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  miniNextButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     justifyContent: 'center',
     alignItems: 'center',
   },

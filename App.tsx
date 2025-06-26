@@ -119,6 +119,31 @@ export default function App() {
   // Toplam radyo listesi (statik + API)
   const allStations = showApiStations ? [...TURKISH_RADIOS, ...apiStations] : TURKISH_RADIOS;
 
+  // Next/Previous radyo fonksiyonları
+  const playNextRadio = async () => {
+    if (!currentStation || allStations.length === 0) return;
+    
+    const currentIndex = allStations.findIndex(station => station.id === currentStation.id);
+    const nextIndex = (currentIndex + 1) % allStations.length; // Sona gelince başa dön
+    const nextStation = allStations[nextIndex];
+    
+    if (nextStation) {
+      await playRadio(nextStation);
+    }
+  };
+
+  const playPreviousRadio = async () => {
+    if (!currentStation || allStations.length === 0) return;
+    
+    const currentIndex = allStations.findIndex(station => station.id === currentStation.id);
+    const previousIndex = currentIndex === 0 ? allStations.length - 1 : currentIndex - 1; // Başta ise sona git
+    const previousStation = allStations[previousIndex];
+    
+    if (previousStation) {
+      await playRadio(previousStation);
+    }
+  };
+
   const playRadio = async (station: any) => {
     try {
       // Eğer farklı bir radyo çalıyorsa önce durdur
@@ -433,12 +458,16 @@ export default function App() {
         isVisible={isMiniPlayerOpen}
         onExpand={handleExpandPlayer}
         onClose={handleCloseMiniPlayer}
+        onNext={playNextRadio}
+        onPrevious={playPreviousRadio}
       />
 
       {/* Full Player */}
       <FullPlayer
         isVisible={isFullPlayerOpen}
         onCollapse={handleCollapsePlayer}
+        onNext={playNextRadio}
+        onPrevious={playPreviousRadio}
       />
       
       <ExtendedRadioList
