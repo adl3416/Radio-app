@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { audioService, PlaybackState } from '../services/cleanAudioService';
+import { simpleBackgroundAudioService, SimpleAudioState } from '../services/simpleBackgroundAudioService';
 
 const { width, height } = Dimensions.get('window');
 
@@ -35,19 +35,19 @@ interface FullPlayerProps {
 
 // Mini Footer Player Component
 export const MiniPlayer: React.FC<MiniPlayerProps> = ({ isVisible, onExpand, onClose, onNext, onPrevious }) => {
-  const [playbackState, setPlaybackState] = useState<PlaybackState>(audioService.getState());
+  const [playbackState, setPlaybackState] = useState<SimpleAudioState>(simpleBackgroundAudioService.getState());
 
   useEffect(() => {
-    const unsubscribe = audioService.subscribe(setPlaybackState);
+    const unsubscribe = simpleBackgroundAudioService.subscribe(setPlaybackState);
     return unsubscribe;
   }, []);
 
   const handlePlayPause = async () => {
     try {
       if (playbackState.isPlaying) {
-        await audioService.pause();
+        await simpleBackgroundAudioService.pause();
       } else {
-        await audioService.resume();
+        await simpleBackgroundAudioService.resume();
       }
     } catch (error) {
       // Sessiz hata yönetimi
@@ -125,12 +125,12 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ isVisible, onExpand, onC
 
 // Full Screen Player Component
 export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, onNext, onPrevious, onToggleFavorite, isFavorite }) => {
-  const [playbackState, setPlaybackState] = useState<PlaybackState>(audioService.getState());
+  const [playbackState, setPlaybackState] = useState<SimpleAudioState>(simpleBackgroundAudioService.getState());
   const [translateY] = useState(new Animated.Value(0));
   const [opacity] = useState(new Animated.Value(1));
 
   useEffect(() => {
-    const unsubscribe = audioService.subscribe(setPlaybackState);
+    const unsubscribe = simpleBackgroundAudioService.subscribe(setPlaybackState);
     return unsubscribe;
   }, []);
 
@@ -148,13 +148,11 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, o
       return isDraggingDown || isSignificantMove;
     },
     onPanResponderGrant: () => {
-      // Gesture başladığında
-      console.log('Gesture başladı');
+      // Gesture başladığında - sessiz
     },
     onPanResponderMove: (evt, gestureState) => {
       // Sürükleme sırasında
       const { dy } = gestureState;
-      console.log('Gesture move, dy:', dy);
       
       // Sadece aşağı doğru hareket için animasyon
       if (dy >= 0) {
@@ -167,12 +165,10 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, o
     onPanResponderRelease: (evt, gestureState) => {
       // Gesture bittiğinde
       const { dy, vy } = gestureState;
-      console.log('Gesture bitti, dy:', dy, 'vy:', vy);
       
       const shouldClose = dy > height * 0.15 || vy > 0.3; // Threshold'ları düşürdük
       
       if (shouldClose) {
-        console.log('Player kapatılıyor');
         // Kapatma animasyonu
         Animated.parallel([
           Animated.timing(translateY, {
@@ -192,7 +188,6 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, o
           onCollapse();
         });
       } else {
-        console.log('Player geri dönüyor');
         // Geri dönme animasyonu
         Animated.parallel([
           Animated.spring(translateY, {
@@ -217,9 +212,9 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, o
   const handlePlayPause = async () => {
     try {
       if (playbackState.isPlaying) {
-        await audioService.pause();
+        await simpleBackgroundAudioService.pause();
       } else {
-        await audioService.resume();
+        await simpleBackgroundAudioService.resume();
       }
     } catch (error) {
       // Sessiz hata yönetimi
@@ -228,7 +223,7 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, o
 
   const handleStop = async () => {
     try {
-      await audioService.stop();
+      await simpleBackgroundAudioService.stop();
       onCollapse();
     } catch (error) {
       // Sessiz hata yönetimi

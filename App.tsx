@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Alert } from 'react-native';
-import { audioService } from './src/services/cleanAudioService';
+import { Alert, AppState } from 'react-native';
+import { simpleBackgroundAudioService } from './src/services/simpleBackgroundAudioService';
 import { radioBrowserService } from './src/services/radioBrowserService';
 import { favoritesService } from './src/services/favoritesService';
 import { MiniPlayer, FullPlayer } from './src/components/NewPlayer';
@@ -37,7 +37,7 @@ export default function App() {
   const [isExtendedListOpen, setIsExtendedListOpen] = useState(false);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [currentStation, setCurrentStation] = useState<any>(null);
-  const [audioState, setAudioState] = useState(audioService.getState());
+  const [audioState, setAudioState] = useState(simpleBackgroundAudioService.getState());
   const [favorites, setFavorites] = useState<any[]>([]);
   const [apiStations, setApiStations] = useState<any[]>([]);
   const [loadingApiStations, setLoadingApiStations] = useState(false);
@@ -46,20 +46,47 @@ export default function App() {
   const [categorizedError, setCategorizedError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isTogglngFavorite, setIsTogglingFavorite] = useState<string | null>(null);
+
   useEffect(() => {
-    audioService.initialize();
+    simpleBackgroundAudioService.initialize();
     
-    // Audio service state'ini dinle
-    const unsubscribe = audioService.subscribe(setAudioState);
+    // Background Audio service state'ini dinle
+    const unsubscribe = simpleBackgroundAudioService.subscribe(setAudioState);
     
     // Favorileri yükle
     const unsubscribeFavorites = favoritesService.subscribe(setFavorites);
+
+    // App state change listener - Background audio için
+    const handleAppStateChange = (nextAppState: string) => {
+      // Simple service kendi app state change'ini handle eder
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    
+    // Next/Previous callbacks'leri set et
+    simpleBackgroundAudioService.onNextStation = playNextRadio;
+    simpleBackgroundAudioService.onPreviousStation = playPreviousRadio;
     
     return () => {
       unsubscribe();
       unsubscribeFavorites();
+      subscription?.remove();
     };
   }, []);
+
+  // Mini player visibility kontrolü - audio state değiştiğinde
+  useEffect(() => {
+    if (audioState.currentStation && (audioState.isPlaying || audioState.isLoading)) {
+      // Radyo çalıyor veya yükleniyor -> mini player'ı göster
+      if (!isMiniPlayerOpen && !isFullPlayerOpen) {
+        setIsMiniPlayerOpen(true);
+      }
+    } else if (!audioState.currentStation) {
+      // Hiç radyo yok -> mini player'ı gizle
+      setIsMiniPlayerOpen(false);
+    }
+  }, [audioState.currentStation, audioState.isPlaying, audioState.isLoading, isFullPlayerOpen]);
   // API'den radyo yükleme fonksiyonu
   const loadApiStations = async () => {
     if (loadingApiStations || apiStations.length > 0) return;
@@ -158,12 +185,12 @@ export default function App() {
     try {
       // Eğer farklı bir radyo çalıyorsa önce durdur
       if (audioState.isPlaying && audioState.currentStation?.id !== station.id) {
-        await audioService.stop();
+        await simpleBackgroundAudioService.stop();
       }
       
       setCurrentStation(station);
-      await audioService.playStation(station);
-      setIsMiniPlayerOpen(true); // Mini player'ı aç
+      await simpleBackgroundAudioService.play(station);
+      // Mini player açma logic'ini useEffect'e bıraktık
     } catch (error) {
       // Hiçbir konsol çıktısı yok, tamamen sessiz
     }
@@ -174,19 +201,19 @@ export default function App() {
       if (audioState.currentStation?.id === station.id) {
         if (audioState.isPlaying) {
           // Aynı radyo çalıyor, durdur
-          await audioService.pause();
+          await simpleBackgroundAudioService.pause();
         } else {
           // Aynı radyo duruyor, devam ettir
-          await audioService.resume();
+          await simpleBackgroundAudioService.resume();
         }
       } else {
         // Farklı radyo - önce mevcut radyoyu durdur, sonra yeni radyoyu çal
         if (audioState.isPlaying) {
-          await audioService.stop();
+          await simpleBackgroundAudioService.stop();
         }
         setCurrentStation(station);
-        await audioService.playStation(station);
-        setIsMiniPlayerOpen(true); // Mini player'ı aç
+        await simpleBackgroundAudioService.play(station);
+        // Mini player açma logic'ini useEffect'e bıraktık
       }
     } catch (error) {
       // Hiçbir konsol çıktısı yok, tamamen sessiz
@@ -203,24 +230,20 @@ export default function App() {
   };
 
   const handleCloseMiniPlayer = () => {
-    audioService.stop();
+    simpleBackgroundAudioService.stop();
     setIsMiniPlayerOpen(false);
     setCurrentStation(null);
+    // useEffect mini player'ı otomatik olarak gizleyecek
   };
-
-  const [isTogglngFavorite, setIsTogglingFavorite] = useState<string | null>(null);
 
   const toggleFavorite = async (station: any) => {
     if (isTogglngFavorite === station.id) {
-      console.log('Toggle favorite already in progress for:', station.name);
       return;
     }
 
     try {
       setIsTogglingFavorite(station.id);
-      console.log('Toggle favorite başladı:', station.name);
-      const result = await favoritesService.toggleFavorite(station);
-      console.log('Toggle favorite sonuç:', result ? 'Eklendi' : 'Kaldırıldı');
+      await favoritesService.toggleFavorite(station);
     } catch (error) {
       console.error('Favori toggle hatası:', error);
     } finally {
