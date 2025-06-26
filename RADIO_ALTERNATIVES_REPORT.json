@@ -1,0 +1,102 @@
+{
+  "timestamp": "2025-06-26T14:25:57.041Z",
+  "searchResults": {
+    "TRT FM": [
+      {
+        "changeuuid": "18a9174e-0393-45ba-91bc-0370fb301cde",
+        "stationuuid": "0a2c3506-a136-40f2-b008-38daf2b12fd6",
+        "serveruuid": "9bafa2ce-515b-40c8-8656-c4a2e0a93650",
+        "name": "TRT FM",
+        "url": "https://trt.radyotvonline.net/trtfm",
+        "url_resolved": "https://trt.radyotvonline.net/trtfm",
+        "homepage": "https://radyo.trt.net.tr/",
+        "favicon": "https://trt-public-static.trt.com.tr/eradyo/public/dm_upload/modul2/dd24ba9f-7f22-4b79-a226-9704169bd953.png",
+        "tags": "",
+        "country": "Türkiye",
+        "countrycode": "TR",
+        "iso_3166_2": "",
+        "state": "",
+        "language": "",
+        "languagecodes": "",
+        "votes": 336,
+        "lastchangetime": "2025-06-12 17:54:17",
+        "lastchangetime_iso8601": "2025-06-12T17:54:17Z",
+        "codec": "AAC+",
+        "bitrate": 134,
+        "hls": 0,
+        "lastcheckok": 1,
+        "lastchecktime": "2025-06-26 12:43:47",
+        "lastchecktime_iso8601": "2025-06-26T12:43:47Z",
+        "lastcheckoktime": "2025-06-26 12:43:47",
+        "lastcheckoktime_iso8601": "2025-06-26T12:43:47Z",
+        "lastlocalchecktime": "2025-06-26 03:51:40",
+        "lastlocalchecktime_iso8601": "2025-06-26T03:51:40Z",
+        "clicktimestamp": "2025-06-26 13:55:19",
+        "clicktimestamp_iso8601": "2025-06-26T13:55:19Z",
+        "clickcount": 171,
+        "clicktrend": 5,
+        "ssl_error": 0,
+        "geo_lat": null,
+        "geo_long": null,
+        "geo_distance": null,
+        "has_extended_info": false,
+        "testResult": {
+          "working": true,
+          "statusCode": 200,
+          "contentType": "audio/aacp",
+          "icyName": "TRT FM"
+        }
+      }
+    ],
+    "TRT 3": [
+      {
+        "changeuuid": "9eceb956-f772-433f-a68e-dd1383b2758d",
+        "stationuuid": "203048eb-cb0c-4f34-b5e8-088ebac3adb1",
+        "serveruuid": "95fc75cc-b1ec-46ee-9701-19f1805a5d83",
+        "name": "TRT3",
+        "url": "http://rd-trtradyo3.medya.trt.com.tr/master.m3u8",
+        "url_resolved": "http://rd-trtradyo3.medya.trt.com.tr/master.m3u8",
+        "homepage": "https://www.trt.net.tr/",
+        "favicon": "https://cdn-i.pr.trt.com.tr/trtdinle//w360/q70/12467462.jpeg",
+        "tags": "classical,culture,independent,jazz,oldies,opera,pop,turkish music",
+        "country": "Türkiye",
+        "countrycode": "TR",
+        "iso_3166_2": "",
+        "state": "",
+        "language": "turkish",
+        "languagecodes": "tr",
+        "votes": 367,
+        "lastchangetime": "2025-06-13 09:33:26",
+        "lastchangetime_iso8601": "2025-06-13T09:33:26Z",
+        "codec": "AAC",
+        "bitrate": 140,
+        "hls": 1,
+        "lastcheckok": 1,
+        "lastchecktime": "2025-06-26 13:49:33",
+        "lastchecktime_iso8601": "2025-06-26T13:49:33Z",
+        "lastcheckoktime": "2025-06-26 13:49:33",
+        "lastcheckoktime_iso8601": "2025-06-26T13:49:33Z",
+        "lastlocalchecktime": "2025-06-25 20:18:31",
+        "lastlocalchecktime_iso8601": "2025-06-25T20:18:31Z",
+        "clicktimestamp": "2025-06-26 14:08:52",
+        "clicktimestamp_iso8601": "2025-06-26T14:08:52Z",
+        "clickcount": 89,
+        "clicktrend": 1,
+        "ssl_error": 0,
+        "geo_lat": null,
+        "geo_long": null,
+        "geo_distance": null,
+        "has_extended_info": false,
+        "testResult": {
+          "statusCode": 200,
+          "contentType": "application/x-mpegURL"
+        }
+      }
+    ]
+  },
+  "summary": {
+    "stationsSearched": 2,
+    "totalAlternatives": 2,
+    "workingAlternatives": 1
+  }
+}

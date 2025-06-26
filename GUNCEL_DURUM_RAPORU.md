@@ -1,7 +1,21 @@
 # 🎧 TÜRK RADYO UYGULAMASI - GÜNCEL DURUM RAPORU
 
-**Tarih:** 25 Haziran 2025  
-**Son Güncelleme:** Format problemleri tamamen çözüldü, tüm radyolar MP3/HTTP uyumlu
+**Tarih:** 26 Haziran ### Butonlar:
+- 🔍 Arama Çubuğu (Anlık filtreleme - YENİ!)
+- 🔄 Yenile (Refresh butonu - YENİ!)
+- 🚀 +500 Radyo (API'den ek istasyonlar)
+- 🎯 Dini/Haber/Spor (Kategori filtreleri)
+- 🌍 Tümünü Gör (Genişletilmiş liste)
+
+### Arama Özellikleri:
+- ✅ İstasyon adında arama
+- ✅ Açıklamada arama  
+- ✅ Emoji ile arama (⚡, 📻, 🎵)
+- ✅ Çoklu kelime desteği
+- ✅ Büyük/küçük harf duyarsız
+- ✅ Gerçek zamanlı sonuçlar
+- ✅ Modern gradient arka plan 
+**Son Güncelleme:** Arama özelliği eklendi, modern gradient tasarım uygulandı
 
 ## 📊 MEVCUT DURUM
 
@@ -55,6 +69,7 @@
 ## 📱 UYGULAMA ÖZELLİKLERİ
 
 - **101 Radyo İstasyonu** (garantili çalışan)
+- **🔍 Arama Özelliği** (anlık arama - YENİ!)
 - **Favoriler Sistemi** (⭐ işaretleme)
 - **Canlı Oynatma Kontrolü** (play/pause/stop)
 - **API Entegrasyonu** (+500 ek radyo)
@@ -72,7 +87,8 @@ Modern Radyo Uygulaması
 ```
 
 ### Butonlar:
-- 🚀 +500 Radyo (API'den ek istasyonlar)
+- � Yenile (Refresh butonu - YENİ!)
+- �🚀 +500 Radyo (API'den ek istasyonlar)
 - 🎯 Dini/Haber/Spor (Kategori filtreleri)
 - 🌍 Tümünü Gör (Genişletilmiş liste)
 

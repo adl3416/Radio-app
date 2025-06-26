@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Alert } from 'react-native';
 import { audioService } from './src/services/cleanAudioService';
 import { radioBrowserService } from './src/services/radioBrowserService';
-import { SimplePlayer } from './src/components/SimplePlayer';
+import { MiniPlayer, FullPlayer } from './src/components/NewPlayer';
 import { ExtendedRadioList } from './src/screens/ExtendedRadioList';
 import { RADIO_STATIONS } from './src/constants/radioStations';
 
@@ -15,6 +15,7 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
+  TextInput,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -29,7 +30,8 @@ const TURKISH_RADIOS = RADIO_STATIONS.map(station => ({
 }));
 
 export default function App() {
-  const [isPlayerOpen, setIsPlayerOpen] = useState(false);
+  const [isMiniPlayerOpen, setIsMiniPlayerOpen] = useState(false);
+  const [isFullPlayerOpen, setIsFullPlayerOpen] = useState(false);
   const [isExtendedListOpen, setIsExtendedListOpen] = useState(false);
   const [currentStation, setCurrentStation] = useState<any>(null);
   const [audioState, setAudioState] = useState(audioService.getState());
@@ -39,6 +41,8 @@ export default function App() {
   const [showApiStations, setShowApiStations] = useState(false);
   const [categorizedLoading, setCategorizedLoading] = useState(false);
   const [categorizedError, setCategorizedError] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   useEffect(() => {
     audioService.initialize();
     
@@ -84,13 +88,39 @@ export default function App() {
     }
   };
 
+  // Refresh fonksiyonu - hem FlatList hem de API istasyonlarını yeniler
+  const handleRefresh = async () => {
+    if (isRefreshing) return;
+    
+    setIsRefreshing(true);
+    try {
+      // Arama sorgusunu temizle
+      setSearchQuery('');
+      
+      // Eğer API istasyonları görünürse onları yenile
+      if (showApiStations) {
+        setApiStations([]);
+        setShowApiStations(false);
+        // API istasyonlarını yeniden yükle
+        const stations = await radioBrowserService.getTurkishStations();
+        setApiStations(stations.slice(0, 500));
+        setShowApiStations(true);
+      }
+      
+      // Favorileri koru, sadece listeyi yenile
+      setCategorizedError(null);
+    } catch (error) {
+      Alert.alert('Hata', 'Radyo listesi yenilenemedi');
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   // Toplam radyo listesi (statik + API)
   const allStations = showApiStations ? [...TURKISH_RADIOS, ...apiStations] : TURKISH_RADIOS;
 
   const playRadio = async (station: any) => {
     try {
-      // Hiç log yazmayalım
-      
       // Eğer farklı bir radyo çalıyorsa önce durdur
       if (audioState.isPlaying && audioState.currentStation?.id !== station.id) {
         await audioService.stop();
@@ -98,7 +128,7 @@ export default function App() {
       
       setCurrentStation(station);
       await audioService.playStation(station);
-      setIsPlayerOpen(true);
+      setIsMiniPlayerOpen(true); // Mini player'ı aç
     } catch (error) {
       // Hiçbir konsol çıktısı yok, tamamen sessiz
     }
@@ -121,11 +151,26 @@ export default function App() {
         }
         setCurrentStation(station);
         await audioService.playStation(station);
-        setIsPlayerOpen(true);
+        setIsMiniPlayerOpen(true); // Mini player'ı aç
       }
     } catch (error) {
       // Hiçbir konsol çıktısı yok, tamamen sessiz
     }
+  };
+
+  // Player handler functions
+  const handleExpandPlayer = () => {
+    setIsFullPlayerOpen(true);
+  };
+
+  const handleCollapsePlayer = () => {
+    setIsFullPlayerOpen(false);
+  };
+
+  const handleCloseMiniPlayer = () => {
+    audioService.stop();
+    setIsMiniPlayerOpen(false);
+    setCurrentStation(null);
   };
 
   const toggleFavorite = (stationId: string) => {
@@ -137,8 +182,47 @@ export default function App() {
       }
     });
   };
-  // Radyoları favori durumuna göre sırala
-  const sortedRadios = [...allStations].sort((a, b) => {
+  // Radyoları favori durumuna göre sırala ve arama filtresini uygula
+  const filteredRadios = allStations.filter(station => {
+    if (!searchQuery) return true;
+    
+    const query = searchQuery.toLowerCase();
+    const searchableText = [
+      station.name,
+      station.description,
+      station.category,
+      station.city,
+      station.genre
+    ].filter(Boolean).join(' ').toLowerCase();
+    
+    // Türkçe arama terimleri için özel eşleştirmeler
+    const searchMappings = {
+      'haber': ['news', 'gündem', 'aktüel'],
+      'müzik': ['music', 'song', 'şarkı'],
+      'pop': ['pop', 'popular'],
+      'rock': ['rock', 'metal'],
+      'klasik': ['classical', 'classic', 'sanat'],
+      'türk': ['turkish', 'türkiye'],
+      'fm': ['fm', 'radyo'],
+      'spor': ['sport', 'sports', 'futbol']
+    };
+    
+    // Doğrudan eşleştirme
+    if (searchableText.includes(query)) {
+      return true;
+    }
+    
+    // Eşleştirme tablosunu kontrol et
+    for (const [key, synonyms] of Object.entries(searchMappings)) {
+      if (query.includes(key) && synonyms.some(synonym => searchableText.includes(synonym))) {
+        return true;
+      }
+    }
+    
+    return false;
+  });
+
+  const sortedRadios = [...filteredRadios].sort((a, b) => {
     const aIsFavorite = favorites.includes(a.id);
     const bIsFavorite = favorites.includes(b.id);
     
@@ -151,10 +235,18 @@ export default function App() {
     const isLoading = audioState.currentStation?.id === item.id && audioState.isLoading;
     const isFavorite = favorites.includes(item.id);
     
+    // Prevent double-tap by checking if this station is currently loading
+    const isDisabled = isLoading || (audioState.isLoading && audioState.currentStation?.id !== item.id);
+    
     return (
       <TouchableOpacity
-        style={[styles.stationCard, isFavorite && styles.favoriteCard]}
-        onPress={() => playRadio(item)}
+        style={[
+          styles.stationCard, 
+          isFavorite && styles.favoriteCard,
+          isDisabled && styles.disabledCard
+        ]}
+        onPress={() => !isDisabled && playRadio(item)}
+        disabled={isDisabled}
       >
         <View style={styles.stationInfo}>
           <View style={styles.stationHeader}>
@@ -171,6 +263,7 @@ export default function App() {
           <TouchableOpacity
             style={styles.favoriteButton}
             onPress={() => toggleFavorite(item.id)}
+            disabled={isDisabled}
           >
             <Ionicons 
               name={isFavorite ? "heart" : "heart-outline"} 
@@ -181,8 +274,8 @@ export default function App() {
           
           <TouchableOpacity
             style={styles.playButton}
-            onPress={() => togglePlayPause(item)}
-            disabled={isLoading}
+            onPress={() => !isDisabled && togglePlayPause(item)}
+            disabled={isDisabled}
           >
             {isLoading ? (
               <ActivityIndicator size="small" color="#FF6B35" />
@@ -190,7 +283,7 @@ export default function App() {
               <Ionicons 
                 name={isCurrentlyPlaying ? "pause-circle" : "play-circle"} 
                 size={40} 
-                color={isCurrentlyPlaying ? "#10B981" : "#FF6B35"} 
+                color={isDisabled ? "#9CA3AF" : (isCurrentlyPlaying ? "#10B981" : "#FF6B35")} 
               />
             )}
           </TouchableOpacity>
@@ -209,14 +302,73 @@ export default function App() {
         <Text style={styles.title}>🎧 RADYO ÇINARI</Text>
         <Text style={styles.subtitle}>Modern Radyo Uygulaması</Text>
         <Text style={styles.stationCount}>
-          {allStations.length} İstasyon ({TURKISH_RADIOS.length} Statik + {apiStations.length} API) • {favorites.length} Favori
+          {searchQuery 
+            ? `${filteredRadios.length}/${allStations.length} İstasyon` 
+            : `${allStations.length} İstasyon`
+          } ({TURKISH_RADIOS.length} Statik + {apiStations.length} API) • {favorites.length} Favori
         </Text>
+      </LinearGradient>
+
+      {/* Arama Çubuğu */}
+      <LinearGradient
+        colors={['rgba(255, 255, 255, 0.95)', 'rgba(248, 250, 252, 0.9)']}
+        style={styles.searchContainer}
+      >
+        <View style={styles.searchInputContainer}>
+          <Ionicons name="search" size={20} color="#9CA3AF" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="🔍 Radyo ara..."
+            placeholderTextColor="#9CA3AF"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity 
+              onPress={() => setSearchQuery('')}
+              style={styles.clearButton}
+            >
+              <Ionicons name="close-circle" size={20} color="#EF4444" />
+            </TouchableOpacity>
+          )}
+        </View>
+        {searchQuery.length > 0 && (
+          <View style={styles.searchResultContainer}>
+            <Text style={styles.searchResultText}>
+              {filteredRadios.length > 0 
+                ? `📻 ${filteredRadios.length} radyo bulundu`
+                : '❌ Hiç radyo bulunamadı'
+              }
+            </Text>
+            {filteredRadios.length === 0 && (
+              <Text style={styles.searchHelpText}>
+                Farklı terimler deneyin: haber, müzik, pop, trt, power...
+              </Text>
+            )}
+          </View>
+        )}
       </LinearGradient>
 
       <View style={styles.content}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>📻 Radyo İstasyonları</Text>
           <View style={styles.buttonGroup}>
+            <TouchableOpacity 
+              style={[styles.exploreButton, isRefreshing && styles.disabledButton]}
+              onPress={handleRefresh}
+              disabled={isRefreshing}
+            >
+              {isRefreshing ? (
+                <ActivityIndicator size="small" color="#FF6B35" />
+              ) : (
+                <>
+                  <Text style={styles.exploreText}>🔄 Yenile</Text>
+                  <Ionicons name="refresh" size={16} color="#FF6B35" />
+                </>
+              )}
+            </TouchableOpacity>
             {!showApiStations && (
               <TouchableOpacity 
                 style={[styles.exploreButton, loadingApiStations && styles.disabledButton]}
@@ -271,21 +423,22 @@ export default function App() {
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
+          refreshing={isRefreshing}
+          onRefresh={handleRefresh}
         />
-      </View>      {currentStation && (
-        <View style={styles.nowPlaying}>
-          <Text style={styles.nowPlayingText}>
-            {audioState.isLoading 
-              ? `Yükleniyor: ${currentStation.name}` 
-              : audioState.error 
-                ? `Hata: ${audioState.error}`
-                : `Şu an çalıyor: ${currentStation.name}`
-            }
-          </Text>
-        </View>
-      )}<SimplePlayer
-        isVisible={isPlayerOpen}
-        onClose={() => setIsPlayerOpen(false)}
+      </View>
+
+      {/* Mini Player */}
+      <MiniPlayer
+        isVisible={isMiniPlayerOpen}
+        onExpand={handleExpandPlayer}
+        onClose={handleCloseMiniPlayer}
+      />
+
+      {/* Full Player */}
+      <FullPlayer
+        isVisible={isFullPlayerOpen}
+        onCollapse={handleCollapsePlayer}
       />
       
       <ExtendedRadioList
@@ -330,7 +483,73 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 20,
-  },  sectionTitle: {
+    paddingBottom: 90, // Mini player için yer bırak
+  },
+  searchContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(229, 231, 235, 0.3)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  searchInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(248, 250, 252, 0.8)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(229, 231, 235, 0.6)',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    shadowColor: '#FF6B35',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#1F2937',
+    paddingVertical: 6,
+    fontWeight: '500',
+  },
+  clearButton: {
+    marginLeft: 8,
+    padding: 4,
+    borderRadius: 12,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+  },
+  searchResultContainer: {
+    marginTop: 12,
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 107, 53, 0.05)',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 107, 53, 0.2)',
+  },
+  searchResultText: {
+    fontSize: 14,
+    color: '#FF6B35',
+    fontWeight: '700',
+  },
+  searchHelpText: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    marginTop: 4,
+    textAlign: 'center',
+    fontStyle: 'italic',
+  },
+  sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#1F2937',
@@ -423,14 +642,8 @@ const styles = StyleSheet.create({
     borderLeftColor: '#FF6B35',
     backgroundColor: '#FFF7ED',
   },
-  nowPlaying: {
-    backgroundColor: '#FF6B35',
-    padding: 15,
-    alignItems: 'center',
-  },
-  nowPlayingText: {
-    color: 'white',
-    fontWeight: 'bold',
+  disabledCard: {
+    opacity: 0.6,
   },
   errorContainer: {
     backgroundColor: '#FFEBEE',
