@@ -7,7 +7,7 @@ import { favoritesService } from './src/services/favoritesService';
 import { MiniPlayer, FullPlayer } from './src/components/NewPlayer';
 import { ExtendedRadioList } from './src/screens/ExtendedRadioList';
 import { FavoritesPage } from './src/screens/FavoritesPage';
-import { RADIO_STATIONS } from './src/constants/radioStations';
+import { RADIO_STATIONS, RADIO_STATS } from './src/constants/radioStations';
 
 // Basit ana sayfa komponenti
 import {
@@ -418,13 +418,13 @@ export default function App() {
         style={styles.header}
       >
         <Text style={styles.title}>🎧 RADYO ÇINARI</Text>
-        <Text style={styles.subtitle}>Modern Radyo Uygulaması</Text>
+        <Text style={styles.subtitle}>🇹🇷 {RADIO_STATS.totalStations} Popüler Türk Radyosu • Test Edildi ✅</Text>
         <View style={styles.headerStats}>
           <Text style={styles.stationCount}>
             {searchQuery 
               ? `${filteredRadios.length}/${allStations.length} İstasyon` 
               : `${allStations.length} İstasyon`
-            } ({TURKISH_RADIOS.length} Statik + {apiStations.length} API)
+            } • 🎵 {RADIO_STATS.categories.Müzik} Müzik • 📰 {RADIO_STATS.categories.Haber} Haber • 🕌 {RADIO_STATS.categories.Dini} Dini
           </Text>
           <TouchableOpacity 
             style={styles.favoritesHeaderButton}
@@ -480,7 +480,7 @@ export default function App() {
 
       <View style={styles.content}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>📻 Radyo İstasyonları</Text>
+          <Text style={styles.sectionTitle}>📻 Radyo İstasyonları ({new Date(RADIO_STATS.lastUpdated).toLocaleDateString('tr-TR')} güncel)</Text>
           <View style={styles.buttonGroup}>
             <TouchableOpacity 
               style={[styles.exploreButton, isRefreshing && styles.disabledButton]}
