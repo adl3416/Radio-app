@@ -16,6 +16,9 @@ export interface RadioStation {
   isLive?: boolean;
   website?: string;
   favicon?: string;
+  country?: string;
+  language?: string;
+  tags?: string;
 }
 
 export const RADIO_STATIONS: RadioStation[] = [
@@ -33,7 +36,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "http://www.radyodejavu.com/",
-    "favicon": ""
+    "favicon": "http://www.radyodejavu.com/favicon.ico"
   },
   {
     "id": "b3e6320b-0ffc-4d4e-a999-2467897b17e6",
@@ -49,7 +52,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "https://www.radyofenomen.com/",
-    "favicon": ""
+    "favicon": "https://www.radyofenomen.com/favicon.ico"
   },
   {
     "id": "0012c08a-31e7-48c6-87a9-7f64736e0a38",
@@ -240,8 +243,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     "tags": "",
     "category": "Genel",
     "isLive": true,
-    "website": "",
-    "favicon": ""
+    "website": "https://www.bestfm.com.tr/",
+    "favicon": "https://www.bestfm.com.tr/favicon.ico"
   },
   {
     "id": "8c0eaabf-29b1-4fae-86f1-e7cfa7ec4953",
@@ -353,7 +356,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Müzik",
     "isLive": true,
     "website": "https://live.radyositesihazir.com/8032/stream",
-    "favicon": ""
+    "favicon": "https://www.kralturkfm.com/favicon.ico"
   },
   {
     "id": "360028f5-46ba-11ea-a860-52543be04c81",
@@ -3194,7 +3197,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "description": "AAC+ 128kbps",
     "votes": 11,
     "bitrate": 128,
-    "codec": "AAC+",
+    "codec": "AAC",
     "country": "Türkiye",
     "language": "turkish",
     "tags": "",
@@ -3219,6 +3222,20 @@ export const RADIO_STATIONS: RadioStation[] = [
     "website": "https://karnaval.com/radyolar/mydonoseturk",
     "favicon": ""
   }
+];
+
+// Kullanıcının en üste taşınmasını istediği radyoların isimleri:
+const TOP_RADIO_NAMES = [
+  "TRT FM", "Virgin Radio Türkiye", "Süper FM", "Radyo 7", "Radyo Seymen", "Pal station", "İstanbul FM", "Küpe FM", "Radyo 35", "Radyo ODTU", "Slow Turk", "Elazığ Mavi Radyo"
+];
+
+// Sıralama işlemi: önce listedeki radyolar, sonra kalanlar
+const topStations = RADIO_STATIONS.filter(r => TOP_RADIO_NAMES.some(name => r.name.trim().toLowerCase() === name.trim().toLowerCase()));
+const restStations = RADIO_STATIONS.filter(r => !TOP_RADIO_NAMES.some(name => r.name.trim().toLowerCase() === name.trim().toLowerCase()));
+
+export const RADIO_STATIONS_SORTED: RadioStation[] = [
+  ...topStations,
+  ...restStations
 ];
 
 // Statistics
