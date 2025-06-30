@@ -36,7 +36,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "http://www.radyodejavu.com/",
-    "favicon": "http://www.radyodejavu.com/favicon.ico"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "b3e6320b-0ffc-4d4e-a999-2467897b17e6",
@@ -52,7 +52,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "https://www.radyofenomen.com/",
-    "favicon": "https://www.radyofenomen.com/favicon.ico"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "0012c08a-31e7-48c6-87a9-7f64736e0a38",
@@ -68,7 +68,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "https://metrofm.com.tr/",
-    "favicon": "https://metrofm.com.tr/favicon.ico"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "f17523b9-2e77-46f3-8851-cdd842ca5b8f",
@@ -84,7 +84,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "https://playerservices.streamtheworld.com/api/livestream-redirect/METRO_FM_SC?",
-    "favicon": ""
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "960969eb-0601-11e8-ae97-52543be04c81",
@@ -100,7 +100,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Müzik",
     "isLive": true,
     "website": "http://www.virginradioturkiye.com/",
-    "favicon": "https://i.karnavalcdn.com/media/site_media/icons/android-icon-192x192.png"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "c7dadc87-3c43-46f5-aa24-91e0fa9a7643",
@@ -116,7 +116,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "",
-    "favicon": ""
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "5509836d-9ca5-4584-bd61-86298fa725b4",
@@ -132,7 +132,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "https://numberone.com.tr/",
-    "favicon": ""
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "159e4625-43d8-4cda-b98c-819edfad8667",
@@ -147,8 +147,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     "tags": "pop",
     "category": "Müzik",
     "isLive": true,
-    "website": "",
-    "favicon": ""
+    "website": "https://superfm.com.tr/",
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "6f3d3422-9998-4079-8e1a-7d23cef150ea",
@@ -179,8 +179,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     "tags": "",
     "category": "Kamu",
     "isLive": true,
-    "website": "https://radyo.trt.net.tr/",
-    "favicon": "https://trt-public-static.trt.com.tr/eradyo/public/dm_upload/modul2/dd24ba9f-7f22-4b79-a226-9704169bd953.png"
+    "website": "https://trt.radyotvonline.net/trtfm",
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "96201b3d-0601-11e8-ae97-52543be04c81",
@@ -196,7 +196,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Müzik",
     "isLive": true,
     "website": "http://www.arabeskfm.biz/",
-    "favicon": ""
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "f3dfbec0-8ddb-457c-94cd-368631337c0f",
@@ -244,7 +244,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "https://www.bestfm.com.tr/",
-    "favicon": "https://www.bestfm.com.tr/favicon.ico"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "8c0eaabf-29b1-4fae-86f1-e7cfa7ec4953",
@@ -276,7 +276,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Haber",
     "isLive": true,
     "website": "http://www.ntvradyo.com.tr/Home",
-    "favicon": "http://www.ntvradyo.com.tr/favicon.ico"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "31da019f-9f0a-11e9-a787-52543be04c81",
@@ -324,7 +324,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "http://www.radyo7.com/",
-    "favicon": "https://cdn.kanal7.com/radyo7//application/assets/home/common/images/apple-touch-icon-114x114.png"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "1e0dcee9-bfb6-41a4-8356-e8c4540dfcf0",
@@ -500,7 +500,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "https://palstation106.com/",
-    "favicon": "https://palstation106.com/img/logo/pal-station.ico"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "de28a78a-6cee-453d-b9df-13557334dfdb",
@@ -516,7 +516,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "https://www.radyoseymen.com.tr/",
-    "favicon": ""
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "706def0c-7017-4601-8305-db1cdb2e9420",
@@ -580,7 +580,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "http://dostfm.com/",
-    "favicon": "http://dostfm.com/favicon.ico"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "8c76958a-2cbf-11e8-91bf-52543be04c81",
@@ -628,7 +628,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "https://www.slowturk.com.tr/",
-    "favicon": "https://www.slowturk.com.tr/_next/image?url=https%3A%2F%2Fassets.blupoint.io%2Fimg%2F85%2F330x175%2F6410d8c4310c17000763c62b&w=256&q=75"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "2a372113-4b74-41aa-a1e8-3dcb5d66de61",
@@ -643,8 +643,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     "tags": "",
     "category": "Müzik",
     "isLive": true,
-    "website": "https://playerservices.streamtheworld.com/api/livestream-redirect/JOY_TURK_SC?/",
-    "favicon": ""
+    "website": "https://joyturk.com/",
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "0dc6e3f7-b313-4bc4-a06a-94f05c51dff5",
@@ -980,7 +980,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Klasik",
     "isLive": true,
     "website": "http://radyopiryolu.canliyayinda.com:8165/",
-    "favicon": "http://radyopiryolu.canliyayinda.com:8165/favicon.ico"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "0da692ab-2ee2-45e6-8303-26ff30949f91",
@@ -1044,7 +1044,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Haber",
     "isLive": true,
     "website": "https://www.haberturkradyo.com.tr/",
-    "favicon": "https://www.haberturkradyo.com.tr/wp-content/uploads/2017/07/cropped-RADYO_LOGO_Son-180x180.png"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "306970f9-8063-481d-9f6b-00b99833d206",
@@ -1252,7 +1252,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "http://canlikurtceradyodinle.com/havin-fm-canli-yayin/",
-    "favicon": "http://canlikurtceradyodinle.com/favicon.ico"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "354ffe25-8a45-4534-888b-c900054c1ba7",
@@ -1316,7 +1316,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Müzik",
     "isLive": true,
     "website": "http://www.radioeksen.com/",
-    "favicon": ""
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "c1e2e152-71d0-458f-9c41-5fb54a33dbf8",
@@ -1332,7 +1332,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Kamu",
     "isLive": true,
     "website": "https://radyo.trt.net.tr/kanallar/radyo-1",
-    "favicon": "https://static.wikia.nocookie.net/logopedia/images/2/27/TRT_Radyo_1_logo.svg/"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "24a3740f-4a8e-46e5-8b39-c8b4a2730ded",
@@ -1908,7 +1908,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "http://www.radyocan.net/",
-    "favicon": "http://www.radyocan.net/favicon.ico"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "14797ffb-2fdd-4a54-9748-e96486914dd2",
@@ -2260,7 +2260,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "http://radyos.com.tr/",
-    "favicon": "http://radyos.com.tr/apple-touch-icon.png"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "dc8dcd60-8c02-49ab-b2bc-47a4599ae624",
@@ -2516,7 +2516,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Müzik",
     "isLive": true,
     "website": "http://www.bestefm.de/",
-    "favicon": "http://www.bestefm.de/img/favicon.ico"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "1fd7925e-09ac-42b3-b560-f4948fa8bfd1",
@@ -2532,7 +2532,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "https://maviradyo.net/",
-    "favicon": "https://maviradyo.net/assets/images/logo2.png"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "241fc380-b6ac-49d7-919a-c678fcdb6568",
@@ -3140,7 +3140,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Dini",
     "isLive": true,
     "website": "http://baser.org/",
-    "favicon": "http://baser.org/favicon.ico"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "8b4a6d48-413e-493f-8d19-5eaa8b9b3bb6",
@@ -3172,7 +3172,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "https://www.erkamradyo.com/",
-    "favicon": "https://play-lh.googleusercontent.com/Hf0NtOQoXmIPWe2Hz8C5nptvA6Hx4QOvPmuE1bOkDhjcV6bJgRZBWAXS3Cjtf64QvD0"
+    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
   },
   {
     "id": "3e71f5fb-643a-4f73-9ba1-c91d3e726d87",

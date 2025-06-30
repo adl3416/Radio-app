@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radyo App Debug Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #FF6B35, #F59E0B);
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .test-button {
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .test-button:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        #console-output {
+            background: black;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎧 Radyo App Debug Test</h1>
+        <p>Bu sayfada Radyo uygulamasındaki player problemlerini test edebilirsiniz.</p>
+        
+        <div class="status">
+            <h3>🔍 Test Adımları:</h3>
+            <ol>
+                <li>Expo web uygulamasını açın (localhost:8081)</li>
+                <li>Browser Console'u açın (F12)</li>
+                <li>Herhangi bir radyo kartına tıklayın (tüm karta, sadece play butonuna değil)</li>
+                <li>Console'da "🎵 Station card pressed for:" logunu görün</li>
+                <li>Kartın arka plan renginin header turuncusu (#FF6B35) olduğunu kontrol edin</li>
+                <li>Footer'da mini player'ın çıkıp çıkmadığını kontrol edin</li>
+                <li>Mini player'a tıklayınca full player'ın açılıp açılmadığını kontrol edin</li>
+            </ol>
+        </div>
+
+        <div class="status">
+            <h3>🐛 Sorun Giderme:</h3>
+            <ul>
+                <li><strong>Kart tıklama çalışmıyor:</strong> TouchableOpacity aktif mi kontrol edin</li>
+                <li><strong>Arka plan değişmiyor:</strong> isCurrentStation state'i kontrol edin</li>
+                <li><strong>Mini player çıkmıyor:</strong> isMiniPlayerOpen state'i kontrol edin</li>
+                <li><strong>Audio çalmıyor:</strong> simpleRadioAudioService durumunu kontrol edin</li>
+            </ul>
+        </div>
+
+        <div class="status">
+            <h3>🧪 Hızlı Testler:</h3>
+            <button class="test-button" onclick="testRadioStream()">📻 Radyo Stream Testi</button>
+            <button class="test-button" onclick="testAudioPlay()">🔊 Audio Play Testi</button>
+            <button class="test-button" onclick="openExpoApp()">🚀 Expo App Aç</button>
+            <button class="test-button" onclick="clearConsole()">🧹 Console Temizle</button>
+        </div>
+
+        <div class="status">
+            <h3>🎯 Beklenen Davranışlar:</h3>
+            <ul>
+                <li>✅ Radyo kartına tıklayınca arka plan rengi değişmeli (açık turuncu)</li>
+                <li>✅ Mini player footer'da belirmeli</li>
+                <li>✅ Mini player'a tıklayınca full player açılmalı</li>
+                <li>✅ Radyo sesi çalmalı</li>
+            </ul>
+        </div>
+
+        <h3>📋 Console Çıktısı:</h3>
+        <div id="console-output">Console logları burada görünecek...</div>
+    </div>
+
+    <script>
+        // Console loglarını yakalama
+        const consoleOutput = document.getElementById('console-output');
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        function addToConsole(type, message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logLine = `[${timestamp}] ${type}: ${message}\n`;
+            consoleOutput.textContent += logLine;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsole('LOG', args.join(' '));
+        };
+
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToConsole('ERROR', args.join(' '));
+        };
+
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToConsole('WARN', args.join(' '));
+        };
+
+        // Test fonksiyonları
+        function testRadioStream() {
+            console.log('🧪 Testing radio stream...');
+            const testUrl = 'https://radio-trtradyo1.live.trt.com.tr/master_720.m3u8';
+            
+            const audio = new Audio();
+            audio.crossOrigin = 'anonymous';
+            
+            audio.addEventListener('loadstart', () => {
+                console.log('📻 Stream loading started');
+            });
+            
+            audio.addEventListener('canplay', () => {
+                console.log('✅ Stream can play');
+                console.log('🎵 Playing test audio...');
+                audio.play().then(() => {
+                    console.log('✅ Audio playing successfully');
+                    setTimeout(() => {
+                        audio.pause();
+                        console.log('⏸️ Test audio stopped');
+                    }, 3000);
+                }).catch(err => {
+                    console.error('❌ Audio play failed:', err);
+                });
+            });
+            
+            audio.addEventListener('error', (e) => {
+                console.error('❌ Stream error:', e);
+            });
+            
+            audio.src = testUrl;
+            audio.load();
+        }
+
+        function testAudioPlay() {
+            console.log('🔊 Testing HTML5 Audio...');
+            
+            // Test ses dosyası URL'i
+            const testAudio = new Audio('https://www.soundjay.com/misc/sounds/bell-ringing-05.wav');
+            
+            testAudio.addEventListener('canplaythrough', () => {
+                console.log('✅ Test audio can play');
+                testAudio.play().then(() => {
+                    console.log('🔔 Test audio playing');
+                }).catch(err => {
+                    console.error('❌ Test audio failed:', err.message);
+                });
+            });
+            
+            testAudio.addEventListener('error', (e) => {
+                console.error('❌ Test audio error:', e);
+            });
+        }
+
+        function openExpoApp() {
+            console.log('🚀 Opening Expo App...');
+            const expoUrl = 'http://localhost:8081'; // Varsayılan Expo web portu
+            window.open(expoUrl, '_blank');
+        }
+
+        function clearConsole() {
+            consoleOutput.textContent = '';
+            console.log('🧹 Console cleared');
+        }
+
+        // Sayfa yüklendiğinde
+        console.log('🎧 Debug test sayfası yüklendi');
+        console.log('📝 1. Expo uygulamasını açın');
+        console.log('📝 2. Herhangi bir radyo kartına tıklayın');
+        console.log('📝 3. Arka plan renginin değişip değişmediğini kontrol edin');
+        console.log('📝 4. Mini player\'ın footer\'da çıkıp çıkmadığını kontrol edin');
+        console.log('📝 5. Mini player\'a tıklayınca full player\'ın açılıp açılmadığını kontrol edin');
+    </script>
+</body>
+</html>

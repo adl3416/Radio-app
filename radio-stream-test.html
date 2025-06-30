@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radyo Stream Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-card {
+            background: white;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .loading { background: #fff3cd; color: #856404; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        audio {
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎧 Türk Radyo Stream Test</h1>
+        <p>Radyoların gerçek çalışma durumlarını test edelim...</p>
+        
+        <button onclick="testAllRadios()">🧪 Tüm Radyoları Test Et</button>
+        <button onclick="findWorkingRadios()">🔍 Çalışan Radyoları Bul</button>
+        <button onclick="clearResults()">🗑️ Sonuçları Temizle</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Test edilecek radyo URL'leri
+        const testRadios = [
+            {
+                name: "TRT Radyo 1",
+                urls: [
+                    "https://radio-trtradyo1.live.trt.com.tr/master_720.m3u8",
+                    "https://nmicecast.trt.net.tr/trtradyo1",
+                    "http://nmicecast.trt.net.tr/trtradyo1"
+                ]
+            },
+            {
+                name: "Power FM",
+                urls: [
+                    "https://listen.radyonomy.com/power",
+                    "https://playerservices.streamtheworld.com/api/livestream-redirect/POWERFM.mp3",
+                    "http://37.247.98.8/stream/166/"
+                ]
+            },
+            {
+                name: "Metro FM",
+                urls: [
+                    "https://playerservices.streamtheworld.com/api/livestream-redirect/METRO_FM.mp3",
+                    "https://25553.live.streamtheworld.com/METRO_FMAAC.aac",
+                    "http://28953.live.streamtheworld.com/METRO_FMAAC_SC"
+                ]
+            },
+            {
+                name: "Radyo Fenomen",
+                urls: [
+                    "https://live.radyofenomen.com/fenomen/128/icecast.audio",
+                    "https://live.radyofenomen.com/fenomen/64/icecast.audio",
+                    "http://live.radyofenomen.com/fenomen/128/icecast.audio"
+                ]
+            },
+            {
+                name: "Virgin Radio Turkey",
+                urls: [
+                    "https://n10101m.mediatriple.net/videoonlylive/mtkgeuihrlfwlive/u_stream_5c9e19877c9dd_1/playlist.m3u8",
+                    "https://trkvz-radyolar.ercdn.net/virginradio/playlist.m3u8",
+                    "https://playerservices.streamtheworld.com/api/livestream-redirect/VIRGIN_RADIO_TR.mp3"
+                ]
+            },
+            {
+                name: "Joy FM",
+                urls: [
+                    "https://playerservices.streamtheworld.com/api/livestream-redirect/JOY_FM_SC",
+                    "https://25553.live.streamtheworld.com/JOY_FMAAC.aac",
+                    "http://162.244.80.118:6528/;"
+                ]
+            },
+            {
+                name: "Slow Türk",
+                urls: [
+                    "https://radyo.dogannet.tv/slowturk",
+                    "https://trkvz-radyolar.ercdn.net/slowturk/playlist.m3u8",
+                    "http://37.247.98.8/stream/20/"
+                ]
+            },
+            {
+                name: "Kral FM",
+                urls: [
+                    "https://dygedge.radyotvonline.com/kralfm/playlist.m3u8",
+                    "https://trkvz-radyolar.ercdn.net/kralfm/playlist.m3u8",
+                    "http://46.20.3.204/;"
+                ]
+            },
+            {
+                name: "Radio Garden Test",
+                urls: [
+                    "https://radio.garden/api/ara/content/listen/WDzurqO5/channel.mp3",
+                    "https://radio.garden/api/ara/content/listen/rVAbVqJp/channel.mp3"
+                ]
+            }
+        ];
+
+        let workingRadios = [];
+        let testResults = {};
+
+        async function testRadioStream(name, url) {
+            return new Promise((resolve) => {
+                const audio = new Audio();
+                const timeout = setTimeout(() => {
+                    audio.src = '';
+                    resolve({ success: false, error: 'Timeout (10s)', url });
+                }, 10000);
+
+                audio.onerror = (e) => {
+                    clearTimeout(timeout);
+                    console.error(`❌ ${name} failed:`, url, e);
+                    resolve({ success: false, error: e.message || 'Load error', url });
+                };
+
+                audio.oncanplay = () => {
+                    clearTimeout(timeout);
+                    console.log(`✅ ${name} working:`, url);
+                    resolve({ success: true, url });
+                };
+
+                audio.onloadstart = () => {
+                    console.log(`🔄 Testing ${name}:`, url);
+                };
+
+                try {
+                    audio.src = url;
+                    audio.load();
+                } catch (error) {
+                    clearTimeout(timeout);
+                    resolve({ success: false, error: error.message, url });
+                }
+            });
+        }
+
+        async function testAllRadios() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h2>🧪 Test Başlıyor...</h2>';
+            
+            workingRadios = [];
+            testResults = {};
+
+            for (const radio of testRadios) {
+                const card = document.createElement('div');
+                card.className = 'test-card';
+                card.innerHTML = `
+                    <h3>📻 ${radio.name}</h3>
+                    <div id="result-${radio.name.replace(/\s+/g, '-')}" class="test-result loading">
+                        🔄 Test ediliyor...
+                    </div>
+                `;
+                resultsDiv.appendChild(card);
+
+                // Her URL'yi test et
+                let bestResult = null;
+                for (const url of radio.urls) {
+                    const result = await testRadioStream(radio.name, url);
+                    if (result.success) {
+                        bestResult = result;
+                        break; // İlk çalışan URL'yi kullan
+                    }
+                }
+
+                const resultDiv = document.getElementById(`result-${radio.name.replace(/\s+/g, '-')}`);
+                if (bestResult) {
+                    resultDiv.className = 'test-result success';
+                    resultDiv.innerHTML = `
+                        ✅ ÇALIŞIYOR!<br>
+                        <strong>URL:</strong> ${bestResult.url}<br>
+                        <audio controls>
+                            <source src="${bestResult.url}" type="audio/mpeg">
+                        </audio>
+                    `;
+                    workingRadios.push({
+                        name: radio.name,
+                        url: bestResult.url,
+                        tested: true
+                    });
+                } else {
+                    resultDiv.className = 'test-result error';
+                    resultDiv.innerHTML = `❌ HİÇBİR URL ÇALIŞMIYOR<br>Denenen: ${radio.urls.length} URL`;
+                }
+
+                testResults[radio.name] = bestResult;
+            }
+
+            // Özet bilgi
+            const summary = document.createElement('div');
+            summary.className = 'test-card';
+            summary.style.backgroundColor = '#e7f3ff';
+            summary.innerHTML = `
+                <h2>📊 Test Özeti</h2>
+                <p><strong>✅ Çalışan:</strong> ${workingRadios.length}/${testRadios.length} radyo</p>
+                <p><strong>❌ Çalışmayan:</strong> ${testRadios.length - workingRadios.length}/${testRadios.length} radyo</p>
+                ${workingRadios.length > 0 ? '<button onclick="exportWorkingRadios()">📋 Çalışan Radyoları Kopyala</button>' : ''}
+            `;
+            resultsDiv.appendChild(summary);
+        }
+
+        async function findWorkingRadios() {
+            // Daha fazla radyo URL'i test etmek için
+            const additionalRadios = [
+                {
+                    name: "TRT FM",
+                    urls: [
+                        "https://radio-trtfm.live.trt.com.tr/master_720.m3u8",
+                        "https://nmicecast.trt.net.tr/trtfm"
+                    ]
+                },
+                {
+                    name: "Süper FM",
+                    urls: [
+                        "https://trkvz-radyolar.ercdn.net/superfm/playlist.m3u8",
+                        "https://playerservices.streamtheworld.com/api/livestream-redirect/SUPER_FM.mp3"
+                    ]
+                },
+                {
+                    name: "Radyo Viva",
+                    urls: [
+                        "https://trkvz-radyolar.ercdn.net/radyoviva/playlist.m3u8",
+                        "http://stream.radyoviva.com.tr:7040/stream"
+                    ]
+                }
+            ];
+
+            // Test radyolarını genişlet
+            const allTestRadios = [...testRadios, ...additionalRadios];
+            await testAllRadios();
+        }
+
+        function exportWorkingRadios() {
+            if (workingRadios.length === 0) {
+                alert('Henüz çalışan radyo bulunamadı!');
+                return;
+            }
+
+            const exportData = workingRadios.map(radio => ({
+                id: `working-${radio.name.toLowerCase().replace(/\s+/g, '-')}`,
+                name: radio.name,
+                url: radio.url,
+                description: "Tested and working",
+                category: "Müzik",
+                isLive: true,
+                favicon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
+            }));
+
+            const jsCode = `// ÇALIŞAN RADYOLAR - ${new Date().toLocaleString('tr-TR')}
+export const WORKING_RADIOS = ${JSON.stringify(exportData, null, 2)};`;
+
+            navigator.clipboard.writeText(jsCode).then(() => {
+                alert(`✅ ${workingRadios.length} çalışan radyo panoya kopyalandı!`);
+            }).catch(() => {
+                // Fallback - göster
+                const popup = window.open('', '_blank');
+                popup.document.write(`<pre>${jsCode}</pre>`);
+            });
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            workingRadios = [];
+            testResults = {};
+        }
+
+        // Sayfa yüklendiğinde otomatik test başlat
+        window.onload = () => {
+            console.log('🧪 Radyo test sayfası yüklendi');
+            setTimeout(() => {
+                if (confirm('Radyo streamlerini hemen test etmek ister misiniz?')) {
+                    testAllRadios();
+                }
+            }, 1000);
+        };
+    </script>
+</body>
+</html>

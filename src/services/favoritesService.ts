@@ -1,5 +1,24 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 import { RadioStation } from '../constants/radioStations';
+
+// Web için localStorage fallback
+const storage = Platform.OS === 'web' ? {
+  async getItem(key: string): Promise<string | null> {
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  },
+  async setItem(key: string, value: string): Promise<void> {
+    try {
+      localStorage.setItem(key, value);
+    } catch (error) {
+      console.warn('Failed to save to localStorage:', error);
+    }
+  }
+} : AsyncStorage;
 
 const FAVORITES_KEY = 'favorite-stations';
 
@@ -27,12 +46,19 @@ class FavoritesService {
 
   public async loadFavorites(): Promise<RadioStation[]> {
     try {
-      const favoritesJson = await AsyncStorage.getItem(FAVORITES_KEY);
-      this.favorites = favoritesJson ? JSON.parse(favoritesJson) : [];
+      const favoritesJson = await storage.getItem(FAVORITES_KEY);
+      try {
+        this.favorites = favoritesJson ? JSON.parse(favoritesJson) : [];
+      } catch (parseError) {
+        console.error('Favorites JSON parse error:', parseError);
+        this.favorites = [];
+      }
       this.notifyListeners();
       return this.favorites;
     } catch (error) {
       console.error('Failed to load favorites:', error);
+      this.favorites = [];
+      this.notifyListeners();
       return [];
     }
   }
@@ -41,7 +67,7 @@ class FavoritesService {
     try {
       if (!this.isFavorite(station.id)) {
         this.favorites.push(station);
-        await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(this.favorites));
+        await storage.setItem(FAVORITES_KEY, JSON.stringify(this.favorites));
         this.notifyListeners();
       }
     } catch (error) {
@@ -52,7 +78,7 @@ class FavoritesService {
   public async removeFromFavorites(stationId: string): Promise<void> {
     try {
       this.favorites = this.favorites.filter(station => station.id !== stationId);
-      await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(this.favorites));
+      await storage.setItem(FAVORITES_KEY, JSON.stringify(this.favorites));
       this.notifyListeners();
     } catch (error) {
       console.error('Failed to remove favorite:', error);

@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { simpleBackgroundAudioService, SimpleAudioState } from '../services/simpleBackgroundAudioService';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { simpleRadioAudioService, RadioAudioState } from '../services/simpleRadioAudioService';
 
 const { width, height } = Dimensions.get('window');
 
@@ -35,19 +36,69 @@ interface FullPlayerProps {
 
 // Mini Footer Player Component
 export const MiniPlayer: React.FC<MiniPlayerProps> = ({ isVisible, onExpand, onClose, onNext, onPrevious }) => {
-  const [playbackState, setPlaybackState] = useState<SimpleAudioState>(simpleBackgroundAudioService.getState());
+  const [playbackState, setPlaybackState] = useState<RadioAudioState>(simpleRadioAudioService.getState());
+  const [translateY] = useState(new Animated.Value(0));
+  const insets = useSafeAreaInsets();
+  // Header yüksekliği ile uyumlu footer yüksekliği
+  const HEADER_HEIGHT = 70; // App.tsx header'da paddingTop+paddingBottom+fontSize toplamı yaklaşık 70-80px
+  // Mini player yüksekliği 65px'e çıkarıldı
+  const MINI_PLAYER_HEIGHT = 65;
 
   useEffect(() => {
-    const unsubscribe = simpleBackgroundAudioService.subscribe(setPlaybackState);
+    const unsubscribe = simpleRadioAudioService.subscribe(setPlaybackState);
     return unsubscribe;
   }, []);
+
+  // PanResponder for swipe up gesture - improved
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: (evt, gestureState) => {
+      const isSwipeUp = gestureState.dy < -3;
+      const isSignificantMove = Math.abs(gestureState.dy) > 3;
+      return isSwipeUp && isSignificantMove;
+    },
+    onPanResponderMove: (evt, gestureState) => {
+      const { dy } = gestureState;
+      // Sadece yukarı doğru hareket için smooth animasyon
+      if (dy <= 0) {
+        const clampedValue = Math.max(dy, -100); // Max 100px yukarı
+        translateY.setValue(clampedValue);
+      }
+    },
+    onPanResponderRelease: (evt, gestureState) => {
+      const { dy, vy } = gestureState;
+      
+      const shouldExpand = dy < -20 || vy < -0.2; // Düşük threshold
+      
+      if (shouldExpand) {
+        console.log('📱 Mini player swiped up - expanding to full');
+        // Smooth expand animation
+        Animated.timing(translateY, {
+          toValue: -50,
+          duration: 200,
+          useNativeDriver: true,
+        }).start(() => {
+          translateY.setValue(0);
+          onExpand();
+        });
+      } else {
+        // Bounce back animation
+        Animated.spring(translateY, {
+          toValue: 0,
+          useNativeDriver: true,
+          tension: 150,
+          friction: 8,
+        }).start();
+      }
+    },
+  });
 
   const handlePlayPause = async () => {
     try {
       if (playbackState.isPlaying) {
-        await simpleBackgroundAudioService.pause();
+        await simpleRadioAudioService.pause();
       } else {
-        await simpleBackgroundAudioService.resume();
+        await simpleRadioAudioService.resume();
       }
     } catch (error) {
       // Sessiz hata yönetimi
@@ -61,160 +112,169 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ isVisible, onExpand, onC
   };
 
   if (!isVisible || !playbackState.currentStation) {
+    // Mini player görünmez veya aktif radyo yoksa hiç render etme
     return null;
   }
 
+  console.log('📱 Mini player rendering:', {
+    stationName: playbackState.currentStation?.name,
+    isPlaying: playbackState.isPlaying,
+    isLoading: playbackState.isLoading
+  });
+  // Mini player'ı ekranın en altına, tam genişlikte ve footer gibi sabit konumda göster
   return (
-    <TouchableOpacity 
-      style={styles.miniPlayerContainer} 
-      onPress={onExpand}
-      activeOpacity={0.8}
+    <Animated.View
+      style={[
+        styles.miniPlayerContainer,
+        {
+          transform: [{ translateY }],
+          height: MINI_PLAYER_HEIGHT + insets.bottom,
+          // SafeArea için paddingBottom yerine doğrudan height'a ekle, paddingBottom'u kaldır
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 9999,
+        },
+      ]}
+      pointerEvents="box-none"
+      {...panResponder.panHandlers}
     >
       <LinearGradient
         colors={['#FF6B35', '#F59E0B']}
-        style={styles.miniPlayerGradient}
+        style={[styles.miniPlayerGradient, { flex: 1, justifyContent: 'center', paddingVertical: 6 }]}
       >
-        <View style={styles.miniPlayerContent}>
+        <View style={[styles.miniPlayerContent, { minHeight: MINI_PLAYER_HEIGHT - 16, alignItems: 'center' }]}> 
           {/* Sol taraf - İstasyon bilgisi */}
           <View style={styles.miniStationInfo}>
-            <Text style={styles.miniStationName} numberOfLines={1}>
+            <Text style={[styles.miniStationName, { fontSize: 14, marginBottom: 2 }]} numberOfLines={1}>
               {playbackState.currentStation.name}
             </Text>
-            <Text style={styles.miniStationStatus} numberOfLines={1}>
-              {playbackState.isLoading 
-                ? 'Yükleniyor...' 
-                : playbackState.error 
-                  ? 'Hata oluştu'
-                  : 'Şu an çalıyor'
-              }
+            <Text style={[styles.miniStationStatus, { fontSize: 11 }]} numberOfLines={1}>
+              {playbackState.isLoading
+                ? 'Yükleniyor...'
+                : playbackState.error
+                ? 'Hata oluştu'
+                : 'Şu an çalıyor'}
             </Text>
           </View>
-
           {/* Orta - Kontroller */}
           <View style={styles.miniPlayerControls}>
             {playbackState.isLoading ? (
               <ActivityIndicator size="small" color="white" />
             ) : (
               <View style={styles.miniControlsRow}>
-                <TouchableOpacity onPress={handlePlayPause} style={styles.miniPlayButton}>
-                  <Ionicons 
-                    name={playbackState.isPlaying ? "pause" : "play"} 
-                    size={18} 
-                    color="white" 
+                <TouchableOpacity onPress={handlePlayPause} style={[styles.miniPlayButton, { width: 32, height: 32, borderRadius: 16 }] }>
+                  <Ionicons
+                    name={playbackState.isPlaying ? 'pause' : 'play'}
+                    size={16}
+                    color="white"
                   />
                 </TouchableOpacity>
-                
                 {onNext && (
-                  <TouchableOpacity onPress={handleNext} style={styles.miniNextButton}>
-                    <Ionicons name="play-skip-forward" size={16} color="white" />
+                  <TouchableOpacity onPress={handleNext} style={[styles.miniNextButton, { width: 20, height: 20, borderRadius: 10 }] }>
+                    <Ionicons name="play-skip-forward" size={14} color="white" />
                   </TouchableOpacity>
                 )}
               </View>
             )}
           </View>
-
           {/* Sağ taraf - Kapat butonu */}
-          <TouchableOpacity onPress={onClose} style={styles.miniCloseButton}>
-            <Ionicons name="close" size={20} color="white" />
+          <TouchableOpacity onPress={onClose} style={[styles.miniCloseButton, { width: 24, height: 24, borderRadius: 12 }] }>
+            <Ionicons name="close" size={16} color="white" />
           </TouchableOpacity>
         </View>
       </LinearGradient>
-    </TouchableOpacity>
+    </Animated.View>
   );
+
 };
 
 // Full Screen Player Component
 export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, onNext, onPrevious, onToggleFavorite, isFavorite }) => {
-  const [playbackState, setPlaybackState] = useState<SimpleAudioState>(simpleBackgroundAudioService.getState());
+  const [playbackState, setPlaybackState] = useState<RadioAudioState>(simpleRadioAudioService.getState());
   const [translateY] = useState(new Animated.Value(0));
   const [opacity] = useState(new Animated.Value(1));
 
   useEffect(() => {
-    const unsubscribe = simpleBackgroundAudioService.subscribe(setPlaybackState);
+    const unsubscribe = simpleRadioAudioService.subscribe(setPlaybackState);
     return unsubscribe;
   }, []);
 
-  // PanResponder için gesture handling
+  // PanResponder için gesture handling - improved
   const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: (evt, gestureState) => {
-      // Dokunma başladığında gesture'ı etkinleştir
-      return true;
-    },
+    onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: (evt, gestureState) => {
-      // Herhangi bir hareket olduğunda gesture'ı yakala
-      // Aşağı doğru hareket öncelikli ama yan hareket de kabul et
-      const isDraggingDown = gestureState.dy > 5;
-      const isSignificantMove = Math.abs(gestureState.dx) > 5 || Math.abs(gestureState.dy) > 5;
-      return isDraggingDown || isSignificantMove;
+      const isDraggingDown = gestureState.dy > 3;
+      const isSignificantMove = Math.abs(gestureState.dy) > 3;
+      return isDraggingDown && isSignificantMove;
     },
     onPanResponderGrant: () => {
-      // Gesture başladığında - sessiz
+      // Gesture başladığında
     },
     onPanResponderMove: (evt, gestureState) => {
-      // Sürükleme sırasında
       const { dy } = gestureState;
       
-      // Sadece aşağı doğru hareket için animasyon
+      // Sadece aşağı doğru hareket için smooth animasyon
       if (dy >= 0) {
-        translateY.setValue(dy);
-        // Opacity'yi distance'a göre ayarla
-        const newOpacity = Math.max(0.3, 1 - (dy / (height * 0.4)));
+        const dampedY = dy * 0.8; // Hafif damping effect
+        translateY.setValue(dampedY);
+        // Opacity'yi mesafeye göre smooth ayarla
+        const newOpacity = Math.max(0.4, 1 - (dampedY / (height * 0.5)));
         opacity.setValue(newOpacity);
       }
     },
     onPanResponderRelease: (evt, gestureState) => {
-      // Gesture bittiğinde
       const { dy, vy } = gestureState;
       
-      const shouldClose = dy > height * 0.15 || vy > 0.3; // Threshold'ları düşürdük
+      const shouldClose = dy > height * 0.1 || vy > 0.25; // Düşük threshold
       
       if (shouldClose) {
-        // Kapatma animasyonu
+        // Hızlı kapatma animasyonu
         Animated.parallel([
           Animated.timing(translateY, {
             toValue: height,
-            duration: 250,
+            duration: 300,
             useNativeDriver: true,
           }),
           Animated.timing(opacity, {
             toValue: 0,
-            duration: 250,
+            duration: 300,
             useNativeDriver: true,
           }),
         ]).start(() => {
-          // Animasyon bitince collapse callback'ini çağır
           translateY.setValue(0);
           opacity.setValue(1);
           onCollapse();
         });
       } else {
-        // Geri dönme animasyonu
+        // Smooth geri dönme animasyonu
         Animated.parallel([
           Animated.spring(translateY, {
             toValue: 0,
             useNativeDriver: true,
-            tension: 100,
+            tension: 120,
             friction: 8,
           }),
           Animated.spring(opacity, {
             toValue: 1,
             useNativeDriver: true,
-            tension: 100,
+            tension: 120,
             friction: 8,
           }),
         ]).start();
       }
     },
-    onPanResponderTerminationRequest: () => false, // Gesture'ı başka component'lar çalamasın
-    onShouldBlockNativeResponder: () => false, // Native scroll davranışını engelleme
+    onPanResponderTerminationRequest: () => false,
+    onShouldBlockNativeResponder: () => false,
   });
 
   const handlePlayPause = async () => {
     try {
       if (playbackState.isPlaying) {
-        await simpleBackgroundAudioService.pause();
+        await simpleRadioAudioService.pause();
       } else {
-        await simpleBackgroundAudioService.resume();
+        await simpleRadioAudioService.resume();
       }
     } catch (error) {
       // Sessiz hata yönetimi
@@ -223,7 +283,7 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, o
 
   const handleStop = async () => {
     try {
-      await simpleBackgroundAudioService.stop();
+      await simpleRadioAudioService.stop();
       onCollapse();
     } catch (error) {
       // Sessiz hata yönetimi
@@ -371,20 +431,26 @@ const styles = StyleSheet.create({
   // Mini Player Styles
   miniPlayerContainer: {
     position: 'absolute',
-    bottom: 0,
     left: 0,
     right: 0,
-    height: 70,
-    elevation: 8,
+    bottom: 0,
+    elevation: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.2,
-    shadowRadius: 4,
+    shadowRadius: 8,
+    backgroundColor: 'transparent',
+    zIndex: 9999,
+    // height dinamik olarak yukarıda ayarlanıyor
+    // Alt tarafa sıfır sabit footer gibi
+    marginBottom: 0,
+    borderBottomWidth: 0,
+    paddingBottom: 0, // Alt boşluk olmasın
   },
   miniPlayerGradient: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
   },
   miniPlayerContent: {
     flex: 1,
@@ -397,13 +463,13 @@ const styles = StyleSheet.create({
   },
   miniStationName: {
     color: 'white',
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 2,
+    marginBottom: 4,
   },
   miniStationStatus: {
     color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 12,
+    fontSize: 14,
   },
   miniPlayerControls: {
     marginRight: 12,
@@ -414,9 +480,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   miniPlayButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
