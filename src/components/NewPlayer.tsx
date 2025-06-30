@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   PanResponder,
   Animated,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -36,6 +37,12 @@ interface FullPlayerProps {
 
 // Mini Footer Player Component
 export const MiniPlayer: React.FC<MiniPlayerProps> = ({ isVisible, onExpand, onClose, onNext, onPrevious }) => {
+  // Örnek: Kral Pop ve Süper FM logoları ile yuvarlak radyo avatarları
+  const radioLogos = [
+    { name: 'Kral Pop', image: require('../../assets/kralpop.png') },
+    { name: 'Süper FM', image: require('../../assets/superfm.png') },
+    // Diğer radyoları buraya ekleyebilirsiniz
+  ];
   const [playbackState, setPlaybackState] = useState<RadioAudioState>(simpleRadioAudioService.getState());
   const [translateY] = useState(new Animated.Value(0));
   const insets = useSafeAreaInsets();
@@ -45,51 +52,35 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ isVisible, onExpand, onC
   const MINI_PLAYER_HEIGHT = 65;
 
   useEffect(() => {
-    const unsubscribe = simpleRadioAudioService.subscribe(setPlaybackState);
-    return unsubscribe;
+    let isMounted = true;
+    const safeSetState = (state: RadioAudioState) => {
+      if (isMounted) setPlaybackState(state);
+    };
+    const unsubscribe = simpleRadioAudioService.subscribe(safeSetState);
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
   }, []);
 
   // PanResponder for swipe up gesture - improved
+  // Tatlı, titremesiz swipe up için panResponder
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: (evt, gestureState) => {
-      const isSwipeUp = gestureState.dy < -3;
-      const isSignificantMove = Math.abs(gestureState.dy) > 3;
-      return isSwipeUp && isSignificantMove;
+      // Sadece yukarı swipe için, çok hassas olmasın
+      return gestureState.dy < -10;
     },
     onPanResponderMove: (evt, gestureState) => {
-      const { dy } = gestureState;
-      // Sadece yukarı doğru hareket için smooth animasyon
-      if (dy <= 0) {
-        const clampedValue = Math.max(dy, -100); // Max 100px yukarı
-        translateY.setValue(clampedValue);
-      }
+      // Mini player'ı yerinden oynatma, sadece threshold'u geçince büyüt
     },
     onPanResponderRelease: (evt, gestureState) => {
       const { dy, vy } = gestureState;
-      
-      const shouldExpand = dy < -20 || vy < -0.2; // Düşük threshold
-      
-      if (shouldExpand) {
-        console.log('📱 Mini player swiped up - expanding to full');
-        // Smooth expand animation
-        Animated.timing(translateY, {
-          toValue: -50,
-          duration: 200,
-          useNativeDriver: true,
-        }).start(() => {
-          translateY.setValue(0);
-          onExpand();
-        });
-      } else {
-        // Bounce back animation
-        Animated.spring(translateY, {
-          toValue: 0,
-          useNativeDriver: true,
-          tension: 150,
-          friction: 8,
-        }).start();
+      // Yeterince yukarı çekildiyse direkt büyüt
+      if (dy < -30 || vy < -0.2) {
+        onExpand();
       }
+      // Hiçbir animasyon yok, titreme yok, yerinde sabit
     },
   });
 
@@ -129,7 +120,6 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ isVisible, onExpand, onC
         {
           transform: [{ translateY }],
           height: MINI_PLAYER_HEIGHT + insets.bottom,
-          // SafeArea için paddingBottom yerine doğrudan height'a ekle, paddingBottom'u kaldır
           position: 'absolute',
           left: 0,
           right: 0,
@@ -138,51 +128,32 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ isVisible, onExpand, onC
         },
       ]}
       pointerEvents="box-none"
+      onTouchEnd={onExpand}
       {...panResponder.panHandlers}
     >
       <LinearGradient
         colors={['#FF6B35', '#F59E0B']}
         style={[styles.miniPlayerGradient, { flex: 1, justifyContent: 'center', paddingVertical: 6 }]}
       >
-        <View style={[styles.miniPlayerContent, { minHeight: MINI_PLAYER_HEIGHT - 16, alignItems: 'center' }]}> 
-          {/* Sol taraf - İstasyon bilgisi */}
-          <View style={styles.miniStationInfo}>
-            <Text style={[styles.miniStationName, { fontSize: 14, marginBottom: 2 }]} numberOfLines={1}>
-              {playbackState.currentStation.name}
-            </Text>
-            <Text style={[styles.miniStationStatus, { fontSize: 11 }]} numberOfLines={1}>
-              {playbackState.isLoading
-                ? 'Yükleniyor...'
-                : playbackState.error
-                ? 'Hata oluştu'
-                : 'Şu an çalıyor'}
-            </Text>
-          </View>
-          {/* Orta - Kontroller */}
-          <View style={styles.miniPlayerControls}>
-            {playbackState.isLoading ? (
-              <ActivityIndicator size="small" color="white" />
-            ) : (
-              <View style={styles.miniControlsRow}>
-                <TouchableOpacity onPress={handlePlayPause} style={[styles.miniPlayButton, { width: 32, height: 32, borderRadius: 16 }] }>
-                  <Ionicons
-                    name={playbackState.isPlaying ? 'pause' : 'play'}
-                    size={16}
-                    color="white"
-                  />
-                </TouchableOpacity>
-                {onNext && (
-                  <TouchableOpacity onPress={handleNext} style={[styles.miniNextButton, { width: 20, height: 20, borderRadius: 10 }] }>
-                    <Ionicons name="play-skip-forward" size={14} color="white" />
-                  </TouchableOpacity>
-                )}
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 4, paddingLeft: 8 }}>
+          {radioLogos.map((radio, idx) => (
+            <View key={radio.name} style={{ alignItems: 'center', marginRight: 16 }}>
+              <View style={{
+                width: 48,
+                height: 48,
+                borderRadius: 24,
+                overflow: 'hidden',
+                backgroundColor: '#fff',
+                borderWidth: 2,
+                borderColor: '#eee',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+                <Image source={radio.image} style={{ width: 44, height: 44, borderRadius: 22, resizeMode: 'contain' }} />
               </View>
-            )}
-          </View>
-          {/* Sağ taraf - Kapat butonu */}
-          <TouchableOpacity onPress={onClose} style={[styles.miniCloseButton, { width: 24, height: 24, borderRadius: 12 }] }>
-            <Ionicons name="close" size={16} color="white" />
-          </TouchableOpacity>
+              <Text style={{ fontSize: 12, color: '#fff', marginTop: 4 }}>{radio.name}</Text>
+            </View>
+          ))}
         </View>
       </LinearGradient>
     </Animated.View>
@@ -197,73 +168,35 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, o
   const [opacity] = useState(new Animated.Value(1));
 
   useEffect(() => {
-    const unsubscribe = simpleRadioAudioService.subscribe(setPlaybackState);
-    return unsubscribe;
+    let isMounted = true;
+    const safeSetState = (state: RadioAudioState) => {
+      if (isMounted) setPlaybackState(state);
+    };
+    const unsubscribe = simpleRadioAudioService.subscribe(safeSetState);
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
   }, []);
 
   // PanResponder için gesture handling - improved
+  // Titremesiz, soft swipe down için panResponder
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: (evt, gestureState) => {
-      const isDraggingDown = gestureState.dy > 3;
-      const isSignificantMove = Math.abs(gestureState.dy) > 3;
-      return isDraggingDown && isSignificantMove;
-    },
-    onPanResponderGrant: () => {
-      // Gesture başladığında
+      // Sadece aşağı swipe için, çok hassas olmasın
+      return gestureState.dy > 10;
     },
     onPanResponderMove: (evt, gestureState) => {
-      const { dy } = gestureState;
-      
-      // Sadece aşağı doğru hareket için smooth animasyon
-      if (dy >= 0) {
-        const dampedY = dy * 0.8; // Hafif damping effect
-        translateY.setValue(dampedY);
-        // Opacity'yi mesafeye göre smooth ayarla
-        const newOpacity = Math.max(0.4, 1 - (dampedY / (height * 0.5)));
-        opacity.setValue(newOpacity);
-      }
+      // Full player'ı yerinden oynatma, sadece threshold'u geçince küçült
     },
     onPanResponderRelease: (evt, gestureState) => {
       const { dy, vy } = gestureState;
-      
-      const shouldClose = dy > height * 0.1 || vy > 0.25; // Düşük threshold
-      
-      if (shouldClose) {
-        // Hızlı kapatma animasyonu
-        Animated.parallel([
-          Animated.timing(translateY, {
-            toValue: height,
-            duration: 300,
-            useNativeDriver: true,
-          }),
-          Animated.timing(opacity, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: true,
-          }),
-        ]).start(() => {
-          translateY.setValue(0);
-          opacity.setValue(1);
-          onCollapse();
-        });
-      } else {
-        // Smooth geri dönme animasyonu
-        Animated.parallel([
-          Animated.spring(translateY, {
-            toValue: 0,
-            useNativeDriver: true,
-            tension: 120,
-            friction: 8,
-          }),
-          Animated.spring(opacity, {
-            toValue: 1,
-            useNativeDriver: true,
-            tension: 120,
-            friction: 8,
-          }),
-        ]).start();
+      // Yeterince aşağı çekildiyse direkt küçült
+      if (dy > 40 || vy > 0.25) {
+        onCollapse();
       }
+      // Hiçbir animasyon yok, titreme yok, yerinde sabit
     },
     onPanResponderTerminationRequest: () => false,
     onShouldBlockNativeResponder: () => false,
