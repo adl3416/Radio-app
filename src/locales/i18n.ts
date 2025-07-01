@@ -17,7 +17,7 @@ const LANGUAGE_DETECTOR = {
         return;
       }
       // Fallback to device language
-      const deviceLanguage = Localization.locale.split('-')[0];
+      const deviceLanguage = Localization.getLocales()[0]?.languageCode || 'tr';
       callback(deviceLanguage);
     } catch (error) {
       console.log('Error reading language', error);

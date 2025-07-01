@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTranslation } from 'react-i18next';
 
 export type Theme = 'light' | 'dark';
 export type Language = 'tr' | 'en';
@@ -50,7 +49,6 @@ interface AppProviderProps {
 }
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
-  const { i18n } = useTranslation();
   const [theme, setTheme] = useState<Theme>('light');
   const [language, setLanguageState] = useState<Language>('tr');
   const [isLoading, setIsLoading] = useState(false);
@@ -73,7 +71,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       
       if (savedLanguage) {
         setLanguageState(savedLanguage as Language);
-        i18n.changeLanguage(savedLanguage);
+        // i18n.changeLanguage(savedLanguage); // Removed for simplicity
       }
     } catch (error) {
       console.error('Failed to load preferences:', error);
@@ -92,7 +90,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
   const setLanguage = async (lang: Language) => {
     setLanguageState(lang);
-    i18n.changeLanguage(lang);
+    // i18n.changeLanguage(lang); // Removed for simplicity
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.LANGUAGE, lang);
     } catch (error) {

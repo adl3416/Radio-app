@@ -4,252 +4,192 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
   ActivityIndicator,
+  PanResponder,
   Animated,
+  Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { audioService, PlaybackState } from '../services/cleanAudioService';
-import { useAppContext } from '../contexts/AppContext';
-import { RadioStation } from '../constants/radioStations';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { simpleRadioAudioService, RadioAudioState } from '../services/simpleRadioAudioService';
+import { RadioLogo } from './RadioLogo';
 
 const { width } = Dimensions.get('window');
+const audioService = simpleRadioAudioService;
 
 interface ModernFooterPlayerProps {
   onPress?: () => void;
+  onSwipeUp?: () => void;
 }
 
-export const ModernFooterPlayer: React.FC<ModernFooterPlayerProps> = ({ onPress }) => {
-  const { isDark } = useAppContext();
-  const [playbackState, setPlaybackState] = useState<PlaybackState>(audioService.getState());
-  
-  // Animation refs
-  const slideAnim = useRef(new Animated.Value(100)).current;
-  const rotateAnim = useRef(new Animated.Value(0)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
+export const ModernFooterPlayer: React.FC<ModernFooterPlayerProps> = ({ onPress, onSwipeUp }) => {
+  const [playbackState, setPlaybackState] = useState<RadioAudioState>(audioService.getState());
+  const [lastPlayedStation, setLastPlayedStation] = useState<any>(null);
+  const pan = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const unsubscribe = audioService.subscribe(setPlaybackState);
+    loadLastPlayedStation();
     return unsubscribe;
   }, []);
 
+  // Son çalınan radyoyu yükle
+  const loadLastPlayedStation = async () => {
+    try {
+      const saved = await AsyncStorage.getItem('lastPlayedStation');
+      if (saved) {
+        setLastPlayedStation(JSON.parse(saved));
+      }
+    } catch (error) {
+      console.log('Son radyo yüklenemedi:', error);
+    }
+  };
+
+  // Radyo değiştiğinde kaydet
   useEffect(() => {
     if (playbackState.currentStation) {
-      // Slide up animation
-      Animated.spring(slideAnim, {
-        toValue: 0,
-        useNativeDriver: true,
-        tension: 50,
-        friction: 8,
-      }).start();
-    } else {
-      // Slide down animation
-      Animated.timing(slideAnim, {
-        toValue: 100,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
+      AsyncStorage.setItem('lastPlayedStation', JSON.stringify(playbackState.currentStation));
+      setLastPlayedStation(playbackState.currentStation);
     }
   }, [playbackState.currentStation]);
 
-  useEffect(() => {
-    if (playbackState.isPlaying) {
-      startRotation();
-      startPulse();
-    } else {
-      stopRotation();
-      stopPulse();
-    }
-  }, [playbackState.isPlaying]);
-
-  const startRotation = () => {
-    rotateAnim.setValue(0);
-    Animated.loop(
-      Animated.timing(rotateAnim, {
-        toValue: 1,
-        duration: 8000,
-        useNativeDriver: true,
-      })
-    ).start();
-  };
-
-  const stopRotation = () => {
-    rotateAnim.stopAnimation();
-  };
-
-  const startPulse = () => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.1,
-          duration: 1000,
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => false, // Normal dokunmalarda pan başlatma
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        // Sadece belirgin yukarı hareket olduğunda pan'i aktif et
+        return Math.abs(gestureState.dy) > 10 && gestureState.dy < -5; // En az 10px hareket ve yukarı yönde
+      },
+      onPanResponderGrant: () => {
+        // Pan başladığında başlangıç değerini ayarla
+        pan.setOffset((pan as any)._value);
+        pan.setValue(0);
+      },
+      onPanResponderMove: (evt, gestureState) => {
+        // Sadece yukarı hareketle hareket ettir, aşağı hareketi engelle
+        if (gestureState.dy < 0) {
+          pan.setValue(gestureState.dy);
+        }
+      },
+      onPanResponderRelease: (evt, gestureState) => {
+        pan.flattenOffset();
+        
+        // 40px yukarı çekildiğinde büyük player'ı aç
+        if (gestureState.dy < -40 && Math.abs(gestureState.dx) < 50) {
+          onSwipeUp && onSwipeUp();
+        }
+        
+        // Pan'i sıfırla - smooth animasyon
+        Animated.spring(pan, {
+          toValue: 0,
           useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1000,
+          tension: 100,
+          friction: 8,
+        }).start();
+      },
+      onPanResponderTerminate: () => {
+        // Hareket kesintiye uğrarsa pan'i sıfırla
+        pan.flattenOffset();
+        Animated.spring(pan, {
+          toValue: 0,
           useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  };
-
-  const stopPulse = () => {
-    pulseAnim.stopAnimation();
-    pulseAnim.setValue(1);
-  };
+        }).start();
+      },
+    })
+  ).current;
 
   const handlePlayPause = async () => {
+    // Eğer hiç radyo yoksa birşey yapma
+    if (!playbackState.currentStation && !lastPlayedStation) {
+      return;
+    }
+
     try {
       if (playbackState.isPlaying) {
         await audioService.pause();
       } else {
-        await audioService.resume();
+        if (playbackState.currentStation) {
+          await audioService.resume();
+        } else if (lastPlayedStation) {
+          // Son çalınan radyoyu tekrar başlat
+          await audioService.play(lastPlayedStation);
+        }
       }
     } catch (error) {
       console.error('Play/Pause error:', error);
     }
   };
 
-  const handleStop = async () => {
-    try {
-      await audioService.stop();
-    } catch (error) {
-      console.error('Stop error:', error);
-    }
-  };
+  // Son çalınan radyoyu göster - uygulama açıldığında her zaman göster
+  const displayStation = playbackState.currentStation || lastPlayedStation;
 
-  const getStationLogo = (stationName: string) => {
-    if (stationName.toLowerCase().includes('cassette')) return '📼';
-    if (stationName.toLowerCase().includes('x radio')) return '❌';
-    if (stationName.toLowerCase().includes('power')) return '⚡';
-    if (stationName.toLowerCase().includes('metro')) return '🚇';
-    if (stationName.toLowerCase().includes('munzur')) return '🏔️';
-    if (stationName.toLowerCase().includes('amed')) return '🌿';
-    if (stationName.toLowerCase().includes('45lik')) return '💿';
-    if (stationName.toLowerCase().includes('haber')) return '📰';
-    if (stationName.toLowerCase().includes('para')) return '💰';
-    if (stationName.toLowerCase().includes('spor')) return '⚽';
-    if (stationName.toLowerCase().includes('adana')) return '🌆';
-    if (stationName.toLowerCase().includes('afşin')) return '🎵';
-    if (stationName.toLowerCase().includes('polis')) return '🚔';
-    if (stationName.toLowerCase().includes('kar')) return '❄️';
-    return '📻';
-  };
-
-  const getStatusText = () => {
-    if (playbackState.error) return playbackState.error;
-    if (playbackState.isLoading) return 'Yükleniyor...';
-    if (playbackState.isPlaying) return 'Çalıyor';
-    return 'Durduruldu';
-  };
-
-  const getStatusColor = () => {
-    if (playbackState.error) return '#EF4444';
-    if (playbackState.isLoading) return '#F59E0B';
-    if (playbackState.isPlaying) return '#10B981';
-    return '#6B7280';
-  };
-
-  if (!playbackState.currentStation) {
-    return null;
-  }
+  // Mini player'ı her zaman göster (son çalınan radyo yoksa da)
+  // if (!displayStation) {
+  //   return null; // Bu satır kaldırıldı - her zaman göster
+  // }
 
   return (
     <Animated.View 
       style={[
         styles.container,
         {
-          transform: [{ translateY: slideAnim }],
+          transform: [{ translateY: pan }],
         },
       ]}
+      {...panResponder.panHandlers}
     >
-      <LinearGradient
-        colors={isDark ? ['#1F2937', '#111827'] : ['#FFFFFF', '#F9FAFB']}
-        style={styles.gradient}
-      >
-        <TouchableOpacity
-          style={styles.content}
-          onPress={onPress}
-          activeOpacity={0.8}
-        >
-          {/* Station Logo */}
-          <Animated.View
-            style={[
-              styles.logoContainer,
-              {
-                transform: [
-                  { scale: pulseAnim },
-                  {
-                    rotate: rotateAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: ['0deg', '360deg'],
-                    }),
-                  },
-                ],
-              },
-            ]}
-          >
-            <View style={[styles.logo, isDark && styles.logoDark]}>
-              <Text style={styles.logoText}>
-                {getStationLogo(playbackState.currentStation.name)}
-              </Text>
-            </View>
-          </Animated.View>
-
-          {/* Station Info */}
-          <View style={styles.info}>
-            <Text style={[styles.stationName, isDark && styles.stationNameDark]} numberOfLines={1}>
-              {playbackState.currentStation.name}
-            </Text>
-            <View style={styles.statusContainer}>
-              <View style={[styles.statusDot, { backgroundColor: getStatusColor() }]} />
-              <Text style={[styles.statusText, isDark && styles.statusTextDark]} numberOfLines={1}>
-                {getStatusText()}
-              </Text>
-            </View>
-          </View>
-
-          {/* Controls */}
-          <View style={styles.controls}>
-            <TouchableOpacity
-              style={[styles.controlButton, styles.playButton]}
-              onPress={handlePlayPause}
-            >
-              {playbackState.isLoading ? (
-                <ActivityIndicator size="small" color="white" />
-              ) : (
-                <Ionicons
-                  name={playbackState.isPlaying ? 'pause' : 'play'}
-                  size={20}
-                  color="white"
-                />
-              )}
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.controlButton, styles.stopButton]}
-              onPress={handleStop}
-            >
-              <Ionicons
-                name="stop"
-                size={16}
-                color={isDark ? '#F9FAFB' : '#374151'}
-              />
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-
-        {/* Progress Bar */}
-        {playbackState.isPlaying && (
-          <View style={styles.progressContainer}>
-            <View style={[styles.progressBar, isDark && styles.progressBarDark]}>
-              <Animated.View style={styles.progressFill} />
-            </View>
+      {/* Sol: Logo (Gri Arka Plan - 1/3 alan) */}
+      <View style={styles.logoSection}>
+        {displayStation ? (
+          <RadioLogo station={displayStation} size={40} />
+        ) : (
+          <View style={styles.defaultLogoContainer}>
+            <Ionicons name="radio-outline" size={24} color="#6B7280" />
           </View>
         )}
-      </LinearGradient>
+      </View>
+
+      {/* Sağ: İsim ve Kontroller */}
+      <TouchableOpacity
+        style={styles.infoSection}
+        onPress={onPress}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.stationName} numberOfLines={1}>
+          {displayStation?.name || 'Radyo Seçin'}
+        </Text>
+        <Text style={styles.statusText} numberOfLines={1}>
+          {displayStation ? 
+            (playbackState.currentStation ? 
+              (playbackState.isPlaying ? 'Çalıyor' : 'Durduruldu') : 
+              'Son Çalınan'
+            ) : 
+            'Başlamak için bir radyo seçin'
+          }
+        </Text>
+      </TouchableOpacity>
+
+      {/* Kontroller */}
+      <View style={styles.controls}>
+        <TouchableOpacity
+          style={[
+            styles.playButton,
+            (!playbackState.currentStation && !lastPlayedStation) && styles.disabledButton
+          ]}
+          onPress={handlePlayPause}
+          disabled={!playbackState.currentStation && !lastPlayedStation}
+        >
+          {playbackState.isLoading ? (
+            <ActivityIndicator size="small" color="#FF6B35" />
+          ) : (
+            <Ionicons
+              name={playbackState.isPlaying ? 'pause' : 'play'}
+              size={20}
+              color={(!playbackState.currentStation && !lastPlayedStation) ? '#9CA3AF' : '#FF6B35'}
+            />
+          )}
+        </TouchableOpacity>
+      </View>
     </Animated.View>
   );
 };
@@ -260,121 +200,69 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
+    shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowRadius: 4,
+    elevation: 5,
     zIndex: 1000,
   },
-  gradient: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 20,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(0, 0, 0, 0.1)',
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  logoContainer: {
-    width: 50,
-    height: 50,
-  },
-  logo: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#3B82F6',
+  logoSection: {
+    width: 56, // Daha dar ve kare
+    height: 56,
+    backgroundColor: '#F3F4F6',
+    paddingVertical: 0,
+    paddingHorizontal: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#3B82F6',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
+    borderTopLeftRadius: 16,
+    borderBottomLeftRadius: 16,
   },
-  logoDark: {
-    backgroundColor: '#4F46E5',
-    shadowColor: '#4F46E5',
+  defaultLogoContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#E5E7EB',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  logoText: {
-    fontSize: 22,
-    color: 'white',
-  },
-  info: {
+  infoSection: {
     flex: 1,
-    marginRight: 8,
+    marginLeft: 12,
+    marginRight: 12,
   },
   stationName: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: '#374151',
-    marginBottom: 4,
-  },
-  stationNameDark: {
-    color: '#F9FAFB',
-  },
-  statusContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  statusDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    marginBottom: 2,
   },
   statusText: {
     fontSize: 12,
     color: '#6B7280',
-    fontWeight: '500',
-  },
-  statusTextDark: {
-    color: '#9CA3AF',
   },
   controls: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  controlButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginLeft: 12,
   },
   playButton: {
-    backgroundColor: '#3B82F6',
-    shadowColor: '#3B82F6',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#FEF3F2',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#FF6B35',
   },
-  stopButton: {
-    backgroundColor: 'rgba(107, 114, 128, 0.2)',
-  },
-  progressContainer: {
-    marginTop: 12,
-    height: 3,
-  },
-  progressBar: {
-    height: 3,
-    backgroundColor: '#E5E7EB',
-    borderRadius: 1.5,
-    overflow: 'hidden',
-  },
-  progressBarDark: {
-    backgroundColor: '#374151',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#3B82F6',
-    width: '100%',
-    borderRadius: 1.5,
+  disabledButton: {
+    backgroundColor: '#F3F4F6',
+    borderColor: '#D1D5DB',
   },
 });

@@ -37,10 +37,10 @@ interface FullPlayerProps {
 
 // Mini Footer Player Component
 export const MiniPlayer: React.FC<MiniPlayerProps> = ({ isVisible, onExpand, onClose, onNext, onPrevious }) => {
-  // Örnek: Kral Pop ve Süper FM logoları ile yuvarlak radyo avatarları
+  // Örnek: Kral Pop logosu ve varsayılan icon ile yuvarlak radyo avatarları
   const radioLogos = [
-    { name: 'Kral Pop', image: require('../../assets/kralpop.png') },
-    { name: 'Süper FM', image: require('../../assets/superfm.png') },
+    { name: 'Kral Pop', image: require('../../assets/kral.png') },
+    { name: 'Süper FM', image: require('../../assets/super.png') },
     // Diğer radyoları buraya ekleyebilirsiniz
   ];
   const [playbackState, setPlaybackState] = useState<RadioAudioState>(simpleRadioAudioService.getState());

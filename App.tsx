@@ -4,8 +4,10 @@ import { Alert, AppState, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { simpleRadioAudioService } from './src/services/simpleRadioAudioService';
 import { favoritesService } from './src/services/favoritesService';
-import { MiniPlayer, FullPlayer } from './src/components/NewPlayer';
+import { FullPlayer } from './src/components/NewPlayer';
+import { ModernFooterPlayer } from './src/components/ModernFooterPlayer';
 import { FavoritesPage } from './src/screens/FavoritesPage';
+import { AppProvider } from './src/contexts/AppContext';
 import { RADIO_STATIONS, RadioStation } from './src/constants/radioStations';
 
 // Basit ana sayfa komponenti
@@ -60,12 +62,20 @@ const TURKISH_RADIOS = RADIO_STATIONS.map((station: RadioStation) => ({
 const audioService = simpleRadioAudioService;
 
 export default function App() {
+  return (
+    <AppProvider>
+      <MainApp />
+    </AppProvider>
+  );
+}
+
+function MainApp() {
   // 🎉 RADYO SAYISI KONTROLÜ
   console.log(`🎵 TOPLAM ${RADIO_STATIONS.length} RADYO İSTASYONU YÜKLENDİ!`);
   console.log(`📻 İlk 5 Radyo:`, RADIO_STATIONS.slice(0, 5).map(r => r.name));
   
   const insets = useSafeAreaInsets();
-  const [isMiniPlayerOpen, setIsMiniPlayerOpen] = useState(false);
+  // const [isMiniPlayerOpen, setIsMiniPlayerOpen] = useState(false); // REMOVED - No mini player
   const [isFullPlayerOpen, setIsFullPlayerOpen] = useState(false);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [currentStation, setCurrentStation] = useState<any>(null);
@@ -96,10 +106,10 @@ export default function App() {
           setCurrentStation(currentState.currentStation);
           setAudioState(currentState);
           
-          // Eğer çalıyorsa mini player'ı göster
-          if (currentState.isPlaying && !isFullPlayerOpen) {
-            setIsMiniPlayerOpen(true);
-          }
+          // Mini player removed - no longer showing mini player
+          // if (currentState.isPlaying && !isFullPlayerOpen) {
+          //   setIsMiniPlayerOpen(true);
+          // }
         }
       }
     };
@@ -124,28 +134,28 @@ export default function App() {
     };
   }, []);
 
-  // Mini player visibility kontrolü - daha güvenilir
-  useEffect(() => {
-    const hasActiveStation = audioState.currentStation || currentStation;
-    const shouldShowMiniPlayer = hasActiveStation && !isFullPlayerOpen;
-    
-    console.log('🎮 Mini player visibility check:', {
-      currentStation: audioState.currentStation?.name || currentStation?.name,
-      isPlaying: audioState.isPlaying,
-      isLoading: audioState.isLoading,
-      shouldShowMiniPlayer,
-      isMiniPlayerOpen,
-      isFullPlayerOpen
-    });
-    
-    if (shouldShowMiniPlayer && !isMiniPlayerOpen) {
-      console.log('📱 Opening mini player - conditions met');
-      setIsMiniPlayerOpen(true);
-    } else if (!shouldShowMiniPlayer && isMiniPlayerOpen) {
-      console.log('📱 Closing mini player - conditions not met');
-      setIsMiniPlayerOpen(false);
-    }
-  }, [audioState.currentStation, currentStation, isFullPlayerOpen, audioState.isPlaying]);
+  // Mini player visibility kontrolü - REMOVED (no mini player)
+  // useEffect(() => {
+  //   const hasActiveStation = audioState.currentStation || currentStation;
+  //   const shouldShowMiniPlayer = hasActiveStation && !isFullPlayerOpen;
+  //   
+  //   console.log('🎮 Mini player visibility check:', {
+  //     currentStation: audioState.currentStation?.name || currentStation?.name,
+  //     isPlaying: audioState.isPlaying,
+  //     isLoading: audioState.isLoading,
+  //     shouldShowMiniPlayer,
+  //     isMiniPlayerOpen,
+  //     isFullPlayerOpen
+  //   });
+  //   
+  //   if (shouldShowMiniPlayer && !isMiniPlayerOpen) {
+  //     console.log('📱 Opening mini player - conditions met');
+  //     setIsMiniPlayerOpen(true);
+  //   } else if (!shouldShowMiniPlayer && isMiniPlayerOpen) {
+  //     console.log('📱 Closing mini player - conditions not met');
+  //     setIsMiniPlayerOpen(false);
+  //   }
+  // }, [audioState.currentStation, currentStation, isFullPlayerOpen, audioState.isPlaying]);
 
   // Toplam radyo listesi (sadece statik radyolar)
   const allStations = TURKISH_RADIOS;
@@ -249,9 +259,9 @@ export default function App() {
         await new Promise(resolve => setTimeout(resolve, 100));
       }
       
-      // Set the station immediately and open mini player
+      // Set the station immediately (no mini player)
       setCurrentStation(station);
-      setIsMiniPlayerOpen(true);
+      // setIsMiniPlayerOpen(true); // REMOVED - No mini player
       
       // Start playing
       await audioService.play(station);
@@ -266,7 +276,7 @@ export default function App() {
   // Player handler functions
   const handleExpandPlayer = () => {
     console.log('🔍 Expand player button pressed');
-    console.log('🔍 Current state:', { isMiniPlayerOpen, isFullPlayerOpen });
+    console.log('🔍 Current state:', { isFullPlayerOpen });
     setIsFullPlayerOpen(true);
     // Mini player'ı kapatmayacağız, full player açıkken gizli olur
   };
@@ -280,7 +290,7 @@ export default function App() {
   const handleCloseMiniPlayer = () => {
     console.log('❌ Close mini player button pressed');
     audioService.stop();
-    setIsMiniPlayerOpen(false);
+    // setIsMiniPlayerOpen(false); // REMOVED - No mini player
     setCurrentStation(null);
     setIsFullPlayerOpen(false);
     console.log('✅ Mini player closed and audio stopped');
@@ -316,6 +326,34 @@ export default function App() {
   // Logo bileşeni - Modern yuvarlak tasarım with enhanced error handling
   const RadioLogo = ({ station, size = 50 }: { station: any, size?: number }) => {
     const shouldShowFallback = !station.favicon || failedLogos.has(station.id);
+    
+    // Kral FM için özel logo kontrolü
+    if (station.name.toLowerCase().includes('kral')) {
+      return (
+        <Image 
+          source={require('./assets/kral.png')}
+          style={[styles.modernRadioLogo, { width: size, height: size, borderRadius: size / 2 }]}
+          onError={(error) => {
+            console.log(`❌ Kral FM logo hatası:`, error.nativeEvent);
+            handleLogoError(station.id);
+          }}
+        />
+      );
+    }
+    
+    // Super FM için özel logo kontrolü
+    if (station.name.toLowerCase().includes('super')) {
+      return (
+        <Image 
+          source={require('./assets/super.png')}
+          style={[styles.modernRadioLogo, { width: size, height: size, borderRadius: size / 2 }]}
+          onError={(error) => {
+            console.log(`❌ Super FM logo hatası:`, error.nativeEvent);
+            handleLogoError(station.id);
+          }}
+        />
+      );
+    }
     
     if (shouldShowFallback) {
       return (
@@ -616,13 +654,13 @@ export default function App() {
         />
       </View>
 
-      {/* Modern Mini Player */}
-      <MiniPlayer
-        isVisible={isMiniPlayerOpen && (!!audioState.currentStation || !!currentStation)}
-        onExpand={handleExpandPlayer}
-        onClose={handleCloseMiniPlayer}
-        onNext={playNextRadio}
-        onPrevious={playPreviousRadio}
+      {/* Mini Player - KALDIRILDI */}
+      {/* MiniPlayer component removed to eliminate footer player */}
+
+      {/* Modern Footer Player */}
+      <ModernFooterPlayer 
+        onPress={() => setIsFullPlayerOpen(true)}
+        onSwipeUp={() => setIsFullPlayerOpen(true)}
       />
 
       {/* Full Player */}

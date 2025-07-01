@@ -12,7 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../contexts/AppContext';
 import { RadioStation } from '../constants/radioStations';
-import { audioService, PlaybackState } from '../services/cleanAudioService';
+import { simpleRadioAudioService, RadioAudioState } from '../services/simpleRadioAudioService';
 
 interface ModernMiniPlayerProps {
   station: RadioStation;
@@ -27,7 +27,7 @@ export const ModernMiniPlayer: React.FC<ModernMiniPlayerProps> = ({
 }) => {
   const { t } = useTranslation();
   const { colors, isDark } = useApp();
-  const [playbackState, setPlaybackState] = useState<PlaybackState>(audioService.getState());
+  const [playbackState, setPlaybackState] = useState<RadioAudioState>(simpleRadioAudioService.getState());
   
   // Animations
   const slideAnim = new Animated.Value(100);
@@ -35,7 +35,7 @@ export const ModernMiniPlayer: React.FC<ModernMiniPlayerProps> = ({
   const progressAnim = new Animated.Value(0);
 
   useEffect(() => {
-    const unsubscribe = audioService.subscribe(setPlaybackState);
+    const unsubscribe = simpleRadioAudioService.subscribe(setPlaybackState);
     
     // Entrance animation
     Animated.spring(slideAnim, {
@@ -80,9 +80,9 @@ export const ModernMiniPlayer: React.FC<ModernMiniPlayerProps> = ({
 
     try {
       if (playbackState.isPlaying) {
-        await audioService.pause();
+        await simpleRadioAudioService.pause();
       } else {
-        await audioService.resume();
+        await simpleRadioAudioService.resume();
       }
     } catch (error) {
       console.error('Playback control error:', error);
@@ -172,7 +172,7 @@ export const ModernMiniPlayer: React.FC<ModernMiniPlayerProps> = ({
               >
                 <Image
                   source={{ 
-                    uri: station.imageUrl || station.favicon || 'https://via.placeholder.com/56x56?text=📻'
+                    uri: station.favicon || 'https://via.placeholder.com/56x56?text=📻'
                   }}
                   className="w-full h-full"
                   resizeMode="cover"
@@ -224,7 +224,7 @@ export const ModernMiniPlayer: React.FC<ModernMiniPlayerProps> = ({
                 style={{ color: colors.textSecondary }}
                 numberOfLines={1}
               >
-                {station.genre} • {station.country}
+                {station.category || 'Music'} • {station.country}
               </Text>
             </View>
 

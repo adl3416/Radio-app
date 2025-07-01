@@ -11,7 +11,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../contexts/AppContext';
-import { Category } from '../constants/radioStations';
+
+interface Category {
+  id: string;
+  name: string;
+  icon?: any; // For Ionicons
+}
 
 interface ModernSearchAndFilterProps {
   searchQuery: string;

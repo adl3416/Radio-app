@@ -11,8 +11,25 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { radioBrowserService, ProcessedRadioStation } from '../services/radioBrowserService';
-import { audioService } from '../services/cleanAudioService';
+import { RadioStation } from '../constants/radioStations';
+import { simpleRadioAudioService as audioService } from '../services/simpleRadioAudioService';
+
+// For now, use RadioStation as ProcessedRadioStation
+type ProcessedRadioStation = RadioStation;
+
+// Mock radioBrowserService
+const radioBrowserService = {
+  getTurkishStationsPaginated: async (page: number, limit: number) => {
+    return { 
+      stations: [], 
+      total: 0, 
+      hasMore: false, 
+      page: page, 
+      totalPages: 1 
+    };
+  },
+  clearCache: () => {},
+};
 
 interface ExtendedRadioListProps {
   isVisible: boolean;

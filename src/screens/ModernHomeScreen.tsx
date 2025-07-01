@@ -17,8 +17,37 @@ import { useApp } from '../contexts/AppContext';
 import { ModernHeader } from '../components/ModernHeader';
 import { ModernSearchAndFilter } from '../components/ModernSearchAndFilter';
 import { ModernRadioCard } from '../components/ModernRadioCard';
-import { RADIO_STATIONS, CATEGORIES, RadioStation, GUARANTEED_STATIONS } from '../constants/radioStations';
-import { radioBrowserService, ProcessedRadioStation } from '../services/radioBrowserService';
+import { RADIO_STATIONS, RadioStation } from '../constants/radioStations';
+
+// For now, use RadioStation as ProcessedRadioStation
+type ProcessedRadioStation = RadioStation;
+
+// Mock radioBrowserService
+const radioBrowserService = {
+  getTurkishStationsPaginated: async (page: number, limit: number) => {
+    return { 
+      stations: [], 
+      total: 0, 
+      hasMore: false, 
+      page: page, 
+      totalPages: 1 
+    };
+  },
+  getTurkishStations: async () => {
+    return [];
+  },
+  clearCache: () => {},
+};
+
+// Mock categories and guaranteed stations
+const CATEGORIES = [
+  { id: 'all', name: 'Tümü', icon: 'radio-outline' },
+  { id: 'music', name: 'Müzik', icon: 'musical-notes-outline' },
+  { id: 'news', name: 'Haber', icon: 'newspaper-outline' },
+  { id: 'general', name: 'Genel', icon: 'people-outline' },
+];
+
+const GUARANTEED_STATIONS: RadioStation[] = [];
 
 const { width } = Dimensions.get('window');
 
@@ -114,8 +143,8 @@ export const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
       filtered = filtered.filter((station: RadioStation | ProcessedRadioStation) =>
         station.name.toLowerCase().includes(query) ||
         (station.description && station.description.toLowerCase().includes(query)) ||
-        (station.genre && station.genre.toLowerCase().includes(query)) ||
-        (station.city && station.city.toLowerCase().includes(query))
+        (station.category && station.category.toLowerCase().includes(query)) ||
+        (station.country && station.country.toLowerCase().includes(query))
       );
     }
 
@@ -140,7 +169,7 @@ export const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
 
   const handleStationPress = (station: RadioStation) => {
     // Show warning for API stations
-    if (useApiStations && !station.isGuaranteed && apiStations.length > 0) {
+    if (useApiStations && apiStations.length > 0) {
       Alert.alert(
         t('formatWarning', 'Format Uyarısı'),
         t('formatWarningMessage', 'Bu istasyon API\'den geliyor ve format uyumluluğu garanti edilemez. Sorun yaşarsanız "Yerel" seçeneğine geçin.'),

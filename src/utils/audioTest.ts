@@ -1,4 +1,4 @@
-import { modernRadioAudioService } from '../services/modernRadioAudioService';
+import { simpleRadioAudioService, RadioAudioState } from '../services/simpleRadioAudioService';
 
 // Simple test utility to verify audio service works
 export const testAudioService = async () => {
@@ -6,15 +6,15 @@ export const testAudioService = async () => {
   
   try {
     // Test initialization
-    await modernRadioAudioService.initialize();
+    await simpleRadioAudioService.initialize();
     console.log('✅ Audio service initialized');
     
     // Get initial state
-    const state = modernRadioAudioService.getState();
+    const state = simpleRadioAudioService.getState();
     console.log('📊 Initial state:', state);
     
     // Test subscription
-    const unsubscribe = modernRadioAudioService.subscribe((newState) => {
+    const unsubscribe = simpleRadioAudioService.subscribe((newState: RadioAudioState) => {
       console.log('🔄 State changed:', newState);
     });
     
@@ -29,11 +29,11 @@ export const testAudioService = async () => {
     };
     
     console.log('🎵 Testing radio playback...');
-    await modernRadioAudioService.play(testStation);
+    await simpleRadioAudioService.play(testStation);
     
     // Wait a bit then stop
     setTimeout(async () => {
-      await modernRadioAudioService.stop();
+      await simpleRadioAudioService.stop();
       unsubscribe();
       console.log('🛑 Test completed');
     }, 5000);

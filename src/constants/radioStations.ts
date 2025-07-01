@@ -19,6 +19,7 @@ export interface RadioStation {
   country?: string;
   language?: string;
   tags?: string;
+  logo?: any;
 }
 
 export const RADIO_STATIONS: RadioStation[] = [
@@ -136,7 +137,7 @@ export const RADIO_STATIONS: RadioStation[] = [
   },
   {
     "id": "159e4625-43d8-4cda-b98c-819edfad8667",
-    "name": "Süper FM",
+    "name": "Kral FM",
     "url": "http://22533.live.streamtheworld.com:3690/SUPER_FMAAC_SC",
     "description": "pop • AAC+ 64kbps",
     "votes": 4908,
@@ -147,8 +148,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     "tags": "pop",
     "category": "Müzik",
     "isLive": true,
-    "website": "https://superfm.com.tr/",
-    "favicon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png"
+    "website": "https://kraltv.com.tr/",
+    "favicon": require("../../assets/kral.png")
   },
   {
     "id": "6f3d3422-9998-4079-8e1a-7d23cef150ea",
@@ -520,7 +521,7 @@ export const RADIO_STATIONS: RadioStation[] = [
   },
   {
     "id": "706def0c-7017-4601-8305-db1cdb2e9420",
-    "name": "Super Fm",
+    "name": "Kral FM",
     "url": "https://27743.live.streamtheworld.com:443/SUPER_FM_SC",
     "description": "pop • MP3 64kbps",
     "votes": 3411,
@@ -531,8 +532,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     "tags": "pop",
     "category": "Müzik",
     "isLive": true,
-    "website": "https://superfm.com.tr/",
-    "favicon": "https://superfm.com.tr/favicon.ico"
+    "website": "https://kraltv.com.tr/",
+    "favicon": require("../../assets/kral.png")
   },
   {
     "id": "fd92e72f-2cbe-11e8-91bf-52543be04c81",
@@ -676,7 +677,8 @@ export const RADIO_STATIONS: RadioStation[] = [
     "category": "Genel",
     "isLive": true,
     "website": "https://playerservices.streamtheworld.com/api/livestream-redirect/SUPER2_SC?/",
-    "favicon": ""
+    "favicon": "",
+    "logo": require("../../assets/super.png")
   },
   {
     "id": "775bea1d-8c92-11e9-ad01-52543be04c81",

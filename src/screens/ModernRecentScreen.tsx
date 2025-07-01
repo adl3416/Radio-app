@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useApp } from '../contexts/AppContext';
 import { ModernRadioCard } from '../components/ModernRadioCard';
 import { RadioStation } from '../constants/radioStations';
-import { audioService } from '../services/cleanAudioService';
+import { simpleRadioAudioService as audioService } from '../services/simpleRadioAudioService';
 
 interface ModernRecentScreenProps {
   onStationPress: (station: RadioStation) => void;

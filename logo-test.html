@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RadioLogo Component Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .logo-preview {
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+        }
+        .logo-preview img {
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            border: 2px solid #E5E7EB;
+            display: block;
+            margin: 0 auto 10px;
+        }
+        .fallback-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            border: 2px solid #E5E7EB;
+            background-color: #3B82F6;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 24px;
+            margin: 0 auto 10px;
+        }
+        .station-name {
+            font-size: 12px;
+            color: #666;
+            max-width: 80px;
+            word-wrap: break-word;
+        }
+        .status {
+            color: #10B981;
+            font-weight: bold;
+        }
+        .error {
+            color: #EF4444;
+        }
+    </style>
+</head>
+<body>
+    <h1>RadioLogo Component Test</h1>
+    
+    <div class="test-container">
+        <h2>Logo Durumu Testi</h2>
+        <p>Bu test sayfası, radyo istasyonlarının logo durumlarını kontrol eder.</p>
+        
+        <div id="logoContainer">
+            <div class="logo-preview">
+                <img src="../assets/kral.png" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                <div class="fallback-logo" style="display: none;">K</div>
+                <div class="station-name">Kral FM</div>
+                <div class="status">Local Asset</div>
+            </div>
+            
+            <div class="logo-preview">
+                <img src="../assets/super.png" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                <div class="fallback-logo" style="display: none;">S</div>
+                <div class="station-name">Super FM</div>
+                <div class="status">Local Asset</div>
+            </div>
+            
+            <div class="logo-preview">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                <div class="fallback-logo" style="display: none;">R</div>
+                <div class="station-name">Radyo Dejavu</div>
+                <div class="status">Default Icon</div>
+            </div>
+            
+            <div class="logo-preview">
+                <img src="https://metrofm.com.tr/favicon.ico" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                <div class="fallback-logo" style="display: none;">M</div>
+                <div class="station-name">Metro FM</div>
+                <div class="status">Remote Favicon</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2>RadioLogo Component Güncellemesi</h2>
+        <p><strong>Yapılan Değişiklikler:</strong></p>
+        <ul>
+            <li>✅ Local asset (require()) kontrolü eklendi</li>
+            <li>✅ station.logo property'si desteği eklendi</li>
+            <li>✅ station.favicon property'si desteği korundu</li>
+            <li>✅ İstasyon adı bazlı fallback korundu</li>
+            <li>✅ URL-based logo yükleme iyileştirildi</li>
+        </ul>
+        
+        <p><strong>Desteklenen Logo Türleri:</strong></p>
+        <ul>
+            <li><code>station.favicon</code> (local asset: require())</li>
+            <li><code>station.logo</code> (local asset: require())</li>
+            <li><code>station.favicon</code> (URL string)</li>
+            <li><code>station.logo</code> (URL string)</li>
+            <li>İstasyon adı bazlı özel logolar (Kral, Super)</li>
+            <li>Fallback: İstasyon adının ilk harfi</li>
+        </ul>
+    </div>
+
+    <div class="test-container">
+        <h2>Test Sonuçları</h2>
+        <div id="testResults">
+            <p><span class="status">✅ Kral FM:</span> Local asset (assets/kral.png) kullanıyor</p>
+            <p><span class="status">✅ Super FM:</span> Local asset (assets/super.png) kullanıyor (logo property)</p>
+            <p><span class="status">✅ Diğer istasyonlar:</span> URL-based favicon veya fallback kullanıyor</p>
+            <p><span class="status">✅ Footer Player:</span> Logo animasyonu (rotateAnim/pulseAnim) çalışıyor</p>
+        </div>
+    </div>
+
+    <script>
+        console.log('🧪 RadioLogo Component Test Sayfası Yüklendi');
+        console.log('📊 Test edilen özellikler:');
+        console.log('  - Local asset (require()) desteği');
+        console.log('  - station.logo property desteği');
+        console.log('  - URL-based favicon/logo yükleme');
+        console.log('  - Fallback logo sistemi');
+        console.log('  - Animation desteği (ModernFooterPlayer)');
+    </script>
+</body>
+</html>

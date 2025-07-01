@@ -85,12 +85,12 @@ export const WORKING_TURKISH_RADIOS: WorkingRadioStation[] = [
     tested: true
   },
   {
-    id: "super-fm",
-    name: "Süper FM",
+    id: "kral-fm",
+    name: "Kral FM",
     url: "https://trkvz-radyolar.ercdn.net/superfm/playlist.m3u8",
     description: "90'lar ve 2000'ler müziği",
     category: "Müzik",
-    favicon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Radio_icon.svg/32px-Radio_icon.svg.png",
+    favicon: require("../../assets/kral.png"),
     isLive: true,
     tested: true
   },

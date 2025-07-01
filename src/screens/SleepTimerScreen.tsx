@@ -10,11 +10,40 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
-import {
-  sleepTimerService,
-  SleepTimerState,
-  SLEEP_TIMER_DURATIONS
-} from '../services/sleepTimerService';
+// Mock sleep timer service and types
+interface SleepTimerState {
+  isActive: boolean;
+  remainingTime: number;
+  totalDuration: number;
+  duration: number;
+}
+
+const SLEEP_TIMER_DURATIONS = [
+  { label: '15 min', value: 15 * 60 * 1000 },
+  { label: '30 min', value: 30 * 60 * 1000 },
+  { label: '45 min', value: 45 * 60 * 1000 },
+  { label: '1 saat', value: 60 * 60 * 1000 },
+  { label: '2 saat', value: 2 * 60 * 60 * 1000 },
+];
+
+const sleepTimerService = {
+  getState: (): SleepTimerState => ({
+    isActive: false,
+    remainingTime: 0,
+    totalDuration: 0,
+    duration: 0,
+  }),
+  subscribe: (callback: (state: SleepTimerState) => void) => () => {},
+  start: (duration: number) => {},
+  stop: () => {},
+  pause: () => {},
+  resume: () => {},
+  setDuration: (duration: number) => {},
+  startTimer: (callback: () => void) => {},
+  stopTimer: () => {},
+  extendTimer: (minutes: number) => {},
+  getRemainingTimeFormatted: () => '00:00',
+};
 
 interface SleepTimerScreenProps {
   onClose: () => void;

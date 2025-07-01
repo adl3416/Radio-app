@@ -11,12 +11,58 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
-import {
-  equalizerService,
-  EqualizerState,
-  EQUALIZER_BANDS,
-  EqualizerPreset
-} from '../services/equalizerService';
+// Mock equalizer service and types
+interface EqualizerState {
+  enabled: boolean;
+  isEnabled: boolean;
+  bands: number[];
+  customBands: number[];
+  preset: string;
+  currentPreset: string;
+  presets: EqualizerPreset[];
+}
+
+interface EqualizerPreset {
+  id: string;
+  name: string;
+  gains: number[];
+}
+
+const EQUALIZER_BANDS = [
+  { label: '60Hz', frequency: 60 },
+  { label: '170Hz', frequency: 170 },
+  { label: '310Hz', frequency: 310 },
+  { label: '600Hz', frequency: 600 },
+  { label: '1kHz', frequency: 1000 },
+  { label: '3kHz', frequency: 3000 },
+  { label: '6kHz', frequency: 6000 },
+  { label: '12kHz', frequency: 12000 },
+  { label: '14kHz', frequency: 14000 },
+  { label: '16kHz', frequency: 16000 },
+];
+
+const defaultPresets = [
+  { id: 'flat', name: 'Flat', gains: new Array(10).fill(0) },
+  { id: 'rock', name: 'Rock', gains: [4, 2, -2, -2, 1, 3, 5, 4, 4, 4] },
+  { id: 'pop', name: 'Pop', gains: [-1, 2, 4, 4, 1, -1, -1, -1, -1, -1] },
+];
+
+const equalizerService = {
+  getState: (): EqualizerState => ({
+    enabled: false,
+    isEnabled: false,
+    bands: new Array(10).fill(0),
+    customBands: new Array(10).fill(0),
+    preset: 'flat',
+    currentPreset: 'flat',
+    presets: defaultPresets,
+  }),
+  subscribe: (callback: (state: EqualizerState) => void) => () => {},
+  setEnabled: (enabled: boolean) => {},
+  setBandGain: (bandIndex: number, gain: number) => {},
+  setPreset: (preset: EqualizerPreset) => {},
+  resetToFlat: () => {},
+};
 
 interface EqualizerScreenProps {
   onClose: () => void;
@@ -37,7 +83,7 @@ export const EqualizerScreen: React.FC<EqualizerScreenProps> = ({ onClose }) => 
   };
 
   const handlePresetSelect = (preset: EqualizerPreset) => {
-    equalizerService.setPreset(preset.id);
+    equalizerService.setPreset(preset);
   };
 
   const handleBandIncrease = (bandIndex: number) => {

@@ -13,7 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../contexts/AppContext';
 import { RadioStation } from '../constants/radioStations';
-import { audioService, PlaybackState } from '../services/cleanAudioService';
+import { simpleRadioAudioService, RadioAudioState } from '../services/simpleRadioAudioService';
 
 interface ModernRadioCardProps {
   station: RadioStation;
@@ -31,7 +31,7 @@ export const ModernRadioCard: React.FC<ModernRadioCardProps> = ({
 }) => {
   const { t } = useTranslation();
   const { colors, isDark } = useApp();
-  const [playbackState, setPlaybackState] = useState<PlaybackState>(audioService.getState());
+  const [playbackState, setPlaybackState] = useState<RadioAudioState>(simpleRadioAudioService.getState());
   const [isLoading, setIsLoading] = useState(false);
   
   // Animation values
@@ -40,7 +40,7 @@ export const ModernRadioCard: React.FC<ModernRadioCardProps> = ({
   const slideAnim = new Animated.Value(50);
 
   useEffect(() => {
-    const unsubscribe = audioService.subscribe(setPlaybackState);
+    const unsubscribe = simpleRadioAudioService.subscribe(setPlaybackState);
     return unsubscribe;
   }, []);
 
@@ -176,7 +176,7 @@ export const ModernRadioCard: React.FC<ModernRadioCardProps> = ({
               >
                 <Image
                   source={{ 
-                    uri: station.imageUrl || station.favicon || 'https://via.placeholder.com/80x80?text=📻'
+                    uri: station.favicon || 'https://via.placeholder.com/80x80?text=📻'
                   }}
                   className="w-full h-full"
                   resizeMode="cover"
@@ -220,7 +220,7 @@ export const ModernRadioCard: React.FC<ModernRadioCardProps> = ({
               style={{ color: colors.textSecondary }}
               numberOfLines={1}
             >
-              {station.country} • {station.genre}
+              {station.country} • {station.category || 'Music'}
             </Text>
 
             {/* Genre Tag */}
@@ -237,7 +237,7 @@ export const ModernRadioCard: React.FC<ModernRadioCardProps> = ({
                   className="text-xs font-medium"
                   style={{ color: colors.primary }}
                 >
-                  {station.category.toUpperCase()}
+                  {(station.category || 'Music').toUpperCase()}
                 </Text>
               </View>
             </View>

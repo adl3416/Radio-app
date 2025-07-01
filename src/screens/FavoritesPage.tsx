@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { audioService } from '../services/cleanAudioService';
+import { simpleRadioAudioService as audioService } from '../services/simpleRadioAudioService';
 
 interface FavoritesPageProps {
   isVisible: boolean;

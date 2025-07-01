@@ -12,7 +12,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { audioService, PlaybackState } from '../services/cleanAudioService';
+import { simpleRadioAudioService as audioService, RadioAudioState } from '../services/simpleRadioAudioService';
 import { favoritesService } from '../services/favoritesService';
 import { useAppContext } from '../contexts/AppContext';
 
@@ -25,7 +25,7 @@ const { width, height } = Dimensions.get('window');
 
 export const ModernPlayer: React.FC<PlayerProps> = ({ onClose, isMinimized = false }) => {
   const { isDark } = useAppContext();
-  const [playbackState, setPlaybackState] = useState<PlaybackState>(audioService.getState());
+  const [playbackState, setPlaybackState] = useState<RadioAudioState>(audioService.getState());
   const [isFavorite, setIsFavorite] = useState(false);
   const [volume, setVolume] = useState(1.0);
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
