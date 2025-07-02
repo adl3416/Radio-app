@@ -44,7 +44,8 @@ export const RadioLogo: React.FC<RadioLogoProps> = ({
   }
   
   // İstasyon adına göre özel logo kontrolü
-  if (station.name.toLowerCase().includes('kral')) {
+  const stationName = typeof station.name === 'string' ? station.name : '';
+  if (stationName.toLowerCase().includes('kral')) {
     return (
       <Image 
         source={require('../../assets/kral.png')}
@@ -56,9 +57,8 @@ export const RadioLogo: React.FC<RadioLogoProps> = ({
       />
     );
   }
-  
   // Super FM için özel logo kontrolü
-  if (station.name.toLowerCase().includes('super')) {
+  if (stationName.toLowerCase().includes('super')) {
     return (
       <Image 
         source={require('../../assets/super.png')}
@@ -75,12 +75,13 @@ export const RadioLogo: React.FC<RadioLogoProps> = ({
   const hasValidUrl = (station.favicon && typeof station.favicon === 'string') || 
                       (station.logo && typeof station.logo === 'string');
   const shouldShowFallback = !hasValidUrl || failedLogos.has(station.id);
-  
   if (shouldShowFallback) {
+    // Ensure station.name is a string and not empty
+    const fallbackChar = stationName.length > 0 ? stationName.charAt(0).toUpperCase() : '?';
     return (
-      <View style={[styles.modernDefaultLogo, { width: size, height: size, borderRadius: size / 2 }]}>
-        <Text style={[styles.modernDefaultLogoText, { fontSize: size * 0.4 }]}>
-          {station.name.charAt(0).toUpperCase()}
+      <View style={[styles.modernDefaultLogo, { width: size, height: size, borderRadius: size / 2 }]}> 
+        <Text style={[styles.modernDefaultLogoText, { fontSize: size * 0.4 }]}> 
+          {fallbackChar}
         </Text>
       </View>
     );

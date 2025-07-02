@@ -673,24 +673,27 @@ function MainApp() {
       {/* Gerçek uygulama için aşağıdaki satırı aktif bırakın */}
       <ModernFooterPlayer 
         onPress={() => {
+          if (!playerTransition) return;
           Animated.timing(playerTransition, {
             toValue: 1,
             duration: 600,
             easing: Easing.out(Easing.cubic),
             useNativeDriver: false,
-          }).start(() => setIsFullPlayerOpen(true));
+          }).start(() => {
+            setIsFullPlayerOpen(true);
+          });
         }}
         onSwipeUpProgress={(progress: number) => {
           setIsPanning(true);
-          // Daha yavaş ve yumuşak geçiş için ilerlemeyi easeOut ile yavaşlat
-          const eased = Math.pow(progress, 1.7); // 1.5-2 arası değerler yavaşlatır
+          const eased = Math.pow(progress, 1.7);
           playerTransition.setValue(eased);
         }}
         onSwipeUpEnd={(completed: boolean) => {
+          if (!playerTransition) return;
           if (completed) {
             Animated.timing(playerTransition, {
               toValue: 1,
-              duration: 600, // Daha yavaş ve yumuşak tam açılma
+              duration: 600,
               easing: Easing.out(Easing.cubic),
               useNativeDriver: false,
             }).start(() => {
@@ -716,7 +719,7 @@ function MainApp() {
 
       {/* Full Player Animasyonlu */}
       <Animated.View
-        pointerEvents={isFullPlayerOpen || isPanning ? 'auto' : 'none'}
+        pointerEvents={isFullPlayerOpen ? 'auto' : 'none'}
         style={{
           position: 'absolute',
           left: 0,
@@ -736,7 +739,7 @@ function MainApp() {
         }}
       >
         <FullPlayer
-          isVisible={isFullPlayerOpen || isPanning}
+          isVisible={isFullPlayerOpen}
           onCollapse={() => {
             Animated.timing(playerTransition, {
               toValue: 0,

@@ -149,7 +149,7 @@ export const ModernRadioCard: React.FC<ModernRadioCardProps> = ({
                 className="text-xs font-medium"
                 style={{ color: colors.textSecondary }}
               >
-                {station.isLive ? t('live') : t('offline')}
+                {station.isLive ? (t('live') || 'Live') : (t('offline') || 'Offline')}
               </Text>
             </View>
             

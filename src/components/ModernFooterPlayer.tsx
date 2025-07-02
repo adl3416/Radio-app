@@ -261,59 +261,73 @@ export const ModernFooterPlayer: React.FC<ModernFooterPlayerProps> = ({
         <TouchableOpacity
           activeOpacity={0.7}
           style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}
-          onPress={onPress}
+          onPress={onPress ? onPress : () => {
+            console.warn('Mini player: onPress (büyük player açma) fonksiyonu tanımlı değil!');
+          }}
           hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
         >
-          <View style={styles.logoSection}>
-            {displayStation ? (
-              <RadioLogo station={displayStation} size={72} />
-            ) : (
-              <View style={styles.defaultLogoContainer}>
-                <View style={{alignItems: 'center', justifyContent: 'center'}}>
-                  <Ionicons name="radio-outline" size={24} color="#6B7280" />
+          <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+            <View style={styles.logoSection}>
+              {displayStation ? (
+                <RadioLogo station={displayStation} size={72} />
+              ) : (
+                <View style={styles.defaultLogoContainer}>
+                  <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                    <Ionicons name="radio-outline" size={24} color="#6B7280" />
+                  </View>
                 </View>
-              </View>
-            )}
-          </View>
+              )}
+            </View>
 
-          <View style={styles.rightSection}>
-            {/* Play tuşu radyo isminin hemen sağında, arada 8px boşluk ile */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, height: '100%' }}>
-              <View style={{ flex: 1, justifyContent: 'flex-start', flexDirection: 'row', alignItems: 'center', position: 'relative' }}>
-                {/* Logo ile radyo ismi arasında 4px boşluk */}
-                <View style={{ width: 4 }} />
-                {displayStation && (
-                  <Text style={[styles.stationName, { marginLeft: 0, marginRight: 0 }]} numberOfLines={1} ellipsizeMode="tail">
-                    {displayStation.name}
-                  </Text>
-                )}
-                {/* Play tuşu sağ kenara sabit, arada boşluk yok */}
-                <View style={[styles.controls, { position: 'absolute', right: 0, marginRight: 20 }]}> {/* Sağ kenara sabit, 20px boşluk */}
-                  <TouchableOpacity
-                    style={[
-                      styles.playButton,
-                      (!playbackState.currentStation && !lastPlayedStation) && styles.disabledButton
-                    ]}
-                    onPress={e => {
-                      e.stopPropagation && e.stopPropagation();
-                      handlePlayPause();
-                    }}
-                    disabled={!playbackState.currentStation && !lastPlayedStation}
-                    hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
-                    activeOpacity={0.6}
-                  >
-                    {playbackState.isLoading ? (
-                      <ActivityIndicator size="small" color="#FF6B35" />
-                    ) : (
-                      <View style={{alignItems: 'center', justifyContent: 'center'}}>
-                        <Ionicons
-                          name={playbackState.isPlaying ? 'pause' : 'play'}
-                          size={30}
-                          color={(!playbackState.currentStation && !lastPlayedStation) ? '#9CA3AF' : '#FF6B35'}
-                        />
-                      </View>
-                    )}
-                  </TouchableOpacity>
+            <View style={styles.rightSection}>
+              {/* Play tuşu radyo isminin hemen sağında, arada 8px boşluk ile */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, height: '100%' }}>
+                <View style={{ flex: 1, justifyContent: 'flex-start', flexDirection: 'row', alignItems: 'center', position: 'relative' }}>
+                  {/* Logo ile radyo ismi arasında 4px boşluk */}
+                  <View style={{ width: 4 }} />
+                  {displayStation && (
+                    <Text style={[styles.stationName, { marginLeft: 0, marginRight: 0 }]} numberOfLines={1} ellipsizeMode="tail">
+                      {typeof displayStation.name === 'string' ? displayStation.name : ''}
+                    </Text>
+                  )}
+                  {/* Play tuşu sağ kenara sabit, arada boşluk yok */}
+                  <View style={[styles.controls, { position: 'absolute', right: 0, marginRight: 20 }]} pointerEvents="box-none"> {/* Sağ kenara sabit, 20px boşluk */}
+                    <TouchableOpacity
+                      style={[
+                        styles.playButton,
+                        (!playbackState.currentStation && !lastPlayedStation) && styles.disabledButton
+                      ]}
+                      onPress={e => {
+                        if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+                        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+                        handlePlayPause();
+                      }}
+                      onPressIn={e => {
+                        if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+                        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+                      }}
+                      onPressOut={e => {
+                        if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+                        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+                      }}
+                      disabled={!playbackState.currentStation && !lastPlayedStation}
+                      hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
+                      activeOpacity={0.6}
+                    >
+                      {playbackState.isLoading ? (
+                        <ActivityIndicator size="small" color="#FF6B35" />
+                      ) : (
+                        <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                          {/* Ionicons name prop bir string, sorun çıkarmaz. */}
+                          <Ionicons
+                            name={playbackState.isPlaying ? 'pause' : 'play'}
+                            size={30}
+                            color={(!playbackState.currentStation && !lastPlayedStation) ? '#9CA3AF' : '#FF6B35'}
+                          />
+                        </View>
+                      )}
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             </View>

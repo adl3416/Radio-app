@@ -1,4 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
+// Utility: Filter out accidental string/undefined/null children
+function filterValidChildren(children: ReactNode) {
+  if (Array.isArray(children)) {
+    return children.filter(
+      (child) => React.isValidElement(child)
+    );
+  }
+  return React.isValidElement(children) ? children : null;
+}
 import {
   View,
   Text,
@@ -12,6 +21,7 @@ import {
   Image,
   Easing,
 } from 'react-native';
+import Slider from '@react-native-community/slider';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -138,24 +148,26 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ isVisible, onExpand, onC
         style={[styles.miniPlayerGradient, { flex: 1, justifyContent: 'center', paddingVertical: 6 }]}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 4, paddingLeft: 8 }}>
-          {radioLogos.map((radio, idx) => (
-            <View key={radio.name} style={{ alignItems: 'center', marginRight: 16 }}>
-              <View style={{
-                width: 48,
-                height: 48,
-                borderRadius: 24,
-                overflow: 'hidden',
-                backgroundColor: '#fff',
-                borderWidth: 2,
-                borderColor: '#eee',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-                <Image source={radio.image} style={{ width: 44, height: 44, borderRadius: 22, resizeMode: 'contain' }} />
+          {filterValidChildren(
+            radioLogos.map((radio, idx) => (
+              <View key={radio.name} style={{ alignItems: 'center', marginRight: 16 }}>
+                <View style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 24,
+                  overflow: 'hidden',
+                  backgroundColor: '#fff',
+                  borderWidth: 2,
+                  borderColor: '#eee',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                  <Image source={radio.image} style={{ width: 44, height: 44, borderRadius: 22, resizeMode: 'contain' }} />
+                </View>
+                <Text style={{ fontSize: 12, color: '#fff', marginTop: 4 }}>{radio.name}</Text>
               </View>
-              <Text style={{ fontSize: 12, color: '#fff', marginTop: 4 }}>{radio.name}</Text>
-            </View>
-          ))}
+            ))
+          )}
         </View>
       </LinearGradient>
     </Animated.View>
@@ -236,11 +248,24 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, o
   const [playbackState, setPlaybackState] = useState<RadioAudioState>(simpleRadioAudioService.getState());
   const [translateY] = useState(new Animated.Value(0));
   const [opacity] = useState(new Animated.Value(1));
+  // Footer aktiflik durumları için state
+  const [volumeActive, setVolumeActive] = useState(false);
+  const [shareActive, setShareActive] = useState(false);
+  const [stopped, setStopped] = useState(false);
+  const [volume, setVolume] = useState(1); // 1 = max, 0 = mute
+
+  // Volume change handler (local only)
+  const handleVolumeChange = (val: number) => {
+    setVolume(val);
+    simpleRadioAudioService.setVolume(val);
+  };
 
   useEffect(() => {
     let isMounted = true;
     const safeSetState = (state: RadioAudioState) => {
       if (isMounted) setPlaybackState(state);
+      // If playback resumes, clear stopped
+      if (isMounted && state.isPlaying) setStopped(false);
     };
     const unsubscribe = simpleRadioAudioService.subscribe(safeSetState);
     return () => {
@@ -287,7 +312,8 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, o
   const handleStop = async () => {
     try {
       await simpleRadioAudioService.stop();
-      onCollapse();
+      setStopped(true);
+      // onCollapse(); // Kapatmak yerine durduruldu yazısı gösterilecek
     } catch (error) {
       // Sessiz hata yönetimi
     }
@@ -305,6 +331,7 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, o
     }
   };
 
+  // iOS crash koruması: Modal asla gereksiz açılmasın
   if (!isVisible || !playbackState.currentStation) {
     return null;
   }
@@ -337,77 +364,93 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, o
           ]}
           {...panResponder.panHandlers}
         >
-            <LinearGradient
-              colors={['#FF6B35', '#F59E0B']}
-              style={[styles.fullPlayerGradient, {width: '100%', height: '100%', minHeight: '100%', maxHeight: '100%'}]}
-            >
-              {/* Header with pull indicator */}
-              {/* Radyo İsmi En Üste */}
-              {/* Radyo İsmi Tam En Üste */}
-              <View style={{width: '100%', paddingTop: 0, paddingBottom: 0, marginBottom: 0}}>
-                <Text style={[styles.fullStationName, {marginTop: 0, marginBottom: 0, paddingTop: 0, paddingBottom: 0, textAlign: 'center'}]}>
-                  {playbackState.currentStation.name}
-                </Text>
+          <LinearGradient
+            colors={['#FF6B35', '#F59E0B']}
+            style={[styles.fullPlayerGradient, {width: '100%', height: '100%', minHeight: '100%', maxHeight: '100%'}]}
+          >
+            {/* Defensive: All children must be React elements, never string/undefined/null */}
+            <View style={{width: '100%', paddingTop: 0, paddingBottom: 0, marginBottom: 0}}>
+              {stopped && (
+                <Text style={{color: '#fff', fontSize: 18, fontWeight: 'bold', textAlign: 'center', marginBottom: 4}}>Durduruldu</Text>
+              )}
+              <Text style={[styles.fullStationName, {marginTop: 0, marginBottom: 0, paddingTop: 0, paddingBottom: 0, textAlign: 'center'}]}>
+                {typeof playbackState.currentStation.name === 'string' ? playbackState.currentStation.name : ''}
+              </Text>
+            </View>
+            <View style={[styles.fullPlayerHeader, {paddingTop: 0, paddingBottom: 0}]}> 
+              <View style={styles.pullIndicator} />
+              <TouchableOpacity onPress={onCollapse} style={styles.collapseButton}>
+                <Ionicons name="chevron-down" size={24} color="white" />
+              </TouchableOpacity>
+            </View>
+
+            <View style={{width: '100%', alignItems: 'center', marginTop: 100, marginBottom: 0}}>
+              <View style={[styles.stationLogo, {width: 160, height: 160, borderRadius: 80}]}> {/* Logo daha küçük */}
+                {playbackState.currentStation ? (
+                  <AnimatedCD station={playbackState.currentStation} isPlaying={playbackState.isPlaying} size={220} />
+                ) : (
+                  <View>
+                    <Ionicons name="radio" size={120} color="white" />
+                  </View>
+                )}
               </View>
-              <View style={[styles.fullPlayerHeader, {paddingTop: 0, paddingBottom: 0}]}> 
-                <View style={styles.pullIndicator} />
-                <TouchableOpacity onPress={onCollapse} style={styles.collapseButton}>
-                  <Ionicons name="chevron-down" size={24} color="white" />
+            </View>
+
+            <View style={{height: 100}} />
+
+            <View style={styles.fullPlayerControls}>
+              <View style={styles.mainControls}>
+                <TouchableOpacity style={styles.controlButton} onPress={handlePrevious}>
+                  <Ionicons name="play-skip-back" size={30} color="white" />
+                </TouchableOpacity>
+
+                <View style={{alignItems: 'center', justifyContent: 'center', width: 100, height: 100}}>
+                  <TouchableOpacity 
+                    style={styles.bigPlayPauseButton}
+                    onPress={handlePlayPause}
+                    disabled={playbackState.isLoading}
+                  >
+                    {playbackState.isLoading ? (
+                      <ActivityIndicator size="large" color="#FF6B35" />
+                    ) : (
+                      <Ionicons 
+                        name={playbackState.isPlaying ? "pause" : "play"} 
+                        size={54} 
+                        color="white" 
+                      />
+                    )}
+                  </TouchableOpacity>
+                </View>
+
+                <TouchableOpacity style={styles.controlButton} onPress={handleNext}>
+                  <Ionicons name="play-skip-forward" size={30} color="white" />
                 </TouchableOpacity>
               </View>
+            </View>
 
-              {/* Logo ve CD'yi aşağıya indir, ayrı div */}
-              <View style={{width: '100%', alignItems: 'center', marginTop: 32, marginBottom: 0}}>
-                <View style={[styles.stationLogo, {width: 160, height: 160, borderRadius: 80}]}> {/* Logo daha küçük */}
-                  {/* Modern dönen CD animasyonu ve logo */}
-                  {playbackState.currentStation ? (
-                    <AnimatedCD station={playbackState.currentStation} isPlaying={playbackState.isPlaying} size={220} />
-                  ) : (
-                    <View>
-                      <Ionicons name="radio" size={120} color="white" />
-                    </View>
-                  )}
-                </View>
-              </View>
-
-              {/* LOGO ve PLAY ARASI BOŞLUK */}
-              <View style={{height: 70}} />
-
-              {/* Player Controls */}
-              <View style={styles.fullPlayerControls}>
-                <View style={styles.mainControls}>
-                  <TouchableOpacity style={styles.controlButton} onPress={handlePrevious}>
-                    <Ionicons name="play-skip-back" size={30} color="white" />
-                  </TouchableOpacity>
-
-                  <View style={{alignItems: 'center', justifyContent: 'center', width: 100, height: 100}}>
-                    <TouchableOpacity 
-                      style={styles.bigPlayPauseButton}
-                      onPress={handlePlayPause}
-                      disabled={playbackState.isLoading}
-                    >
-                      {playbackState.isLoading ? (
-                        <ActivityIndicator size="large" color="#FF6B35" />
-                      ) : (
-                        <Ionicons 
-                          name={playbackState.isPlaying ? "pause" : "play"} 
-                          size={54} 
-                          color="white" 
-                        />
-                      )}
-                    </TouchableOpacity>
-                  </View>
-
-                  <TouchableOpacity style={styles.controlButton} onPress={handleNext}>
-                    <Ionicons name="play-skip-forward" size={30} color="white" />
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              {/* Footer Controls - moved to very bottom, light gray background */}
-              <View style={styles.footerControlsBar}>
-                <TouchableOpacity style={styles.actionButtonFooter}>
-                  <Ionicons name="volume-high" size={24} color="#374151" />
+            <View style={[styles.footerControlsBar, { paddingVertical: 44, minHeight: 150, zIndex: 100, justifyContent: 'flex-start' }]}> {/* Yükseklik artırıldı, ikonlar en üste */}
+              <View style={{
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+                alignItems: 'flex-start',
+                width: '100%',
+                marginBottom: 0,
+                position: 'absolute',
+                top: 10, // 10px boşluk yukarıdan (user request)
+                left: 0,
+                right: 0,
+              }}>
+                <TouchableOpacity
+                  style={[
+                    styles.actionButtonFooter,
+                    // Sadece ses ikonu için arka fon kaldırıldı
+                    { backgroundColor: 'transparent', borderWidth: 0 },
+                    volumeActive && { borderColor: '#FF6B35', borderWidth: 2 }
+                  ]}
+                  onPress={() => setVolumeActive(v => !v)}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name="volume-high" size={24} color={volumeActive ? '#FF6B35' : '#374151'} />
                 </TouchableOpacity>
                 <TouchableOpacity 
                   style={styles.actionButtonFooter}
@@ -422,11 +465,64 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({ isVisible, onCollapse, o
                 <TouchableOpacity style={styles.actionButtonFooter} onPress={handleStop}>
                   <Ionicons name="stop" size={24} color="#374151" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.actionButtonFooter}>
-                  <Ionicons name="share-outline" size={24} color="#374151" />
+                <TouchableOpacity
+                  style={[styles.actionButtonFooter, shareActive && { backgroundColor: '#FFEDD5', borderColor: '#FF6B35', borderWidth: 2 }]}
+                  onPress={() => {
+                    setShareActive(a => !a);
+                    if (!shareActive) {
+                      // Paylaşma fonksiyonu örneği (gerçek paylaşım için Share API eklenebilir)
+                      // Share.share({ message: playbackState.currentStation.name + ' dinle!' });
+                    }
+                  }}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name="share-outline" size={24} color={shareActive ? '#FF6B35' : '#374151'} />
                 </TouchableOpacity>
               </View>
-            </LinearGradient>
+              {/* Ses ayarı footer'ın en altına sabitlendi */}
+              {volumeActive && (
+                <View style={{
+                  position: 'absolute',
+                  left: 4,
+                  right: 4,
+                  // bottom: 0, // kaldırıldı, yukarı kaydırmak için
+                  top: 60, // ikonlara yaklaşsın, footer bar'ın üstünden 60px aşağıda
+                  backgroundColor: '#F3F4F6', // Footer ile aynı arka fon
+                  paddingVertical: 0,
+                  paddingHorizontal: 0,
+                  borderTopLeftRadius: 24,
+                  borderTopRightRadius: 24,
+                  alignItems: 'center',
+                  zIndex: 200,
+                  borderWidth: 1,
+                  borderColor: '#FFEDD5',
+                  minHeight: 0,
+                  maxHeight: 80,
+                  justifyContent: 'center',
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: -2 },
+                  shadowOpacity: 0.06,
+                  shadowRadius: 6,
+                  elevation: 8,
+                }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
+                    <Ionicons name="volume-high" size={22} color="#FF6B35" style={{ marginRight: 8, marginLeft: 8 }} />
+                    <Slider
+                      style={{ flex: 1, height: 32 }}
+                      minimumValue={0}
+                      maximumValue={1}
+                      step={0.01}
+                      value={volume}
+                      onValueChange={handleVolumeChange}
+                      minimumTrackTintColor="#FF6B35"
+                      maximumTrackTintColor="#E5E7EB"
+                      thumbTintColor="#FF6B35"
+                    />
+                  </View>
+                </View>
+              )}
+            </View>
+          </LinearGradient>
         </Animated.View>
       </View>
     </Modal>
@@ -652,7 +748,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     backgroundColor: '#F3F4F6', // Açık gri arka fon
-    paddingVertical: 8,
+    paddingVertical: 44, // Daha fazla yükseklik (artırıldı)
     paddingHorizontal: 16,
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
@@ -661,7 +757,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 100,
-    minHeight: 66,
+    minHeight: 150, // Daha fazla yükseklik (artırıldı)
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.06,

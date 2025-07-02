@@ -9,6 +9,32 @@ export interface RadioAudioState {
 }
 
 class SimpleRadioAudioService {
+  // ...existing code...
+  async toggleMute() {
+    if (Platform.OS === 'web' && this.webAudio) {
+      this.webAudio.muted = !this.webAudio.muted;
+    } else if (this.mobileSound) {
+      const status = await this.mobileSound.getStatusAsync();
+      if (status.isLoaded) {
+        await this.mobileSound.setIsMutedAsync(!status.isMuted);
+      }
+    }
+  }
+
+  /**
+   * Set playback volume (0.0 - 1.0)
+   */
+  async setVolume(volume: number) {
+    try {
+      if (Platform.OS === 'web' && this.webAudio) {
+        this.webAudio.volume = volume;
+      } else if (this.mobileSound) {
+        await this.mobileSound.setVolumeAsync(volume);
+      }
+    } catch (error) {
+      console.error('❌ setVolume error:', error);
+    }
+  }
   private webAudio: HTMLAudioElement | null = null;
   private mobileSound: Audio.Sound | null = null;
   private subscribers: ((state: RadioAudioState) => void)[] = [];
