@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Alert, AppState, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -6,6 +6,8 @@ import { simpleRadioAudioService } from './src/services/simpleRadioAudioService'
 import { favoritesService } from './src/services/favoritesService';
 import { FullPlayer } from './src/components/NewPlayer';
 import { ModernFooterPlayer } from './src/components/ModernFooterPlayer';
+// Test için import
+import TestModernFooterPlayerSwipe from './src/components/__test__ModernFooterPlayerSwipe';
 import { FavoritesPage } from './src/screens/FavoritesPage';
 import { AppProvider } from './src/contexts/AppContext';
 import { RADIO_STATIONS, RadioStation } from './src/constants/radioStations';
@@ -69,6 +71,8 @@ export default function App() {
   );
 }
 
+import { Animated, Easing } from 'react-native';
+
 function MainApp() {
   // 🎉 RADYO SAYISI KONTROLÜ
   console.log(`🎵 TOPLAM ${RADIO_STATIONS.length} RADYO İSTASYONU YÜKLENDİ!`);
@@ -77,6 +81,10 @@ function MainApp() {
   const insets = useSafeAreaInsets();
   // const [isMiniPlayerOpen, setIsMiniPlayerOpen] = useState(false); // REMOVED - No mini player
   const [isFullPlayerOpen, setIsFullPlayerOpen] = useState(false);
+  // Büyük player animasyonu için değer (0: mini, 1: full)
+  const playerTransition = useRef(new Animated.Value(0)).current;
+  // Pan state
+  const [isPanning, setIsPanning] = useState(false);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [currentStation, setCurrentStation] = useState<any>(null);
   const [audioState, setAudioState] = useState(audioService.getState());
@@ -658,20 +666,93 @@ function MainApp() {
       {/* MiniPlayer component removed to eliminate footer player */}
 
       {/* Modern Footer Player */}
+
+      {/* TEST: Sadece swipe animasyonunu izlemek için aşağıdaki satırı aktif bırakın */}
+      {/* <TestModernFooterPlayerSwipe /> */}
+
+      {/* Gerçek uygulama için aşağıdaki satırı aktif bırakın */}
       <ModernFooterPlayer 
-        onPress={() => setIsFullPlayerOpen(true)}
-        onSwipeUp={() => setIsFullPlayerOpen(true)}
+        onPress={() => {
+          Animated.timing(playerTransition, {
+            toValue: 1,
+            duration: 600,
+            easing: Easing.out(Easing.cubic),
+            useNativeDriver: false,
+          }).start(() => setIsFullPlayerOpen(true));
+        }}
+        onSwipeUpProgress={(progress: number) => {
+          setIsPanning(true);
+          // Daha yavaş ve yumuşak geçiş için ilerlemeyi easeOut ile yavaşlat
+          const eased = Math.pow(progress, 1.7); // 1.5-2 arası değerler yavaşlatır
+          playerTransition.setValue(eased);
+        }}
+        onSwipeUpEnd={(completed: boolean) => {
+          if (completed) {
+            Animated.timing(playerTransition, {
+              toValue: 1,
+              duration: 600, // Daha yavaş ve yumuşak tam açılma
+              easing: Easing.out(Easing.cubic),
+              useNativeDriver: false,
+            }).start(() => {
+              setIsFullPlayerOpen(true);
+              setIsPanning(false);
+            });
+          } else {
+            Animated.timing(playerTransition, {
+              toValue: 0,
+              duration: 400,
+              easing: Easing.out(Easing.cubic),
+              useNativeDriver: false,
+            }).start(() => {
+              setIsPanning(false);
+            });
+          }
+        }}
+        isPanning={isPanning}
+        playerTransition={playerTransition}
       />
 
       {/* Full Player */}
-      <FullPlayer
-        isVisible={isFullPlayerOpen}
-        onCollapse={handleCollapsePlayer}
-        onNext={playNextRadio}
-        onPrevious={playPreviousRadio}
-        onToggleFavorite={toggleFavorite}
-        isFavorite={audioState.currentStation ? favorites.some(fav => fav.id === audioState.currentStation.id) : false}
-      />
+
+      {/* Full Player Animasyonlu */}
+      <Animated.View
+        pointerEvents={isFullPlayerOpen || isPanning ? 'auto' : 'none'}
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+          zIndex: 9999,
+          opacity: playerTransition.interpolate({ inputRange: [0, 0.2, 1], outputRange: [0, 0.5, 1] }),
+          transform: [
+            {
+              translateY: playerTransition.interpolate({
+                inputRange: [0, 1],
+                outputRange: [600, 0],
+              }),
+            },
+          ],
+        }}
+      >
+        <FullPlayer
+          isVisible={isFullPlayerOpen || isPanning}
+          onCollapse={() => {
+            Animated.timing(playerTransition, {
+              toValue: 0,
+              duration: 300,
+              useNativeDriver: false,
+            }).start(() => {
+              setIsFullPlayerOpen(false);
+              setIsPanning(false);
+            });
+          }}
+          onNext={playNextRadio}
+          onPrevious={playPreviousRadio}
+          onToggleFavorite={toggleFavorite}
+          isFavorite={audioState.currentStation ? favorites.some(fav => fav.id === audioState.currentStation.id) : false}
+        />
+      </Animated.View>
 
       {/* Favoriler Sayfası */}
       <FavoritesPage
